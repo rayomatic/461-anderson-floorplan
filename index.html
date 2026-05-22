@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>461 Anderson — Living Space</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f5f3ee;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:28px 16px;gap:12px}
+h1{font-size:17px;font-weight:500;color:#333;letter-spacing:.01em}
+#ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.lbl{font-size:12px;color:#888;margin-right:2px}
+.b{padding:5px 15px;border-radius:6px;border:1.5px solid #c0bcb4;background:#fff;cursor:pointer;font-size:13px;color:#444;transition:all .15s}
+.b:hover{border-color:#999}
+.b.on{background:#252525;color:#fff;border-color:#252525}
+#inf{font-size:12px;color:#777;min-height:18px;text-align:center}
+canvas{border:1px solid #ddd;border-radius:6px;background:#fff;max-width:100%;height:auto}
+footer{font-size:11px;color:#bbb;margin-top:4px}
+</style>
+</head>
+<body>
+<h1>461 Anderson — Living Space</h1>
+<div id="ctrl">
+  <span class="lbl">PB Comfort sofa:</span>
+  <button class="b"    onclick="go(78)"  id="b78">78"</button>
+  <button class="b on" onclick="go(87)"  id="b87">87"</button>
+  <button class="b"    onclick="go(103)" id="b103">103"</button>
+  <button class="b"    onclick="go(115)" id="b115">115"</button>
+</div>
+<div id="inf"></div>
+<canvas id="c"></canvas>
+<footer>Floor plan study &nbsp;·&nbsp; 461 Anderson St &nbsp;·&nbsp; not for permitting</footer>
+
+<script>
+const S=22, OX=48, OY=72;
+
+// All dimensions in feet
+const KW=11.26, LW=13.74, LH=14.79, ZH=6.29;
+const LWLL=3.49, PWW=4.03, DW=9.31;
+const TW=KW+LW, TH=LH+ZH;
+
+// Lower-left zone splits
+const BATH_W  = 7.5;
+const POWD_W  = KW - BATH_W;   // 3.76 ft
+const POWD_H  = 4.52;
+const LINEN_H = ZH - POWD_H;   // 1.77 ft
+
+// Hallway fills the full gap between lower-left zone and dining
+const HW_W = TW - DW - KW;   // 4.43 ft
+
+// Kitchen counters: WEST + SOUTH walls only
+const CTR_D = 2.0;
+
+// Island — 3.5ft aisle from west counter (standard kitchen clearance)
+const ISL_X = 5.5;   // west counter edge at 2ft; aisle = 5.5-2.0 = 3.5ft
+const ISL_Y = 2.8;
+const ISL_W = 3.0;
+const ISL_H = 8.5;
+const ISL_OH = 0.5;  // 6" overhang east side toward living
+
+function px(x){ return OX + x*S; }
+function py(y){ return OY + y*S; }
+function f(ft){ return ft*S; }
+
+function ln(ctx,x1,y1,x2,y2){
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+}
+function box(ctx,x,y,w,h,fill,str,lw){
+  if(fill){ ctx.fillStyle=fill; ctx.fillRect(x,y,w,h); }
+  if(str){ ctx.strokeStyle=str; ctx.lineWidth=lw||1; ctx.strokeRect(x,y,w,h); }
+}
+
+// Blue dimension annotation (wall measurements)
+function dimAnnot(ctx, x1, y1, x2, y2, label) {
+  ctx.save();
+  ctx.strokeStyle='#6699bb'; ctx.lineWidth=0.7; ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  ctx.setLineDash([]);
+  const isVert = Math.abs(x2-x1) < 1;
+  if(isVert){
+    ctx.beginPath(); ctx.moveTo(x1-4,y1); ctx.lineTo(x1+4,y1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x2-4,y2); ctx.lineTo(x2+4,y2); ctx.stroke();
+    ctx.fillStyle='#4477aa'; ctx.font='bold 8px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(label, x1+7, (y1+y2)/2+3);
+  } else {
+    ctx.beginPath(); ctx.moveTo(x1,y1-4); ctx.lineTo(x1,y1+4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x2,y2-4); ctx.lineTo(x2,y2+4); ctx.stroke();
+    ctx.fillStyle='#4477aa'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(label, (x1+x2)/2, y1-6);
+  }
+  ctx.restore();
+}
+
+// Convert decimal feet to ft+in string
+function ftIn(d) {
+  const ti=Math.round(d*12), ft=Math.floor(ti/12), inch=ti%12;
+  return inch ? `${ft}'${inch}"` : `${ft}'`;
+}
+
+// Draw a 24"×24" accent chair centered at (cx,cy), rotated by angle
+// Back rail is at local "top" (negative y in local space)
+function drawAccentChair(ctx, cx, cy, angle) {
+  const sz = f(2.0);   // 24" square
+  const half = sz/2;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  // Body
+  ctx.fillStyle = P.acChair;
+  ctx.fillRect(-half, -half, sz, sz);
+  ctx.strokeStyle = P.acChairS; ctx.lineWidth = 1;
+  ctx.strokeRect(-half, -half, sz, sz);
+  // Back rail at local top
+  ctx.fillStyle = '#7a6040';
+  ctx.fillRect(-half, -half, sz, f(0.35));
+  // Seat cushion circle
+  ctx.fillStyle = '#c8aa78';
+  ctx.beginPath();
+  ctx.arc(0, half*0.2, sz*0.28, 0, Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle = '#9a7848'; ctx.lineWidth = 0.7; ctx.stroke();
+  ctx.restore();
+}
+
+const P={
+  kit:    '#f3ede0',
+  liv:    '#eaeff8',
+  din:    '#eaf1e4',
+  hall:   '#e8e2d8',
+  bath:   '#d5ebf2',
+  linen:  '#e0d9cc',
+  powd:   '#ece0ea',
+  ctr:    '#cfc8b0',
+  ctrS:   '#a8a090',
+  app:    '#c8c3b3',
+  appS:   '#9a9488',
+  isl:    '#c2b48c',
+  islO:   '#b2a87c',
+  islS:   '#887450',
+  sofa:   '#8a7050',
+  sofaB:  '#685438',
+  stool:  '#9c8254',
+  stoolS: '#c2a070',
+  acChair:'#a09068',
+  acChairS:'#786040',
+  tbl:    '#c0b46e',
+  chr:    '#968058',
+  side:   '#ae9860',
+  coff:   '#b8b060',
+  htch:   '#b4ac9a',
+  ext:    '#1c1c1c',
+  wall:   '#808080',
+  sub:    '#aaaaaa',
+  dim:    '#888',
+};
+
+let curSofa = 87;
+function go(s){
+  curSofa = s;
+  [78,87,103,115].forEach(x=>{
+    document.getElementById('b'+x).className = 'b' + (x===s?' on':'');
+  });
+  draw();
+}
+
+function draw(){
+  const cW = OX*2 + f(TW) + 56;   // extra for right-side dims
+  const cH = OY + 62 + f(TH);      // extra for bottom dims + north arrow
+  const cv = document.getElementById('c');
+  cv.width=cW; cv.height=cH;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,cW,cH);
+
+  // ── ROOM FILLS ──
+  box(ctx, px(0),  py(0), f(KW), f(LH), P.kit);
+  box(ctx, px(KW), py(0), f(LW), f(LH), P.liv);
+
+  // Lightwell hatch (lower-right of living)
+  {
+    const lx=px(TW-LWLL), ly=py(LH-ZH), lw=f(LWLL), lh=f(ZH);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(lx,ly,lw,lh); ctx.clip();
+    ctx.fillStyle='#dbd4c4'; ctx.fillRect(lx,ly,lw,lh);
+    ctx.strokeStyle=P.htch; ctx.lineWidth=0.8;
+    for(let i=-lh; i<lw+lh; i+=7) ln(ctx,lx+i,ly,lx+i+lh,ly+lh);
+    ctx.restore();
+  }
+
+  // ── LOWER ZONE ──
+  const dX=px(TW-DW), dY=py(LH);
+  box(ctx, dX, dY, f(DW), f(ZH), P.din);
+  box(ctx, px(KW), py(LH), f(HW_W), f(ZH), P.hall);
+
+  const llX=px(0), llY=py(LH), llH=f(ZH);
+  const bathPx=f(BATH_W), powdPx=f(POWD_W), powdHpx=f(POWD_H), linenHpx=f(LINEN_H);
+  box(ctx, llX,        llY,           bathPx, llH,      P.bath);
+  box(ctx, llX+bathPx, llY,           powdPx, powdHpx,  P.powd);
+  box(ctx, llX+bathPx, llY+powdHpx,  powdPx, linenHpx, P.linen);
+
+  // ── KITCHEN COUNTERS (west + south walls only) ──
+  const cd = f(CTR_D);
+  box(ctx, px(0),    py(0),         cd,             f(LH),        P.ctr, P.ctrS, 1);
+  box(ctx, px(CTR_D),py(LH-CTR_D), f(KW-CTR_D),    cd,           P.ctr, P.ctrS, 1);
+
+  // Fridge — NW corner, 3ft tall
+  box(ctx, px(0), py(0), cd, f(3), P.app, P.appS, 1.3);
+  ctx.fillStyle='#555'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('fridge', px(0)+cd/2, py(0)+f(1.5)+3);
+
+  // Range — mid west counter, y=4.5 to 7ft (2.5ft)
+  box(ctx, px(0), py(4.5), cd, f(2.5), P.app, P.appS, 1.3);
+  const rbx=px(0)+cd/2, rby=py(4.5)+f(1.25);
+  [[-f(.38),-f(.55)],[f(.38),-f(.55)],[-f(.38),f(.55)],[f(.38),f(.55)]].forEach(([dx,dy])=>{
+    ctx.beginPath(); ctx.arc(rbx+dx, rby+dy, f(.26), 0, Math.PI*2);
+    ctx.strokeStyle='#7a7060'; ctx.lineWidth=1; ctx.stroke();
+  });
+  ctx.fillStyle='#666'; ctx.font='8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('range', px(0)+cd/2, py(7)+8);
+
+  // Sink — west counter y=8 to 9.5ft, N-S stacked double basin
+  const skX=px(0)+3, skY=py(8)+3;
+  const bsW = cd - 6;
+  const bsTotH = f(1.5) - 6;
+  const bsH = (bsTotH - 3) / 2;
+  box(ctx, skX, skY,        bsW, bsH, '#c0dcea', '#78a8be', 1);
+  box(ctx, skX, skY+bsH+3, bsW, bsH, '#c0dcea', '#78a8be', 1);
+
+  // Dishwasher — y=9.8 to 11.3ft
+  box(ctx, px(0), py(9.8), cd, f(1.5), P.app, P.appS, 1);
+  ctx.fillStyle='#666'; ctx.font='8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('DW', px(0)+cd/2, py(9.8)+f(0.75)+3);
+
+  // South counter label
+  ctx.fillStyle='#888'; ctx.font='8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('storage / prep', px(CTR_D)+f((KW-CTR_D)/2), py(LH-CTR_D)+cd/2+3);
+
+  // ── ISLAND + OVERHANG ──
+  const iX=px(ISL_X), iY=py(ISL_Y), iW=f(ISL_W), iH=f(ISL_H), ohW=f(ISL_OH);
+  box(ctx, iX+iW, iY, ohW, iH, P.islO, P.islS, 1);
+  box(ctx, iX,    iY, iW,  iH, P.isl,  P.islS, 1.5);
+  ctx.save();
+  ctx.translate(iX+iW/2, iY+iH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#4c3018'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('ISLAND  3×8.5ʹ', 0, 4);
+  ctx.restore();
+
+  // Kitchen aisle dimension
+  {
+    const aisleY = py(ISL_Y + ISL_H*0.55);
+    const ax1 = px(CTR_D), ax2 = px(ISL_X);
+    ctx.save();
+    ctx.strokeStyle='#cc8844'; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
+    ln(ctx, ax1, aisleY, ax2, aisleY);
+    ctx.setLineDash([]);
+    ln(ctx, ax1, aisleY-4, ax1, aisleY+4);
+    ln(ctx, ax2, aisleY-4, ax2, aisleY+4);
+    ctx.fillStyle='#cc8844'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(ftIn(ISL_X-CTR_D)+' aisle', (ax1+ax2)/2, aisleY-7);
+    ctx.restore();
+  }
+
+  // ── HOLLIS COUNTER STOOLS (3×) ──
+  const stW=f(21.5/12), stD=f(20.5/12), stG=f(0.15);
+  const stTH=3*stW+2*stG;
+  const stSX=iX+iW+ohW;
+  const stSY=py(ISL_Y+ISL_H/2)-stTH/2;
+  for(let i=0;i<3;i++){
+    const sy=stSY+i*(stW+stG);
+    box(ctx, stSX, sy, stD, stW, P.stool, P.islS, 1);
+    ctx.fillStyle=P.stoolS;
+    ctx.beginPath(); ctx.arc(stSX+stD/2, sy+stW/2, Math.min(stD,stW)*.30, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#7a6040'; ctx.lineWidth=.7; ctx.stroke();
+  }
+
+  // ── SOFA — back against east wall ──
+  const sL=f(curSofa/12), sD=f(3.5);
+  const sX=px(TW)-sD;
+  const imY=ISL_Y+ISL_H/2;  // 7.05 ft — sofa centered on island midpoint
+  const sY=py(imY)-sL/2;
+
+  ctx.fillStyle='rgba(0,0,0,.05)'; ctx.fillRect(sX+3,sY+3,sD,sL);
+  box(ctx, sX, sY, sD, sL, P.sofa, '#4a3828', 1.5);
+  // Back rail on EAST side (against wall)
+  box(ctx, sX+sD-f(10/12), sY, f(10/12), sL, P.sofaB);
+
+  // Cushion lines across seat (from west edge to back rail)
+  ctx.strokeStyle='#5a4830'; ctx.lineWidth=0.8;
+  const nC = curSofa <= 90 ? 3 : 4;
+  for(let i=1;i<nC;i++){ const cy=sY+sL*i/nC; ln(ctx, sX, cy, sX+sD-f(10/12), cy); }
+
+  // Sofa label
+  ctx.save();
+  ctx.translate(sX+sD/2, sY+sL/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#fff'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(curSofa+'" sofa', 0, 4);
+  ctx.restore();
+
+  // Side tables (22"×22")
+  const ss=f(22/12);
+  box(ctx, px(TW)-ss, sY-f(1/12)-ss,  ss, ss, P.side, '#7a6848', 1);
+  box(ctx, px(TW)-ss, sY+sL+f(1/12),  ss, ss, P.side, '#7a6848', 1);
+
+  // ── COFFEE TABLE — 2ft E-W × 4.5ft N-S ──
+  const ctW=f(2.0), ctH=f(4.5);
+  const ctX=sX-f(1.0)-ctW;
+  const ctY=sY+sL/2-ctH/2;
+  box(ctx, ctX, ctY, ctW, ctH, P.coff, '#7a6838', 1);
+  ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('coffee', ctX+ctW/2, ctY+ctH/2-3);
+  ctx.fillText('table',  ctX+ctW/2, ctY+ctH/2+8);
+
+  // ── ACCENT CHAIRS — 45° at NW and SW corners of coffee table ──
+  // Chairs are 24"×24". Back rail at local "top" (negative y).
+  // NW corner (ctX, ctY):  angle=-PI/4 → back points NW, seat faces SE toward table
+  // SW corner (ctX, ctY+ctH): angle=-3PI/4 → back points SW, seat faces NE toward table
+  const diag = f(1.0);   // offset from corner; chair just touches corner when rotated 45°
+  drawAccentChair(ctx, ctX - diag, ctY - diag,         -Math.PI/4);         // NW corner
+  drawAccentChair(ctx, ctX - diag, ctY + ctH + diag,   -3*Math.PI/4);       // SW corner
+
+  ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('accent chairs', ctX - diag, ctY + ctH + diag + f(1.0) + 10);
+
+  // ── DINING TABLE + 6 CHAIRS — rotated 90°: 5ft E-W × 2.67ft N-S ──
+  const dtW=f(5), dtH=f(2.67);
+  const dtX=dX+(f(DW)-dtW)/2, dtY3=dY+(f(ZH)-dtH)/2;
+  box(ctx, dtX, dtY3, dtW, dtH, P.tbl, '#7a6838', 1);
+  ctx.fillStyle='#666'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('60"×32"', dtX+dtW/2, dtY3+dtH/2+4);
+
+  const cw=f(1.4), chd=f(1.2);
+  [
+    // West end chair
+    [dtX-chd-2,              dtY3+dtH/2-cw/2,        chd, cw],
+    // East end chair
+    [dtX+dtW+2,              dtY3+dtH/2-cw/2,        chd, cw],
+    // North side: 2 chairs
+    [dtX+dtW*0.27-cw/2,     dtY3-chd-2,             cw, chd],
+    [dtX+dtW*0.73-cw/2,     dtY3-chd-2,             cw, chd],
+    // South side: 2 chairs
+    [dtX+dtW*0.27-cw/2,     dtY3+dtH+2,             cw, chd],
+    [dtX+dtW*0.73-cw/2,     dtY3+dtH+2,             cw, chd],
+  ].forEach(([x,y,w,h])=>box(ctx,x,y,w,h,P.chr,'#6a5838',.7));
+
+  // ── WALLS (drawn on top) ──
+  // Exterior perimeter
+  ctx.strokeStyle=P.ext; ctx.lineWidth=3;
+  ln(ctx, px(0),  py(0),  px(TW), py(0));
+  ln(ctx, px(TW), py(0),  px(TW), py(TH));
+  ln(ctx, px(0),  py(0),  px(0),  py(TH));
+  ln(ctx, px(0),  py(TH), px(TW), py(TH));
+
+  // Interior walls
+  ctx.strokeStyle=P.wall; ctx.lineWidth=2;
+  // South wall of kitchen / north wall of lower-left zone
+  ln(ctx, px(0),      py(LH),  px(KW),      py(LH));
+  // ↑ hallway north wall line intentionally omitted (open plan — no wall between kitchen and hallway)
+  // Left wall of lower zone (east wall of bath/powder/linen)
+  ln(ctx, px(KW),     py(LH),  px(KW),      py(TH));
+  // Right wall of hallway / left wall of dining
+  ln(ctx, px(TW-DW),  py(LH),  px(TW-DW),   py(TH));
+
+  // Lower-left subdivisions
+  ctx.strokeStyle=P.sub; ctx.lineWidth=1.3;
+  ln(ctx, llX+bathPx, llY,          llX+bathPx, llY+llH);
+  ln(ctx, llX+bathPx, llY+powdHpx,  llX+bathPx+powdPx, llY+powdHpx);
+
+  // ── DIMENSION ANNOTATIONS ──
+  // Top: total width
+  dimAnnot(ctx, px(0),  OY-16, px(TW), OY-16, ftIn(TW));
+  // Right: total height + sub-split
+  dimAnnot(ctx, px(TW)+30, py(0),  px(TW)+30, py(TH), ftIn(TH));
+  dimAnnot(ctx, px(TW)+16, py(0),  px(TW)+16, py(LH), ftIn(LH));
+  dimAnnot(ctx, px(TW)+16, py(LH), px(TW)+16, py(TH), ftIn(ZH));
+  // Bottom: lower-zone breakdown
+  dimAnnot(ctx, px(0),       py(TH)+22, px(KW),      py(TH)+22, ftIn(KW));
+  dimAnnot(ctx, px(KW),      py(TH)+22, px(TW-DW),   py(TH)+22, ftIn(HW_W));
+  dimAnnot(ctx, px(TW-DW),   py(TH)+22, px(TW),      py(TH)+22, ftIn(DW));
+
+  // ── CLEARANCE ANNOTATION (stools → coffee table) ──
+  const stoolFrontX = stSX + stD;
+  const coffeeWestX = ctX;
+  if(coffeeWestX > stoolFrontX + 5){
+    const gapFt = ((coffeeWestX - stoolFrontX)/S).toFixed(1);
+    const gapY  = py(imY);
+    ctx.save();
+    ctx.strokeStyle='#e05050'; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
+    ln(ctx, stoolFrontX, gapY, coffeeWestX, gapY);
+    ctx.setLineDash([]);
+    ln(ctx, stoolFrontX, gapY-5, stoolFrontX, gapY+5);
+    ln(ctx, coffeeWestX, gapY-5, coffeeWestX, gapY+5);
+    ctx.fillStyle='#e05050'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(gapFt+"' open", (stoolFrontX+coffeeWestX)/2, gapY-8);
+    ctx.restore();
+  }
+
+  // ── LABELS ──
+  function lbl(x,y,t,s,col){
+    ctx.fillStyle=col||'#222'; ctx.font='bold 10px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(t,x,y);
+    if(s){ ctx.font='8.5px sans-serif'; ctx.fillStyle='#999'; ctx.fillText(s,x,y+13); }
+  }
+
+  lbl(px(CTR_D)+6, py(5.5), 'Kitchen', '167 SF');
+  lbl(px(KW)+6,    py(0)+16,'Living Room', '~180 SF');
+  lbl(px(KW)+4,    py(LH)+14,'Hallway');
+  lbl(dX+6,        dY+14,   'Dining', '~59 SF');
+
+  // Lightwell
+  ctx.fillStyle='#aaa'; ctx.font='8px sans-serif'; ctx.textAlign='center';
+  const lwcX=px(TW-LWLL)+f(LWLL)/2;
+  ctx.fillText('(N) FLOOR', lwcX, py(LH-ZH)+f(ZH)/2-4);
+  ctx.fillText('infill',    lwcX, py(LH-ZH)+f(ZH)/2+7);
+
+  // Stool label
+  ctx.fillStyle='#888'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('Hollis ×3', stSX+stD+3, stSY+stTH/2+3);
+
+  // Lower-left labels
+  ctx.save();
+  ctx.translate(llX+bathPx/2, llY+llH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#222'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Bath 1', 0, -6);
+  ctx.fillStyle='#999'; ctx.font='8.5px sans-serif';
+  ctx.fillText('203', 0, 7);
+  ctx.restore();
+
+  const prCX=llX+bathPx+powdPx/2, prCY=llY+powdHpx/2;
+  ctx.fillStyle='#222'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Pwdr', prCX, prCY-5);
+  ctx.fillStyle='#999'; ctx.font='8px sans-serif';
+  ctx.fillText('204 · 17 SF', prCX, prCY+7);
+
+  const liCX=llX+bathPx+powdPx/2, liCY=llY+powdHpx+linenHpx/2;
+  ctx.fillStyle='#444'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Linen', liCX, liCY+3);
+
+  // ── NORTH ARROW (← = north) ──
+  {
+    const nx=px(TW)-14, ny=py(TH)+32;
+    ctx.save();
+    ctx.strokeStyle='#555'; ctx.fillStyle='#555'; ctx.lineWidth=1.5;
+    ln(ctx, nx, ny, nx-26, ny);
+    ctx.beginPath(); ctx.moveTo(nx-26,ny); ctx.lineTo(nx-20,ny-5); ctx.lineTo(nx-20,ny+5); ctx.closePath(); ctx.fill();
+    ctx.font='bold 11px sans-serif'; ctx.textAlign='right';
+    ctx.fillText('N', nx-30, ny+4);
+    ctx.restore();
+  }
+
+  // Title
+  ctx.fillStyle='#444'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('461 Anderson — living space', px(TW/2), OY-42);
+  ctx.fillStyle='#aaa'; ctx.font='10px sans-serif';
+  ctx.fillText('scale: 1 ft = 22 px  ·  not for permitting', px(TW/2), OY-27);
+
+  // Clearance info banner
+  const nc  = (imY - curSofa/24).toFixed(1);
+  const sc  = (LH  - imY - curSofa/24).toFixed(1);
+  const aisle = (ISL_X - CTR_D).toFixed(1);
+  document.getElementById('inf').innerHTML =
+    `<b>${curSofa}" sofa</b> &nbsp;·&nbsp; N clearance: <b>${nc}ʹ</b> &nbsp;·&nbsp; S clearance: <b>${sc}ʹ</b> &nbsp;·&nbsp; kitchen aisle: <b>${aisle}ʹ</b>`;
+}
+
+draw();
+</script>
+</body>
+</html>
