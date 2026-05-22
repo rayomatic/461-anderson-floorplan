@@ -36,7 +36,7 @@ const S=22, OX=48, OY=72;
 
 // All dimensions in feet
 const KW=11.26, LW=13.74, LH=14.79, ZH=6.29;
-const LWLL=3.49, PWW=4.03, DW=9.31;
+const LWLL=3.49, PWW=4.03;
 const TW=KW+LW, TH=LH+ZH;
 
 // Lower-left zone splits
@@ -45,19 +45,22 @@ const POWD_W  = KW - BATH_W;   // 3.76 ft
 const POWD_H  = 4.52;
 const LINEN_H = ZH - POWD_H;   // 1.77 ft
 
-// Hallway fills the full gap between lower-left zone and dining
-const HW_W = TW - DW - KW;   // 4.43 ft
+// Hallway: fixed at 4ft per architectural plans; dining room derived
+const HW_W = 4.0;
+const DW   = TW - KW - HW_W;   // dining width = 9.74ft
 
 // Kitchen counters: WEST + SOUTH walls only
 const CTR_D = 2.0;
 
-// Island dimensions declared first so ISL_X can reference them
+// Island — 4ft aisle from west counter; 13.75ft from stool front to east wall
 const ISL_W = 3.0;
 const ISL_H = 8.5;
 const ISL_OH = 0.5;  // 6" overhang east side toward living
 const ISL_Y = 2.8;
-// Right edge aligns with hallway left wall (per architectural plans)
-const ISL_X = KW - ISL_W;   // = 8.26ft; right edge at KW=11.26ft; aisle ~6.3ft
+const ISL_X = 6.0;   // aisle = 6.0−2.0 = 4.0ft ✓
+
+// Sliding glass door on north wall (living room, NE zone)
+const SGD_X1 = 17.5, SGD_X2 = 23.5;  // 6ft wide
 
 function px(x){ return OX + x*S; }
 function py(y){ return OY + y*S; }
@@ -310,16 +313,33 @@ function draw(){
   ctx.fillText('coffee', ctX+ctW/2, ctY+ctH/2-3);
   ctx.fillText('table',  ctX+ctW/2, ctY+ctH/2+8);
 
-  // ── ACCENT CHAIRS — 45° at NW and SW corners of coffee table ──
-  // Chairs are 24"×24". Back rail at local "top" (negative y).
-  // NW corner (ctX, ctY):  angle=-PI/4 → back points NW, seat faces SE toward table
-  // SW corner (ctX, ctY+ctH): angle=-3PI/4 → back points SW, seat faces NE toward table
-  const diag = f(1.0);   // offset from corner; chair just touches corner when rotated 45°
-  drawAccentChair(ctx, ctX - diag, ctY - diag,         -Math.PI/4);         // NW corner
-  drawAccentChair(ctx, ctX - diag, ctY + ctH + diag,   -3*Math.PI/4);       // SW corner
+  // ── ACCENT CHAIRS — tucked into island east face at 45° ──
+  // Centers sit at the overhang east edge so chairs overlap into the island body,
+  // showing them "stored" under the counter. Seat faces east toward the sofa.
+  const acTuckX = ISL_X + ISL_W + 0.1;   // 9.1ft — just inside overhang
+  const acNY    = ISL_Y + 0.85;           // 3.65ft — north end of island
+  const acSY    = ISL_Y + ISL_H - 0.85;  // 10.45ft — south end of island
+  drawAccentChair(ctx, px(acTuckX), py(acNY), -Math.PI/4);       // NW, faces SE
+  drawAccentChair(ctx, px(acTuckX), py(acSY), -3*Math.PI/4);     // SW, faces NE
 
-  ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('accent chairs', ctX - diag, ctY + ctH + diag + f(1.0) + 10);
+  // Dashed "in-use" ghost at coffee table NW/SW corners
+  const diag = f(1.0);
+  [
+    [ctX - diag, ctY - diag,       -Math.PI/4],
+    [ctX - diag, ctY + ctH + diag, -3*Math.PI/4],
+  ].forEach(([cx, cy, angle]) => {
+    const sz=f(2.0), half=sz/2;
+    ctx.save();
+    ctx.translate(cx, cy); ctx.rotate(angle);
+    ctx.strokeStyle='rgba(160,140,100,0.35)'; ctx.lineWidth=0.8;
+    ctx.setLineDash([3,3]);
+    ctx.strokeRect(-half, -half, sz, sz);
+    ctx.setLineDash([]);
+    ctx.restore();
+  });
+
+  ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('accent chairs (tucked)', px(acTuckX)+f(1.6), py((acNY+acSY)/2)+3);
 
   // ── DINING TABLE + 6 CHAIRS — rotated 90°: 5ft E-W × 2.67ft N-S ──
   const dtW=f(5), dtH=f(2.67);
@@ -342,10 +362,32 @@ function draw(){
     [dtX+dtW*0.73-cw/2,     dtY3+dtH+2,             cw, chd],
   ].forEach(([x,y,w,h])=>box(ctx,x,y,w,h,P.chr,'#6a5838',.7));
 
+  // ── SLIDING GLASS DOOR (north wall, living room) ──
+  {
+    const sd1=px(SGD_X1), sd2=px(SGD_X2), sdW=sd2-sd1;
+    const panW=sdW/2, sdD=f(3/12);  // two equal panels, 3" thick in plan
+    // Glass fill
+    ctx.fillStyle='rgba(180,220,240,0.45)';
+    ctx.fillRect(sd1, py(0), sdW, sdD);
+    // West panel (sliding, shown partially open — overlapping east panel)
+    ctx.fillStyle='rgba(150,205,230,0.55)';
+    ctx.fillRect(sd1, py(0), panW, sdD);
+    // East panel (fixed)
+    ctx.fillRect(sd1+panW*0.5, py(0), panW, sdD);
+    // Panel outlines
+    ctx.strokeStyle='#6899b8'; ctx.lineWidth=0.8;
+    ctx.strokeRect(sd1, py(0), panW, sdD);
+    ctx.strokeRect(sd1+panW*0.5, py(0), panW, sdD);
+    // Label
+    ctx.fillStyle='#5588aa'; ctx.font='7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('sliding glass door', (sd1+sd2)/2, py(0)+sdD+9);
+  }
+
   // ── WALLS (drawn on top) ──
-  // Exterior perimeter
+  // Exterior perimeter — north wall split around sliding door
   ctx.strokeStyle=P.ext; ctx.lineWidth=3;
-  ln(ctx, px(0),  py(0),  px(TW), py(0));
+  ln(ctx, px(0),      py(0),    px(SGD_X1), py(0));   // north wall west of door
+  ln(ctx, px(SGD_X2), py(0),    px(TW),     py(0));   // north wall east of door
   ln(ctx, px(TW), py(0),  px(TW), py(TH));
   ln(ctx, px(0),  py(0),  px(0),  py(TH));
   ln(ctx, px(0),  py(TH), px(TW), py(TH));
