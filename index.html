@@ -317,7 +317,9 @@ function draw(){
   // Center x = overhang east edge (ISL_X+ISL_W+ISL_OH = 9.5ft with KW=10):
   // - west half of chair (1ft) is under overhang/island  → "tucked"
   // - east half (1ft) is in the aisle                    → visible in plan
-  const acTuckX = ISL_X + ISL_W + ISL_OH;  // 9.5ft — center at overhang east edge
+  // Chair back (west edge) sits at overhang east face; seat extends 2ft east into aisle.
+  // Center must be 1ft (half-chair depth) east of the overhang edge.
+  const acTuckX = ISL_X + ISL_W + ISL_OH + 1.0;  // 10.5ft — back edge at 9.5ft (overhang face)
   const acNY    = ISL_Y + 1.0;             // 3.8ft — north chair
   const acSY    = ISL_Y + ISL_H - 1.0;    // 10.3ft — south chair
   // angle = -π/2 → back rail faces west (into island), seat faces east (living room)
