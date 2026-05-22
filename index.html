@@ -102,26 +102,25 @@ function ftIn(d) {
   return inch ? `${ft}'${inch}"` : `${ft}'`;
 }
 
-// Draw a 24"×24" accent chair centered at (cx,cy), rotated by angle
-// Back rail is at local "top" (negative y in local space)
-function drawAccentChair(ctx, cx, cy, angle) {
-  const sz = f(2.0);   // 24" square
-  const half = sz/2;
+// Draw accent chair centered at (cx,cy), rotated by angle.
+// szW = width (side-to-side), szD = depth (back-to-front). Back rail at local top (−y).
+function drawAccentChair(ctx, cx, cy, angle, szW, szD) {
+  szW = szW || f(2.0); szD = szD || szW;
+  const hw = szW/2, hd = szD/2;
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(angle);
-  // Body
   ctx.fillStyle = P.acChair;
-  ctx.fillRect(-half, -half, sz, sz);
+  ctx.fillRect(-hw, -hd, szW, szD);
   ctx.strokeStyle = P.acChairS; ctx.lineWidth = 1;
-  ctx.strokeRect(-half, -half, sz, sz);
+  ctx.strokeRect(-hw, -hd, szW, szD);
   // Back rail at local top
   ctx.fillStyle = '#7a6040';
-  ctx.fillRect(-half, -half, sz, f(0.35));
+  ctx.fillRect(-hw, -hd, szW, szD*0.18);
   // Seat cushion circle
   ctx.fillStyle = '#c8aa78';
   ctx.beginPath();
-  ctx.arc(0, half*0.2, sz*0.28, 0, Math.PI*2);
+  ctx.arc(0, hd*0.15, Math.min(szW,szD)*0.28, 0, Math.PI*2);
   ctx.fill();
   ctx.strokeStyle = '#9a7848'; ctx.lineWidth = 0.7; ctx.stroke();
   ctx.restore();
@@ -326,31 +325,31 @@ function draw(){
   ctx.fillText('coffee', ctX+ctW/2, ctY+ctH/2-3);
   ctx.fillText('table',  ctX+ctW/2, ctY+ctH/2+8);
 
-  // ── ACCENT CHAIRS — solid = PRIMARY position flanking coffee table ──
-  // Dashed ghost = tucked at island east face (stored position)
-  // angle = -π/2 → back rail west, seat faces east toward sofa
-  const acX  = ctX - f(1.5);           // center: 1.5ft west of coffee table west edge
-  const acNY = ctY + f(1.0);           // north chair, near N end of coffee table
-  const acSY = ctY + ctH - f(1.0);     // south chair, near S end of coffee table
-  drawAccentChair(ctx, acX, acNY, -Math.PI/2);
-  drawAccentChair(ctx, acX, acSY, -Math.PI/2);
+  // ── ACCENT CHAIRS — Joybird Rosen Lounge (29"w × 29.5"d) at 45° near coffee table ──
+  // angle=-π/4  → back faces NW, seat faces SE (north chair)
+  // angle=-3π/4 → back faces SW, seat faces NE (south chair)
+  const acW = f(29/12), acD = f(29.5/12);   // Rosen footprint in canvas px
+  const acNX = ctX - f(1.6),  acNY = ctY + f(1.2);
+  const acSX = ctX - f(1.6),  acSY = ctY + ctH - f(1.2);
+  drawAccentChair(ctx, acNX, acNY, -Math.PI/4,   acW, acD);   // NW — back NW, seat SE
+  drawAccentChair(ctx, acSX, acSY, -3*Math.PI/4, acW, acD);   // SW — back SW, seat NE
 
   // Dashed ghost at island tuck position (back against overhang face at 9.5ft)
   const acGX  = px(ISL_X + ISL_W + ISL_OH + 1.0);  // 10.5ft
-  const acGNY = py(ISL_Y + 1.0);
-  const acGSY = py(ISL_Y + ISL_H - 1.0);
-  [[acGX, acGNY], [acGX, acGSY]].forEach(([cx, cy]) => {
-    const sz=f(2.0), half=sz/2;
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-Math.PI/2);
-    ctx.strokeStyle='rgba(140,120,80,0.45)'; ctx.lineWidth=0.9;
+  const acGNY = py(ISL_Y + 1.2);
+  const acGSY = py(ISL_Y + ISL_H - 1.2);
+  [[acGX, acGNY, -Math.PI/4], [acGX, acGSY, -3*Math.PI/4]].forEach(([cx, cy, ang]) => {
+    const hw=acW/2, hd=acD/2;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+    ctx.strokeStyle='rgba(140,120,80,0.4)'; ctx.lineWidth=0.9;
     ctx.setLineDash([3,3]);
-    ctx.strokeRect(-half,-half,sz,sz);
+    ctx.strokeRect(-hw,-hd,acW,acD);
     ctx.setLineDash([]); ctx.restore();
   });
 
   // Labels
   ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('accent chairs', acX, acNY - f(1.3));
+  ctx.fillText('accent chairs', (acNX+acSX)/2, acNY - f(1.8));
   ctx.font='7px sans-serif'; ctx.fillStyle='rgba(120,100,70,0.55)'; ctx.textAlign='left';
   ctx.fillText('(tucks to island)', px(ISL_X+ISL_W+ISL_OH+2.3), py(ISL_Y+0.4));
 
