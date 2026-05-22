@@ -35,7 +35,7 @@ footer{font-size:11px;color:#bbb;margin-top:4px}
 const S=22, OX=48, OY=72;
 
 // All dimensions in feet
-const KW=11.26, LW=13.74, LH=14.79, ZH=6.29;
+const KW=10.0, LW=13.74, LH=14.79, ZH=6.29;
 const LWLL=3.49, PWW=4.03;
 const TW=KW+LW, TH=LH+ZH;
 
@@ -313,20 +313,21 @@ function draw(){
   ctx.fillText('coffee', ctX+ctW/2, ctY+ctH/2-3);
   ctx.fillText('table',  ctX+ctW/2, ctY+ctH/2+8);
 
-  // ── ACCENT CHAIRS — tucked into island east face at 45° ──
-  // Centers sit at the overhang east edge so chairs overlap into the island body,
-  // showing them "stored" under the counter. Seat faces east toward the sofa.
-  const acTuckX = ISL_X + ISL_W + 0.1;   // 9.1ft — just inside overhang
-  const acNY    = ISL_Y + 0.85;           // 3.65ft — north end of island
-  const acSY    = ISL_Y + ISL_H - 0.85;  // 10.45ft — south end of island
-  drawAccentChair(ctx, px(acTuckX), py(acNY), -Math.PI/4);       // NW, faces SE
-  drawAccentChair(ctx, px(acTuckX), py(acSY), -3*Math.PI/4);     // SW, faces NE
+  // ── ACCENT CHAIRS — tucked into island east face, seat facing east (angle = -π/2) ──
+  // Center x = overhang east edge (ISL_X+ISL_W+ISL_OH = 9.5ft with KW=10):
+  // - west half of chair (1ft) is under overhang/island  → "tucked"
+  // - east half (1ft) is in the aisle                    → visible in plan
+  const acTuckX = ISL_X + ISL_W + ISL_OH;  // 9.5ft — center at overhang east edge
+  const acNY    = ISL_Y + 1.0;             // 3.8ft — north chair
+  const acSY    = ISL_Y + ISL_H - 1.0;    // 10.3ft — south chair
+  // angle = -π/2 → back rail faces west (into island), seat faces east (living room)
+  drawAccentChair(ctx, px(acTuckX), py(acNY), -Math.PI/2);
+  drawAccentChair(ctx, px(acTuckX), py(acSY), -Math.PI/2);
 
-  // Dashed "in-use" ghost at coffee table NW/SW corners
-  const diag = f(1.0);
+  // Dashed "deployed" ghost at coffee table flanks — same orientation (seat east)
   [
-    [ctX - diag, ctY - diag,       -Math.PI/4],
-    [ctX - diag, ctY + ctH + diag, -3*Math.PI/4],
+    [ctX - f(1.4), ctY + f(1.0),       -Math.PI/2],
+    [ctX - f(1.4), ctY + ctH - f(1.0), -Math.PI/2],
   ].forEach(([cx, cy, angle]) => {
     const sz=f(2.0), half=sz/2;
     ctx.save();
@@ -339,7 +340,7 @@ function draw(){
   });
 
   ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='left';
-  ctx.fillText('accent chairs (tucked)', px(acTuckX)+f(1.6), py((acNY+acSY)/2)+3);
+  ctx.fillText('accent chairs (tucked)', px(acTuckX)+f(0.2), py(acNY) - f(1.2));
 
   // ── DINING TABLE + 6 CHAIRS — rotated 90°: 5ft E-W × 2.67ft N-S ──
   const dtW=f(5), dtH=f(2.67);
