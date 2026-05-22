@@ -35,7 +35,7 @@ footer{font-size:11px;color:#bbb;margin-top:4px}
 const S=22, OX=48, OY=72;
 
 // All dimensions in feet
-const KW=10.0, LW=13.74, LH=14.79, ZH=6.29;
+const KW=10.0, LW=13.3, LH=14.79, ZH=6.29;   // TW=23.3, DW=9.3 per architectural plans
 const LWLL=3.49, PWW=4.03;
 const TW=KW+LW, TH=LH+ZH;
 
@@ -59,8 +59,9 @@ const ISL_OH = 0.5;  // 6" overhang east side toward living
 const ISL_Y = 2.8;
 const ISL_X = 6.0;   // aisle = 6.0−2.0 = 4.0ft ✓
 
-// Sliding glass door on north wall (living room, NE zone)
-const SGD_X1 = 17.5, SGD_X2 = 23.5;  // 6ft wide
+// Sliding glass door: right edge 3.49ft from east wall (= lightwell face); 6ft wide
+const SGD_X2 = TW - LWLL;        // 23.3 − 3.49 = 19.81ft
+const SGD_X1 = SGD_X2 - 6.0;    // 13.81ft
 
 function px(x){ return OX + x*S; }
 function py(y){ return OY + y*S; }
@@ -171,8 +172,11 @@ function draw(){
   const cW = OX*2 + f(TW) + 56;   // extra for right-side dims
   const cH = OY + 62 + f(TH);      // extra for bottom dims + north arrow
   const cv = document.getElementById('c');
-  cv.width=cW; cv.height=cH;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = cW * dpr; cv.height = cH * dpr;
+  cv.style.width = cW + 'px'; cv.style.height = cH + 'px';
   const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
   ctx.clearRect(0,0,cW,cH);
 
   // ── ROOM FILLS ──
@@ -206,10 +210,13 @@ function draw(){
   box(ctx, px(0),    py(0),         cd,             f(LH),        P.ctr, P.ctrS, 1);
   box(ctx, px(CTR_D),py(LH-CTR_D), f(KW-CTR_D),    cd,           P.ctr, P.ctrS, 1);
 
-  // Fridge — NW corner, 3ft tall
+  // Wall ovens — NW corner, 3ft tall (two stacked ovens)
   box(ctx, px(0), py(0), cd, f(3), P.app, P.appS, 1.3);
-  ctx.fillStyle='#555'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('fridge', px(0)+cd/2, py(0)+f(1.5)+3);
+  ctx.strokeStyle='#7a7060'; ctx.lineWidth=0.7;
+  ln(ctx, px(0)+3, py(0)+f(1.5), px(0)+cd-3, py(0)+f(1.5));  // divider between ovens
+  ctx.fillStyle='#555'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('wall', px(0)+cd/2, py(0)+f(1.5)-4);
+  ctx.fillText('ovens', px(0)+cd/2, py(0)+f(1.5)+6);
 
   // Range — mid west counter, y=4.5 to 7ft (2.5ft)
   box(ctx, px(0), py(4.5), cd, f(2.5), P.app, P.appS, 1.3);
@@ -234,9 +241,15 @@ function draw(){
   ctx.fillStyle='#666'; ctx.font='8px sans-serif'; ctx.textAlign='center';
   ctx.fillText('DW', px(0)+cd/2, py(9.8)+f(0.75)+3);
 
-  // South counter label
+  // Fridge — SE corner of kitchen (eastern end of south counter, 3ft wide)
+  const frW = f(3.0);
+  box(ctx, px(KW)-frW, py(LH-CTR_D), frW, cd, P.app, P.appS, 1.3);
+  ctx.fillStyle='#555'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('fridge', px(KW)-frW/2, py(LH-CTR_D)+cd/2+3);
+
+  // South counter label (remaining west portion)
   ctx.fillStyle='#888'; ctx.font='8px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('storage / prep', px(CTR_D)+f((KW-CTR_D)/2), py(LH-CTR_D)+cd/2+3);
+  ctx.fillText('storage / prep', px(CTR_D)+f((KW-CTR_D-3)/2), py(LH-CTR_D)+cd/2+3);
 
   // ── ISLAND + OVERHANG ──
   const iX=px(ISL_X), iY=py(ISL_Y), iW=f(ISL_W), iH=f(ISL_H), ohW=f(ISL_OH);
@@ -313,36 +326,33 @@ function draw(){
   ctx.fillText('coffee', ctX+ctW/2, ctY+ctH/2-3);
   ctx.fillText('table',  ctX+ctW/2, ctY+ctH/2+8);
 
-  // ── ACCENT CHAIRS — tucked into island east face, seat facing east (angle = -π/2) ──
-  // Center x = overhang east edge (ISL_X+ISL_W+ISL_OH = 9.5ft with KW=10):
-  // - west half of chair (1ft) is under overhang/island  → "tucked"
-  // - east half (1ft) is in the aisle                    → visible in plan
-  // Chair back (west edge) sits at overhang east face; seat extends 2ft east into aisle.
-  // Center must be 1ft (half-chair depth) east of the overhang edge.
-  const acTuckX = ISL_X + ISL_W + ISL_OH + 1.0;  // 10.5ft — back edge at 9.5ft (overhang face)
-  const acNY    = ISL_Y + 1.0;             // 3.8ft — north chair
-  const acSY    = ISL_Y + ISL_H - 1.0;    // 10.3ft — south chair
-  // angle = -π/2 → back rail faces west (into island), seat faces east (living room)
-  drawAccentChair(ctx, px(acTuckX), py(acNY), -Math.PI/2);
-  drawAccentChair(ctx, px(acTuckX), py(acSY), -Math.PI/2);
+  // ── ACCENT CHAIRS — solid = PRIMARY position flanking coffee table ──
+  // Dashed ghost = tucked at island east face (stored position)
+  // angle = -π/2 → back rail west, seat faces east toward sofa
+  const acX  = ctX - f(1.5);           // center: 1.5ft west of coffee table west edge
+  const acNY = ctY + f(1.0);           // north chair, near N end of coffee table
+  const acSY = ctY + ctH - f(1.0);     // south chair, near S end of coffee table
+  drawAccentChair(ctx, acX, acNY, -Math.PI/2);
+  drawAccentChair(ctx, acX, acSY, -Math.PI/2);
 
-  // Dashed "deployed" ghost at coffee table flanks — same orientation (seat east)
-  [
-    [ctX - f(1.4), ctY + f(1.0),       -Math.PI/2],
-    [ctX - f(1.4), ctY + ctH - f(1.0), -Math.PI/2],
-  ].forEach(([cx, cy, angle]) => {
+  // Dashed ghost at island tuck position (back against overhang face at 9.5ft)
+  const acGX  = px(ISL_X + ISL_W + ISL_OH + 1.0);  // 10.5ft
+  const acGNY = py(ISL_Y + 1.0);
+  const acGSY = py(ISL_Y + ISL_H - 1.0);
+  [[acGX, acGNY], [acGX, acGSY]].forEach(([cx, cy]) => {
     const sz=f(2.0), half=sz/2;
-    ctx.save();
-    ctx.translate(cx, cy); ctx.rotate(angle);
-    ctx.strokeStyle='rgba(160,140,100,0.35)'; ctx.lineWidth=0.8;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-Math.PI/2);
+    ctx.strokeStyle='rgba(140,120,80,0.45)'; ctx.lineWidth=0.9;
     ctx.setLineDash([3,3]);
-    ctx.strokeRect(-half, -half, sz, sz);
-    ctx.setLineDash([]);
-    ctx.restore();
+    ctx.strokeRect(-half,-half,sz,sz);
+    ctx.setLineDash([]); ctx.restore();
   });
 
-  ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='left';
-  ctx.fillText('accent chairs (tucked)', px(acTuckX)+f(0.2), py(acNY) - f(1.2));
+  // Labels
+  ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('accent chairs', acX, acNY - f(1.3));
+  ctx.font='7px sans-serif'; ctx.fillStyle='rgba(120,100,70,0.55)'; ctx.textAlign='left';
+  ctx.fillText('(tucks to island)', px(ISL_X+ISL_W+ISL_OH+2.3), py(ISL_Y+0.4));
 
   // ── DINING TABLE + 6 CHAIRS — rotated 90°: 5ft E-W × 2.67ft N-S ──
   const dtW=f(5), dtH=f(2.67);
