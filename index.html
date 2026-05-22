@@ -51,12 +51,13 @@ const HW_W = TW - DW - KW;   // 4.43 ft
 // Kitchen counters: WEST + SOUTH walls only
 const CTR_D = 2.0;
 
-// Island — right edge aligns with hallway left wall (per architectural plans)
-const ISL_X = KW - ISL_W;   // = 8.26ft; right edge at KW=11.26ft; aisle = 6.26ft
-const ISL_Y = 2.8;
+// Island dimensions declared first so ISL_X can reference them
 const ISL_W = 3.0;
 const ISL_H = 8.5;
 const ISL_OH = 0.5;  // 6" overhang east side toward living
+const ISL_Y = 2.8;
+// Right edge aligns with hallway left wall (per architectural plans)
+const ISL_X = KW - ISL_W;   // = 8.26ft; right edge at KW=11.26ft; aisle ~6.3ft
 
 function px(x){ return OX + x*S; }
 function py(y){ return OY + y*S; }
