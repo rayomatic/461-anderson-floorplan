@@ -51,8 +51,8 @@ const HW_W = TW - DW - KW;   // 4.43 ft
 // Kitchen counters: WEST + SOUTH walls only
 const CTR_D = 2.0;
 
-// Island — 3.5ft aisle from west counter (standard kitchen clearance)
-const ISL_X = 5.5;   // west counter edge at 2ft; aisle = 5.5-2.0 = 3.5ft
+// Island — right edge aligns with hallway left wall (per architectural plans)
+const ISL_X = KW - ISL_W;   // = 8.26ft; right edge at KW=11.26ft; aisle = 6.26ft
 const ISL_Y = 2.8;
 const ISL_W = 3.0;
 const ISL_H = 8.5;
