@@ -3,11 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>461 Anderson — Living Space</title>
+<title>461 Anderson — Floor Plan Study</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#f5f3ee;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:28px 16px;gap:12px}
 h1{font-size:17px;font-weight:500;color:#333;letter-spacing:.01em}
+#tabs{display:flex;gap:0;border:1.5px solid #c0bcb4;border-radius:8px;overflow:hidden;background:#fff}
+.tab{padding:7px 18px;border:0;background:#fff;cursor:pointer;font-size:13px;color:#555;transition:all .15s;border-right:1px solid #d8d4cc}
+.tab:last-child{border-right:0}
+.tab:hover{background:#f2efe8}
+.tab.on{background:#252525;color:#fff}
 #ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
 .lbl{font-size:12px;color:#888;margin-right:2px}
 .b{padding:5px 15px;border-radius:6px;border:1.5px solid #c0bcb4;background:#fff;cursor:pointer;font-size:13px;color:#444;transition:all .15s}
@@ -16,20 +21,39 @@ h1{font-size:17px;font-weight:500;color:#333;letter-spacing:.01em}
 #inf{font-size:12px;color:#777;min-height:18px;text-align:center}
 canvas{border:1px solid #ddd;border-radius:6px;background:#fff;max-width:100%;height:auto}
 footer{font-size:11px;color:#bbb;margin-top:4px}
+.footer-row{display:none}
+.footer-row.on{display:block}
 </style>
 </head>
 <body>
-<h1>461 Anderson — Living Space</h1>
+<h1 id="title">461 Anderson — Living Room</h1>
+<div id="tabs">
+  <button class="tab on" onclick="setView('living')" id="tabLiving">Living Room</button>
+  <button class="tab"    onclick="setView('family')" id="tabFamily">Family Room</button>
+</div>
 <div id="ctrl">
   <span class="lbl">PB Comfort sofa:</span>
   <button class="b"    onclick="go(78)"  id="b78">78"</button>
   <button class="b on" onclick="go(87)"  id="b87">87"</button>
-  <button class="b"    onclick="go(103)" id="b103">103"</button>
+  <button class="b"    onclick="go(98)"  id="b98">98"</button>
   <button class="b"    onclick="go(115)" id="b115">115"</button>
 </div>
 <div id="inf"></div>
 <canvas id="c"></canvas>
-<footer>Floor plan study &nbsp;·&nbsp; 461 Anderson St &nbsp;·&nbsp; not for permitting</footer>
+<footer style="line-height:1.7;text-align:center;max-width:620px">
+  <div class="footer-row on" id="footLiving">
+    Floor plan study &nbsp;·&nbsp; 461 Anderson St &nbsp;·&nbsp; not for permitting<br>
+    <span style="color:#999">Furniture refs:</span>
+    <a href="https://www.article.com/product/25370/lenia-storage-side-table-walnut" target="_blank" rel="noopener" style="color:#7a6848">Article Lenia Side Table (17.5"×17.5"×22"H) — ×2 flanking sofa</a>
+    &nbsp;·&nbsp;
+    <a href="https://www.article.com/product/25371/lenia-46-storage-coffee-table-walnut" target="_blank" rel="noopener" style="color:#7a6848">Article Lenia 46" Coffee Table (46"×20"×15"H)</a>
+  </div>
+  <div class="footer-row" id="footFamily">
+    Family Room 107 &nbsp;·&nbsp; 11ʹ6½″ × 14ʹ10″ &nbsp;·&nbsp; 190 SF<br>
+    <span style="color:#999">Furniture ref:</span>
+    <a href="https://www.lovesac.com/sactionals/build/4-seats-4-sides-sactional-snow-owl-phur" target="_blank" rel="noopener" style="color:#7a6848">LoveSac Sactional — 4 Seats + 4 Sides, Snow Owl Phur (L-shape · 3 stacked + SE chaise)</a>
+  </div>
+</footer>
 
 <script>
 const S=22, OX=48, OY=72;
@@ -159,15 +183,35 @@ const P={
 };
 
 let curSofa = 87;
+let curView = 'living';
+
 function go(s){
   curSofa = s;
-  [78,87,103,115].forEach(x=>{
+  [78,87,98,115].forEach(x=>{
     document.getElementById('b'+x).className = 'b' + (x===s?' on':'');
   });
   draw();
 }
 
+function setView(v){
+  curView = v;
+  document.getElementById('tabLiving').className = 'tab' + (v==='living'?' on':'');
+  document.getElementById('tabFamily').className = 'tab' + (v==='family'?' on':'');
+  document.getElementById('ctrl').style.display = (v==='living') ? 'flex' : 'none';
+  document.getElementById('footLiving').className = 'footer-row' + (v==='living'?' on':'');
+  document.getElementById('footFamily').className = 'footer-row' + (v==='family'?' on':'');
+  document.getElementById('title').textContent = (v==='living')
+    ? '461 Anderson — Living Room'
+    : '461 Anderson — Family Room';
+  draw();
+}
+
 function draw(){
+  if(curView==='family') return drawFamily();
+  return drawLiving();
+}
+
+function drawLiving(){
   const cW = OX*2 + f(TW) + 56;   // extra for right-side dims
   const cH = OY + 62 + f(TH);      // extra for bottom dims + north arrow
   const cv = document.getElementById('c');
@@ -250,8 +294,26 @@ function draw(){
   ctx.fillStyle='#888'; ctx.font='8px sans-serif'; ctx.textAlign='center';
   ctx.fillText('storage / prep', px(CTR_D)+f((KW-CTR_D-3)/2), py(LH-CTR_D)+cd/2+3);
 
-  // ── ISLAND + OVERHANG ──
+  // Island/stool coordinates (island drawn AFTER stools so overhang covers tucked portion)
   const iX=px(ISL_X), iY=py(ISL_Y), iW=f(ISL_W), iH=f(ISL_H), ohW=f(ISL_OH);
+
+  // ── HOLLIS COUNTER STOOLS (3×) — drawn FIRST so island overhang paints over tucked portion ──
+  // Chair is 20.5" deep × 30" tall; back curves to 19" deep at top (per profile spec).
+  // Counter is 36" H, overhang underside ~34" H → entire 30"-tall chair clears the overhang.
+  // Max tuck = chair back at counter face, fully under the 6" overhang.
+  const stW=f(21.5/12), stD=f(20.5/12), stG=f(0.15);
+  const stTH=3*stW+2*stG;
+  const stSX=iX+iW;                                    // chair back at counter face (under overhang)
+  const stSY=py(ISL_Y+ISL_H/2)-stTH/2;
+  for(let i=0;i<3;i++){
+    const sy=stSY+i*(stW+stG);
+    box(ctx, stSX, sy, stD, stW, P.stool, P.islS, 1);
+    ctx.fillStyle=P.stoolS;
+    ctx.beginPath(); ctx.arc(stSX+stD/2, sy+stW/2, Math.min(stD,stW)*.30, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#7a6040'; ctx.lineWidth=.7; ctx.stroke();
+  }
+
+  // ── ISLAND + OVERHANG (painted on top of stools — covers the tucked back portion) ──
   box(ctx, iX+iW, iY, ohW, iH, P.islO, P.islS, 1);
   box(ctx, iX,    iY, iW,  iH, P.isl,  P.islS, 1.5);
   ctx.save();
@@ -275,19 +337,6 @@ function draw(){
     ctx.restore();
   }
 
-  // ── HOLLIS COUNTER STOOLS (3×) ──
-  const stW=f(21.5/12), stD=f(20.5/12), stG=f(0.15);
-  const stTH=3*stW+2*stG;
-  const stSX=iX+iW+ohW;
-  const stSY=py(ISL_Y+ISL_H/2)-stTH/2;
-  for(let i=0;i<3;i++){
-    const sy=stSY+i*(stW+stG);
-    box(ctx, stSX, sy, stD, stW, P.stool, P.islS, 1);
-    ctx.fillStyle=P.stoolS;
-    ctx.beginPath(); ctx.arc(stSX+stD/2, sy+stW/2, Math.min(stD,stW)*.30, 0, Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#7a6040'; ctx.lineWidth=.7; ctx.stroke();
-  }
-
   // ── SOFA — back against east wall ──
   const sL=f(curSofa/12), sD=f(3.5);
   const sX=px(TW)-sD;
@@ -296,13 +345,13 @@ function draw(){
 
   ctx.fillStyle='rgba(0,0,0,.05)'; ctx.fillRect(sX+3,sY+3,sD,sL);
   box(ctx, sX, sY, sD, sL, P.sofa, '#4a3828', 1.5);
-  // Back rail on EAST side (against wall)
-  box(ctx, sX+sD-f(10/12), sY, f(10/12), sL, P.sofaB);
-
-  // Cushion lines across seat (from west edge to back rail)
-  ctx.strokeStyle='#5a4830'; ctx.lineWidth=0.8;
-  const nC = curSofa <= 90 ? 3 : 4;
-  for(let i=1;i<nC;i++){ const cy=sY+sL*i/nC; ln(ctx, sX, cy, sX+sD-f(10/12), cy); }
+  // Back rail on EAST side (against wall), split into 3 cushions
+  const backW = f(10/12);
+  const backX = sX + sD - backW;
+  box(ctx, backX, sY, backW, sL, P.sofaB);
+  ctx.strokeStyle='#4a3828'; ctx.lineWidth=0.8;
+  for(let i=1;i<3;i++){ const by=sY+sL*i/3; ln(ctx, backX, by, sX+sD, by); }
+  // Single bench seat — no cushion dividers
 
   // Sofa label
   ctx.save();
@@ -311,13 +360,16 @@ function draw(){
   ctx.fillText(curSofa+'" sofa', 0, 4);
   ctx.restore();
 
-  // Side tables (22"×22")
-  const ss=f(22/12);
+  // Side tables — Article Lenia Storage Side Table (Walnut), 17.5"W × 17.5"D × 22"H
+  // https://www.article.com/product/25370/lenia-storage-side-table-walnut
+  const ss=f(17.5/12);
   box(ctx, px(TW)-ss, sY-f(1/12)-ss,  ss, ss, P.side, '#7a6848', 1);
   box(ctx, px(TW)-ss, sY+sL+f(1/12),  ss, ss, P.side, '#7a6848', 1);
 
-  // ── COFFEE TABLE — 2ft E-W × 4.5ft N-S ──
-  const ctW=f(2.0), ctH=f(4.5);
+  // ── COFFEE TABLE — Article Lenia 46" Storage Coffee Table (Walnut), 46"W × 20"D × 15"H ──
+  // https://www.article.com/product/25371/lenia-46-storage-coffee-table-walnut
+  // 46" long side runs N-S parallel to sofa
+  const ctW=f(20/12), ctH=f(46/12);
   const ctX=sX-f(1.0)-ctW;
   const ctY=sY+sL/2-ctH/2;
   box(ctx, ctX, ctY, ctW, ctH, P.coff, '#7a6838', 1);
@@ -326,32 +378,21 @@ function draw(){
   ctx.fillText('table',  ctX+ctW/2, ctY+ctH/2+8);
 
   // ── ACCENT CHAIRS — Joybird Rosen Lounge (29"w × 29.5"d) at 45° near coffee table ──
+  // Chair center is on the diagonal axis through the coffee-table NW/SW corner,
+  // backed up to leave knee room between the chair seat-front and the table corner.
   // angle=-π/4  → back faces NW, seat faces SE (north chair)
   // angle=-3π/4 → back faces SW, seat faces NE (south chair)
   const acW = f(29/12), acD = f(29.5/12);   // Rosen footprint in canvas px
-  const acNX = ctX - f(1.6),  acNY = ctY + f(1.2);
-  const acSX = ctX - f(1.6),  acSY = ctY + ctH - f(1.2);
+  const acBack = 2.6;                        // ft, back-up along chair diagonal
+  const acOff  = f(acBack / Math.SQRT2);     // = ~1.84 ft on each axis
+  const acNX = ctX - acOff,           acNY = ctY - acOff;
+  const acSX = ctX - acOff,           acSY = ctY + ctH + acOff;
   drawAccentChair(ctx, acNX, acNY, -Math.PI/4,   acW, acD);   // NW — back NW, seat SE
   drawAccentChair(ctx, acSX, acSY, -3*Math.PI/4, acW, acD);   // SW — back SW, seat NE
 
-  // Dashed ghost at island tuck position (back against overhang face at 9.5ft)
-  const acGX  = px(ISL_X + ISL_W + ISL_OH + 1.0);  // 10.5ft
-  const acGNY = py(ISL_Y + 1.2);
-  const acGSY = py(ISL_Y + ISL_H - 1.2);
-  [[acGX, acGNY, -Math.PI/4], [acGX, acGSY, -3*Math.PI/4]].forEach(([cx, cy, ang]) => {
-    const hw=acW/2, hd=acD/2;
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
-    ctx.strokeStyle='rgba(140,120,80,0.4)'; ctx.lineWidth=0.9;
-    ctx.setLineDash([3,3]);
-    ctx.strokeRect(-hw,-hd,acW,acD);
-    ctx.setLineDash([]); ctx.restore();
-  });
-
-  // Labels
+  // Label
   ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('accent chairs', (acNX+acSX)/2, acNY - f(1.8));
-  ctx.font='7px sans-serif'; ctx.fillStyle='rgba(120,100,70,0.55)'; ctx.textAlign='left';
-  ctx.fillText('(tucks to island)', px(ISL_X+ISL_W+ISL_OH+2.3), py(ISL_Y+0.4));
+  ctx.fillText('accent chairs', (acNX+acSX)/2, (acNY+acSY)/2);
 
   // ── DINING TABLE + 6 CHAIRS — rotated 90°: 5ft E-W × 2.67ft N-S ──
   const dtW=f(5), dtH=f(2.67);
@@ -513,6 +554,226 @@ function draw(){
   const aisle = (ISL_X - CTR_D).toFixed(1);
   document.getElementById('inf').innerHTML =
     `<b>${curSofa}" sofa</b> &nbsp;·&nbsp; N clearance: <b>${nc}ʹ</b> &nbsp;·&nbsp; S clearance: <b>${sc}ʹ</b> &nbsp;·&nbsp; kitchen aisle: <b>${aisle}ʹ</b>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// FAMILY ROOM — Room 107, 11ʹ6½″ × 14ʹ10″, 190 SF
+// LoveSac Sactional 4 Seats + 4 Sides (Snow Owl Phur)
+// ══════════════════════════════════════════════════════════
+function drawFamily(){
+  // Interior room dims (feet)
+  const FRW = 11 + 6.5/12;   // 11.542 ft (E-W)
+  const FRH = 14 + 10/12;    // 14.833 ft (N-S)
+  const WT  = 0.5;           // wall thickness for rendering
+
+  // Sactional 4S+4S — L-shape:
+  //   • 3 cushions stacked N-S on the west (main bench, seats face east)
+  //   • 4th cushion east of the bottom cushion (chaise extension at SE)
+  //   • 4 sides = 3 backs west of the 3-stack + 1 arm at the north end
+  const SEAT = 32.5/12;      // 2.708 ft per cushion
+  const SIDE = 12.5/12;      // 1.042 ft (back / arm thickness)
+  const SAC_N = SIDE + 3*SEAT;          // 9.17 ft N-S (incl. north arm)
+  const SAC_E_TOP = SIDE + SEAT;         // 3.75 ft E-W (upper rows, no chaise)
+  const SAC_E_BOT = SIDE + 2*SEAT;       // 6.46 ft E-W (bottom row, with chaise)
+
+  // Hallway corridor on west side (between sofa back and west wall)
+  const HALL = 3.0;          // ft — clear path from south doorway up alongside back of sofa
+
+  // Sactional position: back (west side) at x = HALL; centered N-S
+  const sacX = HALL;
+  const sacY = (FRH - SAC_N) / 2;
+
+  // Canvas sizing — Family Room is smaller than Living, but keep margins consistent
+  const FROX = 56, FROY = 72;
+  const cW = FROX*2 + f(FRW) + 60;
+  const cH = FROY    + f(FRH) + 80;
+  const cv = document.getElementById('c');
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = cW * dpr; cv.height = cH * dpr;
+  cv.style.width = cW + 'px'; cv.style.height = cH + 'px';
+  const ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0,0,cW,cH);
+
+  // Local helpers (override OX/OY for this view)
+  const lpx = x => FROX + x*S;
+  const lpy = y => FROY + y*S;
+
+  // ── ROOM FILL ──
+  box(ctx, lpx(0), lpy(0), f(FRW), f(FRH), P.liv);
+
+  // Hallway pass-through corridor highlight (west side of room)
+  ctx.save();
+  ctx.fillStyle = P.hall;
+  ctx.globalAlpha = 0.55;
+  ctx.fillRect(lpx(0), lpy(0), f(HALL), f(FRH));
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  // ── DOORS (from architectural plan) ──
+  // 108A — west wall doorway near south (entry from rear of house / hallway from below)
+  {
+    const dW = f(3.0);
+    const dY = lpy(FRH) - dW - f(0.5);
+    ctx.fillStyle='#fff'; ctx.fillRect(lpx(0)-3, dY, 6, dW);
+    ctx.strokeStyle='#bbb'; ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.arc(lpx(0), dY, dW, -Math.PI/2, 0); ctx.stroke();
+    ctx.fillStyle='#888'; ctx.font='7px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('108A', lpx(0)+5, dY+dW/2+2);
+  }
+  // 107B — north wall doorway, west of center
+  {
+    const dW = f(3.0);
+    const dX = lpx(2.5);
+    ctx.fillStyle='#fff'; ctx.fillRect(dX, lpy(0)-3, dW, 6);
+    ctx.strokeStyle='#bbb'; ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.arc(dX, lpy(0), dW, 0, Math.PI/2); ctx.stroke();
+    ctx.fillStyle='#888'; ctx.font='7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('107B', dX+dW/2, lpy(0)-5);
+  }
+
+  // ── SACTIONAL — L-shape: 3 stacked + chaise SE, with north arm ──
+  // Outer bounding box for shadow
+  ctx.fillStyle='rgba(0,0,0,.06)';
+  ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SAC_E_BOT), f(SAC_N));
+  // erase shadow above chaise row (upper-right area)
+  ctx.clearRect(lpx(sacX + SAC_E_TOP)+3, lpy(sacY)+3,
+                f(SAC_E_BOT - SAC_E_TOP), f(SIDE + 2*SEAT));
+
+  // Cushion-row Y coordinates (south of north arm)
+  const seatTopY = sacY + SIDE;          // first cushion starts below north arm
+  const backX = lpx(sacX);
+  const seatX = lpx(sacX + SIDE);
+  const chaiseX = lpx(sacX + SIDE + SEAT);
+
+  // 1. North arm — runs full E-W of the upper portion (top edge of sofa)
+  box(ctx, backX, lpy(sacY), f(SAC_E_TOP), f(SIDE), '#e8e3d2', '#8c8270', 1.3);
+
+  // 2. Back panel — 3 sides stacked along west of the 3-cushion column
+  box(ctx, backX, lpy(seatTopY), f(SIDE), f(3*SEAT), '#e8e3d2', '#8c8270', 1.3);
+  // seams between the 3 back modules
+  ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
+  for(let i=1; i<3; i++){
+    const yy = lpy(seatTopY + i*SEAT);
+    ln(ctx, backX, yy, backX+f(SIDE), yy);
+  }
+
+  // 3. Draw cushions — 3 stacked + 1 chaise to the right of the bottom
+  function drawCushion(x, y, w, h){
+    box(ctx, x, y, w, h, '#f4ede0', '#8c8270', 1.2);
+    ctx.save();
+    ctx.strokeStyle='rgba(160,148,120,.35)'; ctx.lineWidth=0.5;
+    const cx = x + w/2, cy = y + h/2;
+    const rr = Math.min(w, h);
+    for(let j=0;j<16;j++){
+      const ang = (j/16)*Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(cx+Math.cos(ang)*rr*0.16, cy+Math.sin(ang)*rr*0.16);
+      ctx.lineTo(cx+Math.cos(ang)*rr*0.40, cy+Math.sin(ang)*rr*0.40);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  for(let row=0; row<3; row++){
+    drawCushion(seatX, lpy(seatTopY + row*SEAT), f(SEAT), f(SEAT));
+  }
+  // Chaise — east of bottom cushion
+  drawCushion(chaiseX, lpy(seatTopY + 2*SEAT), f(SEAT), f(SEAT));
+
+  // Sactional label (in chaise open-east area)
+  ctx.save();
+  ctx.fillStyle='#7a6c4a'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+  const lblX = lpx(sacX + SAC_E_BOT/2 + SIDE/2);
+  const lblY = lpy(seatTopY + 1.5*SEAT) - 18;
+  ctx.fillText('Sactional 4S+4S', lblX, lblY);
+  ctx.font='8px sans-serif'; ctx.fillStyle='#a9a08c';
+  ctx.fillText('Snow Owl Phur · L-shape', lblX, lblY + 12);
+  ctx.fillText('3 + chaise SE  ·  faces east →', lblX, lblY + 24);
+  ctx.restore();
+
+  // Seat-facing arrow (east, from chaise area)
+  {
+    const ax = lpx(sacX + SAC_E_BOT) + 6;
+    const ay = lpy(seatTopY + 1.5*SEAT);
+    ctx.save();
+    ctx.strokeStyle='#b8a070'; ctx.fillStyle='#b8a070'; ctx.lineWidth=1.2;
+    ln(ctx, ax, ay, ax+22, ay);
+    ctx.beginPath(); ctx.moveTo(ax+22,ay); ctx.lineTo(ax+16,ay-4); ctx.lineTo(ax+16,ay+4); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // ── HALLWAY ANNOTATION ──
+  {
+    const hY = lpy(FRH) - 14;
+    ctx.save();
+    ctx.strokeStyle='#cc8844'; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
+    ln(ctx, lpx(0)+4, hY, lpx(HALL)-2, hY);
+    ctx.setLineDash([]);
+    ln(ctx, lpx(0)+4, hY-4, lpx(0)+4, hY+4);
+    ln(ctx, lpx(HALL)-2, hY-4, lpx(HALL)-2, hY+4);
+    ctx.fillStyle='#cc8844'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(ftIn(HALL)+' hall', (lpx(0)+lpx(HALL))/2, hY-5);
+    ctx.restore();
+
+    // Hallway flow arrow (north from south doorway)
+    ctx.save();
+    ctx.strokeStyle='#cc8844'; ctx.fillStyle='#cc8844'; ctx.lineWidth=1;
+    const fx = lpx(HALL/2);
+    ln(ctx, fx, lpy(FRH)-22, fx, lpy(2));
+    ctx.beginPath(); ctx.moveTo(fx, lpy(2)); ctx.lineTo(fx-4, lpy(2)+6); ctx.lineTo(fx+4, lpy(2)+6); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // East-of-sofa clear zone label
+  {
+    const ezX = lpx(sacX + SAC_E);
+    const ezY = lpy(sacY + SAC_N/2);
+    const ezW = lpx(FRW) - ezX;
+    ctx.fillStyle='#9a9080'; ctx.font='italic 9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(ftIn((FRW - sacX - SAC_E))+' open', ezX + ezW/2, ezY-6);
+    ctx.fillText('(media wall / TV)', ezX + ezW/2, ezY+8);
+  }
+
+  // ── WALLS ──
+  ctx.strokeStyle=P.ext; ctx.lineWidth=3;
+  ctx.strokeRect(lpx(0), lpy(0), f(FRW), f(FRH));
+
+  // ── DIMENSIONS ──
+  dimAnnot(ctx, lpx(0),  FROY-16, lpx(FRW), FROY-16, ftIn(FRW));
+  dimAnnot(ctx, lpx(FRW)+16, lpy(0), lpx(FRW)+16, lpy(FRH), ftIn(FRH));
+
+  // ── LABEL ──
+  ctx.fillStyle='#222'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('Family Room', lpx(0)+8, lpy(0)+16);
+  ctx.fillStyle='#999'; ctx.font='9px sans-serif';
+  ctx.fillText('107 · 190 SF', lpx(0)+8, lpy(0)+29);
+
+  // ── NORTH ARROW ──
+  {
+    const nx=lpx(FRW)-14, ny=lpy(FRH)+34;
+    ctx.save();
+    ctx.strokeStyle='#555'; ctx.fillStyle='#555'; ctx.lineWidth=1.5;
+    ln(ctx, nx, ny, nx-26, ny);
+    ctx.beginPath(); ctx.moveTo(nx-26,ny); ctx.lineTo(nx-20,ny-5); ctx.lineTo(nx-20,ny+5); ctx.closePath(); ctx.fill();
+    ctx.font='bold 11px sans-serif'; ctx.textAlign='right';
+    ctx.fillText('N', nx-30, ny+4);
+    ctx.restore();
+  }
+
+  // Title
+  ctx.fillStyle='#444'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('461 Anderson — family room', lpx(FRW/2), FROY-42);
+  ctx.fillStyle='#aaa'; ctx.font='10px sans-serif';
+  ctx.fillText('scale: 1 ft = 22 px  ·  not for permitting', lpx(FRW/2), FROY-27);
+
+  // Info bar
+  const eastClearBot = (FRW - sacX - SAC_E_BOT).toFixed(2);   // east of chaise
+  const eastClearTop = (FRW - sacX - SAC_E_TOP).toFixed(2);   // east of upper 2 cushions
+  const nClear = sacY.toFixed(2), sClear = (FRH - sacY - SAC_N).toFixed(2);
+  document.getElementById('inf').innerHTML =
+    `<b>Sactional 4S+4S (L)</b> &nbsp;·&nbsp; hallway (W): <b>${HALL.toFixed(1)}ʹ</b> &nbsp;·&nbsp; ` +
+    `front clearance: <b>${eastClearTop}ʹ</b> upper / <b>${eastClearBot}ʹ</b> at chaise &nbsp;·&nbsp; ` +
+    `N/S: <b>${nClear}ʹ / ${sClear}ʹ</b>`;
 }
 
 draw();
