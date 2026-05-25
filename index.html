@@ -40,9 +40,8 @@ footer{font-size:11px;color:#bbb;margin-top:4px}
 </div>
 <div id="ctrl-family" style="display:none">
   <span class="lbl">Sactional config:</span>
-  <button class="b on" onclick="setSac('L')"    id="bSacL">L-shape (3 + chaise)</button>
-  <button class="b"    onclick="setSac('long')" id="bSacLong">4×1 long sofa</button>
-  <button class="b"    onclick="setSac('U')"    id="bSacU">3×2 U-shape (6S → bed)</button>
+  <button class="b on" onclick="setSac('ottoman')" id="bSacOtt">3 + ottoman (L)</button>
+  <button class="b"    onclick="setSac('deep4')"   id="bSacDeep">4×1 (deep 4th)</button>
 </div>
 <div id="inf"></div>
 <canvas id="c"></canvas>
@@ -57,7 +56,7 @@ footer{font-size:11px;color:#bbb;margin-top:4px}
   <div class="footer-row" id="footFamily">
     Family Room 107 &nbsp;·&nbsp; 11ʹ6½″ × 14ʹ10″ &nbsp;·&nbsp; 190 SF<br>
     <span style="color:#999">Furniture ref:</span>
-    <a href="https://www.lovesac.com/sactionals/build/4-seats-4-sides-sactional-snow-owl-phur" target="_blank" rel="noopener" style="color:#7a6848">LoveSac Sactional — 4 Seats + 4 Sides, Snow Owl Phur (L-shape · 3 stacked + SE chaise)</a>
+    Sectional — 117″ × 64″ outer  ·  cushions 29″, ottoman 64″, back 28.5″H
   </div>
 </footer>
 
@@ -190,7 +189,7 @@ const P={
 
 let curSofa = 87;
 let curView = 'living';
-let curSac  = 'L';   // 'L' = L-shape (3 + SE chaise), 'long' = 4×1 straight sofa
+let curSac  = 'ottoman';   // 'ottoman' = 3 + ottoman L; 'deep4' = 4×1 with deep 4th cushion
 
 function go(s){
   curSofa = s;
@@ -202,9 +201,8 @@ function go(s){
 
 function setSac(c){
   curSac = c;
-  document.getElementById('bSacL').className    = 'b' + (c==='L'    ?' on':'');
-  document.getElementById('bSacLong').className = 'b' + (c==='long' ?' on':'');
-  document.getElementById('bSacU').className    = 'b' + (c==='U'    ?' on':'');
+  document.getElementById('bSacOtt').className  = 'b' + (c==='ottoman'?' on':'');
+  document.getElementById('bSacDeep').className = 'b' + (c==='deep4'  ?' on':'');
   draw();
 }
 
@@ -582,28 +580,26 @@ function drawFamily(){
   const FRH = 14 + 10/12;    // 14.833 ft (N-S)
   const WT  = 0.5;           // wall thickness for rendering
 
-  // Sactional geometry depends on curSac:
-  //   'L'    → 4S+4S: 3 stacked + SE chaise; 3 backs west + 1 N arm
-  //   'long' → 4S+4S: 4 cushions in a row; 4 backs along west
-  //   'U'    → 6S+4S: 4-row main + 1 chaise at each end; 4 backs west (converts to 3×2 bed)
-  const SEAT = 32.5/12;      // 2.708 ft per cushion
-  const SIDE = 12.5/12;      // 1.042 ft (back thickness)
-  const isL    = (curSac === 'L');
-  const isLong = (curSac === 'long');
-  const isU    = (curSac === 'U');
-  // N-S extent
-  const SAC_N = isL ? (SIDE + 3*SEAT)        // 9.17 ft (incl. N arm)
-                    : (4*SEAT);              // 10.83 ft (long & U)
-  // E-W extent at narrowest (middle / non-chaise rows)
-  const SAC_E_MID = SIDE + SEAT;             // 3.75 ft (all configs)
-  // E-W extent at widest (chaise row(s))
-  const SAC_E_WIDE = (isL || isU) ? (SIDE + 2*SEAT)  // 6.46 ft
-                                  : SAC_E_MID;        // long: same as narrow
+  // Sactional geometry — two configs:
+  //   'ottoman' → L: 3 cushions in a row N-S, ottoman south end (perpendicular)
+  //               Back panel runs only along the 3-cushion main bench.
+  //   'deep4'   → 4×1 straight sofa, 4th cushion is the 64"-deep piece (in line).
+  //               Back panel runs the full 4-position length.
+  const CUSH = 29/12;        // 2.417 ft per cushion (29")
+  const OTT  = 64/12;        // 5.333 ft ottoman / deep cushion depth (64")
+  const SIDE = 12.5/12;      // 1.042 ft (back panel thickness)
+  const isOttoman = (curSac === 'ottoman');
+  const isDeep4   = (curSac === 'deep4');
 
-  // Hallway corridor on west side (between sofa back and west wall)
+  const SAC_N        = 4 * CUSH;           // 9.67 ft N-S (≈ 117″)
+  const SAC_E_CUSH   = SIDE + CUSH;        // 3.46 ft (main bench, incl. back)
+  const SAC_E_DEEP4  = SIDE + OTT;         // 6.38 ft (deep4 row with back)
+  const SAC_E_OTT    = OTT;                // 5.33 ft (ottoman, no back, from west wall)
+  const SAC_E_WIDE   = isOttoman ? SAC_E_OTT : SAC_E_DEEP4;
+  const SAC_E_MID    = SAC_E_CUSH;
+
+  // Hallway corridor on west side
   const HALL = 3.0;
-
-  // Sactional position: back (west side) at x = HALL; centered N-S
   const sacX = HALL;
   const sacY = (FRH - SAC_N) / 2;
 
@@ -676,126 +672,83 @@ function drawFamily(){
   const backX = lpx(sacX);
   const seatX = lpx(sacX + SIDE);
 
-  if(isL){
-    // ── L-SHAPE: 3 stacked + chaise SE, with north arm ──
+  if(isOttoman){
+    // ── 3+OTTOMAN L-SHAPE — 3 cushions in row + ottoman perpendicular south, no back behind ottoman ──
     ctx.fillStyle='rgba(0,0,0,.06)';
-    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SAC_E_WIDE), f(SAC_N));
-    ctx.clearRect(lpx(sacX + SAC_E_MID)+3, lpy(sacY)+3,
-                  f(SAC_E_WIDE - SAC_E_MID), f(SIDE + 2*SEAT));
+    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SAC_E_OTT), f(SAC_N));
+    // erase shadow east of main bench at upper 3 rows (no furniture there)
+    ctx.clearRect(lpx(sacX + SAC_E_CUSH)+3, lpy(sacY)+3,
+                  f(SAC_E_OTT - SAC_E_CUSH), f(3*CUSH));
 
-    const seatTopY = sacY + SIDE;
-    const chaiseX  = lpx(sacX + SIDE + SEAT);
-
-    // North arm
-    box(ctx, backX, lpy(sacY), f(SAC_E_MID), f(SIDE), '#e8e3d2', '#8c8270', 1.3);
-    // 3 backs west of the 3-cushion column
-    box(ctx, backX, lpy(seatTopY), f(SIDE), f(3*SEAT), '#e8e3d2', '#8c8270', 1.3);
+    // Back panel — only along the 3-cushion main bench
+    box(ctx, backX, lpy(sacY), f(SIDE), f(3*CUSH), '#e8e3d2', '#8c8270', 1.3);
     ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
     for(let i=1; i<3; i++){
-      const yy = lpy(seatTopY + i*SEAT);
+      const yy = lpy(sacY + i*CUSH);
       ln(ctx, backX, yy, backX+f(SIDE), yy);
     }
 
+    // 3 main cushions stacked N-S
     for(let row=0; row<3; row++){
-      drawCushion(seatX, lpy(seatTopY + row*SEAT), f(SEAT), f(SEAT));
+      drawCushion(seatX, lpy(sacY + row*CUSH), f(CUSH), f(CUSH));
     }
-    drawCushion(chaiseX, lpy(seatTopY + 2*SEAT), f(SEAT), f(SEAT));
+    // Ottoman — south end, 29" along row × 64" deep east, starts at west wall (no back)
+    drawCushion(lpx(sacX), lpy(sacY + 3*CUSH), f(OTT), f(CUSH));
 
+    // Label
     ctx.save();
     ctx.fillStyle='#7a6c4a'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
-    const lblX = lpx(sacX + SAC_E_WIDE/2 + SIDE/2);
-    const lblY = lpy(seatTopY + 1.5*SEAT) - 18;
-    ctx.fillText('Sactional 4S+4S', lblX, lblY);
+    const lblX = lpx(sacX + SAC_E_OTT/2);
+    const lblY = lpy(sacY + 1.5*CUSH) - 6;
+    ctx.fillText('3 + Ottoman (L)', lblX, lblY);
     ctx.font='8px sans-serif'; ctx.fillStyle='#a9a08c';
-    ctx.fillText('Snow Owl Phur · L-shape', lblX, lblY + 12);
-    ctx.fillText('3 + chaise SE  ·  faces east →', lblX, lblY + 24);
+    ctx.fillText('117″ × 64″  ·  cushions 29″, ottoman 64″', lblX, lblY + 12);
+    ctx.fillText('faces east →', lblX, lblY + 24);
     ctx.restore();
 
-    { const ax = lpx(sacX + SAC_E_WIDE) + 6, ay = lpy(seatTopY + 1.5*SEAT);
+    // Arrow
+    { const ax = lpx(sacX + SAC_E_OTT) + 6, ay = lpy(sacY + 3.5*CUSH);
       ctx.save(); ctx.strokeStyle='#b8a070'; ctx.fillStyle='#b8a070'; ctx.lineWidth=1.2;
       ln(ctx, ax, ay, ax+22, ay);
       ctx.beginPath(); ctx.moveTo(ax+22,ay); ctx.lineTo(ax+16,ay-4); ctx.lineTo(ax+16,ay+4); ctx.closePath(); ctx.fill();
       ctx.restore(); }
-
-  } else if(isU){
-    // ── U-SHAPE: 4-cushion main row + 1 chaise at each end (6 Seats + 4 Sides) ──
-    // Rearranges into a 3×2 = 97.5″ × 65″ guest bed.
-    ctx.fillStyle='rgba(0,0,0,.06)';
-    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SAC_E_WIDE), f(SAC_N));
-    // erase shadow in the middle (only chaises stick out east)
-    ctx.clearRect(lpx(sacX + SAC_E_MID)+3, lpy(sacY + SEAT)+3,
-                  f(SAC_E_WIDE - SAC_E_MID), f(2*SEAT));
-
-    // 4 backs along the west (full N-S length of main row)
-    box(ctx, backX, lpy(sacY), f(SIDE), f(4*SEAT), '#e8e3d2', '#8c8270', 1.3);
-    ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
-    for(let i=1; i<4; i++){
-      const yy = lpy(sacY + i*SEAT);
-      ln(ctx, backX, yy, backX+f(SIDE), yy);
-    }
-
-    // 4 main cushions stacked N-S
-    for(let row=0; row<4; row++){
-      drawCushion(seatX, lpy(sacY + row*SEAT), f(SEAT), f(SEAT));
-    }
-    // 2 chaise cushions — east of north-most and south-most
-    const chaiseX = lpx(sacX + SIDE + SEAT);
-    drawCushion(chaiseX, lpy(sacY + 0*SEAT),  f(SEAT), f(SEAT));   // N chaise
-    drawCushion(chaiseX, lpy(sacY + 3*SEAT),  f(SEAT), f(SEAT));   // S chaise
-
-    // Label (in the open-east middle area)
-    ctx.save();
-    ctx.fillStyle='#7a6c4a'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
-    const lblX = lpx(sacX + SAC_E_WIDE/2 + SIDE/2);
-    const lblY = lpy(sacY + 2*SEAT) - 6;
-    ctx.fillText('Sactional 6S+4S', lblX, lblY);
-    ctx.font='8px sans-serif'; ctx.fillStyle='#a9a08c';
-    ctx.fillText('Snow Owl Phur · U-shape', lblX, lblY + 12);
-    ctx.fillText('4-row + 2 chaises  ·  → 3×2 bed', lblX, lblY + 24);
-    ctx.restore();
-
-    // East-facing arrow from middle
-    { const ax = lpx(sacX + SAC_E_MID) + 6, ay = lpy(sacY + 2*SEAT);
-      ctx.save(); ctx.strokeStyle='#b8a070'; ctx.fillStyle='#b8a070'; ctx.lineWidth=1.2;
-      ln(ctx, ax, ay, ax+22, ay);
-      ctx.beginPath(); ctx.moveTo(ax+22,ay); ctx.lineTo(ax+16,ay-4); ctx.lineTo(ax+16,ay+4); ctx.closePath(); ctx.fill();
-      ctx.restore(); }
-
-    // Bed-mode footprint annotation (dashed overlay)
-    ctx.save();
-    ctx.strokeStyle='rgba(120,150,180,0.6)'; ctx.lineWidth=0.8; ctx.setLineDash([4,3]);
-    ctx.strokeRect(lpx(sacX+SIDE), lpy(sacY+0.5*SEAT), f(3*SEAT), f(2*SEAT));
-    ctx.setLineDash([]);
-    ctx.fillStyle='rgba(80,110,150,0.75)'; ctx.font='italic 7.5px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('bed mode: 97.5″ × 65″', lpx(sacX+SIDE+1.5*SEAT), lpy(sacY+1.5*SEAT)+3);
-    ctx.restore();
 
   } else {
-    // ── LONG SOFA: 4 cushions in a row N-S, 4 backs along the west ──
+    // ── 4×1 WITH DEEP 4TH — straight sofa, back along full length, 4th cushion is 64" deep ──
     ctx.fillStyle='rgba(0,0,0,.06)';
-    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SAC_E_MID), f(SAC_N));
+    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SAC_E_DEEP4), f(SAC_N));
+    // erase shadow east of main cushions at top 3 positions
+    ctx.clearRect(lpx(sacX + SAC_E_CUSH)+3, lpy(sacY)+3,
+                  f(SAC_E_DEEP4 - SAC_E_CUSH), f(3*CUSH));
 
-    box(ctx, backX, lpy(sacY), f(SIDE), f(4*SEAT), '#e8e3d2', '#8c8270', 1.3);
+    // Back panel — full length (4 cushions, including deep 4th)
+    box(ctx, backX, lpy(sacY), f(SIDE), f(4*CUSH), '#e8e3d2', '#8c8270', 1.3);
     ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
     for(let i=1; i<4; i++){
-      const yy = lpy(sacY + i*SEAT);
+      const yy = lpy(sacY + i*CUSH);
       ln(ctx, backX, yy, backX+f(SIDE), yy);
     }
 
-    for(let row=0; row<4; row++){
-      drawCushion(seatX, lpy(sacY + row*SEAT), f(SEAT), f(SEAT));
+    // 3 regular cushions
+    for(let row=0; row<3; row++){
+      drawCushion(seatX, lpy(sacY + row*CUSH), f(CUSH), f(CUSH));
     }
+    // Deep 4th cushion — east of back panel, 64" deep × 29" wide
+    drawCushion(seatX, lpy(sacY + 3*CUSH), f(OTT), f(CUSH));
 
+    // Label
     ctx.save();
-    ctx.translate(seatX + f(SEAT)/2, lpy(sacY + 2*SEAT));
-    ctx.rotate(-Math.PI/2);
     ctx.fillStyle='#7a6c4a'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('Sactional 4S+4S — Snow Owl Phur', 0, 0);
+    const lblX = lpx(sacX + SAC_E_DEEP4/2);
+    const lblY = lpy(sacY + 1.5*CUSH) - 6;
+    ctx.fillText('4×1 (deep 4th)', lblX, lblY);
     ctx.font='8px sans-serif'; ctx.fillStyle='#a9a08c';
-    ctx.fillText('4×1 long sofa  ·  130″ × 45″  ·  faces east →', 0, 12);
+    ctx.fillText('116″ × 64″  ·  4th cushion rotated', lblX, lblY + 12);
+    ctx.fillText('faces east →', lblX, lblY + 24);
     ctx.restore();
 
-    { const ax = lpx(sacX + SAC_E_MID) + 6, ay = lpy(sacY + 2*SEAT);
+    // Arrow
+    { const ax = lpx(sacX + SAC_E_DEEP4) + 6, ay = lpy(sacY + 3.5*CUSH);
       ctx.save(); ctx.strokeStyle='#b8a070'; ctx.fillStyle='#b8a070'; ctx.lineWidth=1.2;
       ln(ctx, ax, ay, ax+22, ay);
       ctx.beginPath(); ctx.moveTo(ax+22,ay); ctx.lineTo(ax+16,ay-4); ctx.lineTo(ax+16,ay+4); ctx.closePath(); ctx.fill();
@@ -870,17 +823,8 @@ function drawFamily(){
   const eastClearMid  = (FRW - sacX - SAC_E_MID).toFixed(2);
   const eastClearWide = (FRW - sacX - SAC_E_WIDE).toFixed(2);
   const nClear = sacY.toFixed(2), sClear = (FRH - sacY - SAC_N).toFixed(2);
-  let front, label;
-  if(isL){
-    front = `<b>${eastClearMid}ʹ</b> upper / <b>${eastClearWide}ʹ</b> at chaise`;
-    label = 'Sactional 4S+4S (L)';
-  } else if(isU){
-    front = `<b>${eastClearMid}ʹ</b> mid / <b>${eastClearWide}ʹ</b> at chaises`;
-    label = 'Sactional 6S+4S (U → 3×2 bed)';
-  } else {
-    front = `<b>${eastClearMid}ʹ</b>`;
-    label = 'Sactional 4S+4S (4×1)';
-  }
+  const label = isOttoman ? '3 + Ottoman (L)' : '4×1 (deep 4th)';
+  const front = `<b>${eastClearMid}ʹ</b> at cushions / <b>${eastClearWide}ʹ</b> at ottoman`;
   document.getElementById('inf').innerHTML =
     `<b>${label}</b> &nbsp;·&nbsp; hallway (W): <b>${HALL.toFixed(1)}ʹ</b> &nbsp;·&nbsp; ` +
     `front clearance: ${front} &nbsp;·&nbsp; N/S: <b>${nClear}ʹ / ${sClear}ʹ</b>`;
