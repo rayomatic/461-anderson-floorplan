@@ -426,7 +426,7 @@ function drawLiving(){
   const acHalf = (acW+acD)/2*Math.SQRT1_2;   // 45° bounding half-extent (px)
 
   // ── SLIDING-DOOR EGRESS — keep EGRESS ft of clear floor in front of the door ──
-  const EGRESS = 3.5;                        // 42″ clear approach/egress
+  const EGRESS = 3.0;                        // 36″ clear approach/egress
   {
     const ez1=px(SGD_X1), ez2=px(SGD_X2), ezB=py(EGRESS);
     ctx.save();
@@ -436,7 +436,7 @@ function drawLiving(){
     ctx.strokeRect(ez1, py(0), ez2-ez1, ezB-py(0)); ctx.setLineDash([]);
     ctx.fillStyle='#4a7ea0'; ctx.font='italic 8px sans-serif'; ctx.textAlign='center';
     ctx.fillText('egress clear', (ez1+ez2)/2, ezB-15);
-    ctx.fillText('42″ deep', (ez1+ez2)/2, ezB-4);
+    ctx.fillText('36″ deep', (ez1+ez2)/2, ezB-4);
     ctx.restore();
   }
 
