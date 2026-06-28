@@ -54,9 +54,9 @@ footer{font-size:11px;color:#bbb;margin-top:4px}
     <a href="https://www.article.com/product/25371/lenia-46-storage-coffee-table-walnut" target="_blank" rel="noopener" style="color:#7a6848">Article Lenia 46" Coffee Table (46"×20"×15"H)</a>
   </div>
   <div class="footer-row" id="footFamily">
-    Family Room 107 &nbsp;·&nbsp; 11ʹ6½″ × 14ʹ10″ &nbsp;·&nbsp; 190 SF<br>
-    <span style="color:#999">Furniture ref:</span>
-    Sectional — 117″ × 64″ outer  ·  cushions 29″, ottoman 64″, back 28.5″H
+    Family Room 107 &nbsp;·&nbsp; 8ʹ6½″ × 15ʹ2″ (102½″ × 182″) &nbsp;·&nbsp; ~130 SF<br>
+    <span style="color:#999">Furniture:</span>
+    LoveSac Sactional 117″×64″ (seats 29″W×35″D, side 6″)  ·  IKEA Billy corner bookcase 53½″×53½″, 11″D, 93¼″H — NE + SW corners
   </div>
 </footer>
 
@@ -86,7 +86,7 @@ const ISL_W = 3.0;
 const ISL_H = 8.5;
 const ISL_OH = 0.5;  // 6" overhang east side toward living
 const ISL_Y = 2.8;
-const ISL_X = 6.0;   // aisle = 6.0−2.0 = 4.0ft ✓
+const ISL_X = 5.5;   // moved left → aisle = 5.5−2.0 = 3.5ft = 42″
 
 // Sliding glass door: right edge 3.49ft from east wall (= lightwell face); 6ft wide
 const SGD_X2 = TW - LWLL;        // 23.3 − 3.49 = 19.81ft
@@ -180,6 +180,8 @@ const P={
   chr:    '#968058',
   side:   '#ae9860',
   coff:   '#b8b060',
+  bc:     '#c9a978',
+  bcS:    '#8a6c44',
   htch:   '#b4ac9a',
   ext:    '#1c1c1c',
   wall:   '#808080',
@@ -317,7 +319,7 @@ function drawLiving(){
   // Max tuck = chair back at counter face, fully under the 6" overhang.
   const stW=f(21.5/12), stD=f(20.5/12), stG=f(0.15);
   const stTH=3*stW+2*stG;
-  const stSX=iX+iW;                                    // chair back at counter face (under overhang)
+  const stSX=iX+iW;                                    // chair back at counter face (tucked under 6″ overhang)
   const stSY=py(ISL_Y+ISL_H/2)-stTH/2;
   for(let i=0;i<3;i++){
     const sy=stSY+i*(stW+stG);
@@ -333,8 +335,33 @@ function drawLiving(){
   ctx.save();
   ctx.translate(iX+iW/2, iY+iH/2); ctx.rotate(-Math.PI/2);
   ctx.fillStyle='#4c3018'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('ISLAND  3×8.5ʹ', 0, 4);
+  ctx.fillText('ISLAND  42″×8½ʹ', 0, 4);
   ctx.restore();
+
+  // ── ISLAND TOTAL WIDTH (body 36″ + 6″ overhang = 42″) ──
+  {
+    const wy = iY - 10;
+    ctx.save(); ctx.strokeStyle='#888'; ctx.lineWidth=0.8; ctx.setLineDash([2,2]);
+    ln(ctx, iX, wy, iX+iW+ohW, wy); ctx.setLineDash([]);
+    ln(ctx, iX, wy-3, iX, wy+3); ln(ctx, iX+iW+ohW, wy-3, iX+iW+ohW, wy+3);
+    ctx.fillStyle='#666'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('42″ total', iX+(iW+ohW)/2, wy-4); ctx.restore();
+  }
+
+  // ── COUNTER OVERHANG (6″) + STOOL PROJECTION (6″) — east toward living ──
+  {
+    const ohX=iX+iW+ohW, sfX=stSX+stD, oy=stSY-9;
+    ctx.save(); ctx.strokeStyle='#cc8844'; ctx.lineWidth=0.8; ctx.setLineDash([2,2]);
+    ln(ctx, iX+iW, oy, ohX, oy); ctx.setLineDash([]);
+    ln(ctx, iX+iW, oy-3, iX+iW, oy+3); ln(ctx, ohX, oy-3, ohX, oy+3);
+    ctx.fillStyle='#cc8844'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('6″ OH', (iX+iW+ohX)/2, oy-4); ctx.restore();
+    ctx.save(); ctx.strokeStyle='#e05050'; ctx.lineWidth=0.9; ctx.setLineDash([2,2]);
+    ln(ctx, ohX, oy, sfX, oy); ctx.setLineDash([]);
+    ln(ctx, ohX, oy-3, ohX, oy+3); ln(ctx, sfX, oy-3, sfX, oy+3);
+    ctx.fillStyle='#e05050'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('≈14½″ stool proj', (ohX+sfX)/2, oy+9); ctx.restore();
+  }
 
   // Kitchen aisle dimension
   {
@@ -391,22 +418,41 @@ function drawLiving(){
   ctx.fillText('coffee', ctX+ctW/2, ctY+ctH/2-3);
   ctx.fillText('table',  ctX+ctW/2, ctY+ctH/2+8);
 
-  // ── ACCENT CHAIRS — Joybird Rosen Lounge (29"w × 29.5"d) at 45° near coffee table ──
-  // Chair center is on the diagonal axis through the coffee-table NW/SW corner,
-  // backed up to leave knee room between the chair seat-front and the table corner.
-  // angle=-π/4  → back faces NW, seat faces SE (north chair)
-  // angle=-3π/4 → back faces SW, seat faces NE (south chair)
-  const acW = f(29/12), acD = f(29.5/12);   // Rosen footprint in canvas px
+  // ── ACCENT CHAIRS — Interior Define Sloan (32"W × 31"D swivel) at 45° near coffee table ──
+  // North chair is clamped south so it stays clear of the sliding-door egress zone.
+  const acW = f(32/12), acD = f(31/12);      // Sloan footprint in canvas px
   const acBack = 2.6;                        // ft, back-up along chair diagonal
-  const acOff  = f(acBack / Math.SQRT2);     // = ~1.84 ft on each axis
-  const acNX = ctX - acOff,           acNY = ctY - acOff;
-  const acSX = ctX - acOff,           acSY = ctY + ctH + acOff;
-  drawAccentChair(ctx, acNX, acNY, -Math.PI/4,   acW, acD);   // NW — back NW, seat SE
-  drawAccentChair(ctx, acSX, acSY, -3*Math.PI/4, acW, acD);   // SW — back SW, seat NE
+  const acOff  = f(acBack / Math.SQRT2);
+  const acHalf = (acW+acD)/2*Math.SQRT1_2;   // 45° bounding half-extent (px)
+
+  // ── SLIDING-DOOR EGRESS — keep EGRESS ft of clear floor in front of the door ──
+  const EGRESS = 3.5;                        // 42″ clear approach/egress
+  {
+    const ez1=px(SGD_X1), ez2=px(SGD_X2), ezB=py(EGRESS);
+    ctx.save();
+    ctx.fillStyle='rgba(110,160,200,0.10)';
+    ctx.fillRect(ez1, py(0), ez2-ez1, ezB-py(0));
+    ctx.strokeStyle='#6aa0c8'; ctx.lineWidth=0.8; ctx.setLineDash([4,3]);
+    ctx.strokeRect(ez1, py(0), ez2-ez1, ezB-py(0)); ctx.setLineDash([]);
+    ctx.fillStyle='#4a7ea0'; ctx.font='italic 8px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('egress clear', (ez1+ez2)/2, ezB-15);
+    ctx.fillText('42″ deep', (ez1+ez2)/2, ezB-4);
+    ctx.restore();
+  }
+
+  const acNX = ctX - acOff;
+  const acNY = Math.max(ctY - acOff, py(EGRESS) + acHalf);   // push S so chair clears egress
+  const acSX = ctX - acOff,  acSY = ctY + ctH + acOff;
+  drawAccentChair(ctx, acNX, acNY, -Math.PI/4,   acW, acD);   // N — back NW, seat SE
+  drawAccentChair(ctx, acSX, acSY, -3*Math.PI/4, acW, acD);   // S — back SW, seat NE
+
+  // North chair clears the slider
+  ctx.fillStyle='#2a8a4a'; ctx.font='italic 7px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('↑ clears slider', acNX, acNY-acHalf-3);
 
   // Label
   ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('accent chairs', (acNX+acSX)/2, (acNY+acSY)/2);
+  ctx.fillText('Sloan chairs', (acNX+acSX)/2, (acNY+acSY)/2);
 
   // ── DINING TABLE + 6 CHAIRS — rotated 90°: 5ft E-W × 2.67ft N-S ──
   const dtW=f(5), dtH=f(2.67);
@@ -571,99 +617,77 @@ function drawLiving(){
 }
 
 // ══════════════════════════════════════════════════════════
-// FAMILY ROOM — Room 107, 11ʹ6½″ × 14ʹ10″, 190 SF
-// LoveSac Sactional 4 Seats + 4 Sides (Snow Owl Phur)
+// FAMILY ROOM — Room 107
+// Measured 2026-06 (Ray): 102½″ (E-W, to hallway opening) × 182″ (N-S) ≈ 130 SF
+// LoveSac Sactional (verified lovesac.com + spec sheet): 117″ L × 64″ D × 28½″ H
+//   Seat 29″W × 35″D, Side/back 6″, chaise/ottoman 64″ deep
+// IKEA Billy corner bookcase: 53½″ × 53½″ L-footprint, 11″ deep, 93¼″ H
 // ══════════════════════════════════════════════════════════
 function drawFamily(){
-  // Interior room dims (feet)
-  const FRW = 11 + 6.5/12;   // 11.542 ft (E-W)
-  const FRH = 14 + 10/12;    // 14.833 ft (N-S)
-  const WT  = 0.5;           // wall thickness for rendering
+  // ── ROOM (measured) ──
+  const FRW = 102.5/12;             // 8.542 ft  E-W (east wall → hallway opening)
+  const FRH = 182/12;               // 15.167 ft N-S
+  const SF  = Math.round(FRW*FRH);  // ≈130 SF
 
-  // Sactional geometry — two configs:
-  //   'ottoman' → L: 3 cushions in a row N-S, ottoman south end (perpendicular)
-  //               Back panel runs only along the 3-cushion main bench.
-  //   'deep4'   → 4×1 straight sofa, 4th cushion is the 64"-deep piece (in line).
-  //               Back panel runs the full 4-position length.
-  const CUSH = 29/12;        // 2.417 ft per cushion (29")
-  const OTT  = 64/12;        // 5.333 ft ottoman / deep cushion depth (64")
-  const SIDE = 12.5/12;      // 1.042 ft (back panel thickness)
+  // ── LOVESAC SACTIONAL (verified 117″ × 64″) ──
+  const SAC_N  = 117/12;            // 117″ overall length (N-S)
+  const SEAT_W = SAC_N/4;           // ≈29¼″ per module
+  const SEAT_D = 35/12;             // 35″ seat depth (E-W)
+  const SIDE   = 6/12;              // 6″ Side / back thickness
+  const CHAISE = 64/12;             // 64″ chaise / deep depth (E-W)
+  const DEPTH_MAIN = SIDE + SEAT_D; // 41″ deep at 3-seat run
+  const DEEP4_D = CHAISE - SIDE;    // deep-4th cushion depth (outer = 64″)
   const isOttoman = (curSac === 'ottoman');
-  const isDeep4   = (curSac === 'deep4');
 
-  const SAC_N        = 4 * CUSH;           // 9.67 ft N-S (≈ 117″)
-  const SAC_E_CUSH   = SIDE + CUSH;        // 3.46 ft (main bench, incl. back)
-  const SAC_E_DEEP4  = SIDE + OTT;         // 6.38 ft (deep4 row with back)
-  const SAC_E_OTT    = OTT;                // 5.33 ft (ottoman, no back, from west wall)
-  const SAC_E_WIDE   = isOttoman ? SAC_E_OTT : SAC_E_DEEP4;
-  const SAC_E_MID    = SAC_E_CUSH;
+  // ── BILLY CORNER BOOKCASE ──
+  const BC_LEG = 53.5/12;           // leg length along each wall
+  const BC_DEP = 11/12;             // depth
 
-  // Hallway corridor on west side
-  const HALL = 3.0;
-  const sacX = HALL;
-  const sacY = (FRH - SAC_N) / 2;
+  // ── SOFA — back on west edge, shifted N to clear SW bookcase ──
+  const sacX = 0;
+  const sacAvail = FRH - BC_LEG;                  // west wall free of SW bookcase
+  const sacY = Math.max(0,(sacAvail - SAC_N)/2);  // ≈5¾″
 
-  // Canvas sizing — Family Room is smaller than Living, but keep margins consistent
-  const FROX = 56, FROY = 72;
-  const cW = FROX*2 + f(FRW) + 60;
-  const cH = FROY    + f(FRH) + 80;
+  // ── CANVAS ──
+  const FROX = 60, FROY = 84;
+  const cW = FROX*2 + f(FRW) + 80;
+  const cH = FROY    + f(FRH) + 84;
   const cv = document.getElementById('c');
   const dpr = window.devicePixelRatio || 1;
-  cv.width = cW * dpr; cv.height = cH * dpr;
-  cv.style.width = cW + 'px'; cv.style.height = cH + 'px';
+  cv.width = cW*dpr; cv.height = cH*dpr;
+  cv.style.width = cW+'px'; cv.style.height = cH+'px';
   const ctx = cv.getContext('2d');
-  ctx.scale(dpr, dpr);
+  ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,cW,cH);
 
-  // Local helpers (override OX/OY for this view)
   const lpx = x => FROX + x*S;
   const lpy = y => FROY + y*S;
 
   // ── ROOM FILL ──
   box(ctx, lpx(0), lpy(0), f(FRW), f(FRH), P.liv);
 
-  // Hallway pass-through corridor highlight (west side of room)
+  // ── HALLWAY (open, west of room) ──
   ctx.save();
-  ctx.fillStyle = P.hall;
-  ctx.globalAlpha = 0.55;
-  ctx.fillRect(lpx(0), lpy(0), f(HALL), f(FRH));
-  ctx.globalAlpha = 1;
+  ctx.fillStyle = P.hall; ctx.globalAlpha = .5;
+  ctx.fillRect(lpx(0)-f(0.85), lpy(0), f(0.85), f(FRH));
+  ctx.globalAlpha = 1; ctx.restore();
+  ctx.save();
+  ctx.translate(lpx(0)-f(0.42), lpy(FRH/2)); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#9a8e78'; ctx.font='italic 8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('open to hallway', 0, 3);
   ctx.restore();
 
-  // ── DOORS (from architectural plan) ──
-  // 108A — west wall doorway near south (entry from rear of house / hallway from below)
-  {
-    const dW = f(3.0);
-    const dY = lpy(FRH) - dW - f(0.5);
-    ctx.fillStyle='#fff'; ctx.fillRect(lpx(0)-3, dY, 6, dW);
-    ctx.strokeStyle='#bbb'; ctx.lineWidth=0.8;
-    ctx.beginPath(); ctx.arc(lpx(0), dY, dW, -Math.PI/2, 0); ctx.stroke();
-    ctx.fillStyle='#888'; ctx.font='7px sans-serif'; ctx.textAlign='left';
-    ctx.fillText('108A', lpx(0)+5, dY+dW/2+2);
-  }
-  // 107B — north wall doorway, west of center
-  {
-    const dW = f(3.0);
-    const dX = lpx(2.5);
-    ctx.fillStyle='#fff'; ctx.fillRect(dX, lpy(0)-3, dW, 6);
-    ctx.strokeStyle='#bbb'; ctx.lineWidth=0.8;
-    ctx.beginPath(); ctx.arc(dX, lpy(0), dW, 0, Math.PI/2); ctx.stroke();
-    ctx.fillStyle='#888'; ctx.font='7px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('107B', dX+dW/2, lpy(0)-5);
-  }
-
-  // ── SACTIONAL ──
+  // ── CUSHION HELPER ──
   function drawCushion(x, y, w, h){
     box(ctx, x, y, w, h, '#f4ede0', '#8c8270', 1.2);
     ctx.save();
     ctx.strokeStyle='rgba(160,148,120,.35)'; ctx.lineWidth=0.5;
-    const cx = x + w/2, cy = y + h/2;
-    const rr = Math.min(w, h);
+    const cx=x+w/2, cy=y+h/2, rr=Math.min(w,h);
     for(let j=0;j<16;j++){
-      const ang = (j/16)*Math.PI*2;
+      const a=(j/16)*Math.PI*2;
       ctx.beginPath();
-      ctx.moveTo(cx+Math.cos(ang)*rr*0.16, cy+Math.sin(ang)*rr*0.16);
-      ctx.lineTo(cx+Math.cos(ang)*rr*0.40, cy+Math.sin(ang)*rr*0.40);
+      ctx.moveTo(cx+Math.cos(a)*rr*0.16, cy+Math.sin(a)*rr*0.16);
+      ctx.lineTo(cx+Math.cos(a)*rr*0.40, cy+Math.sin(a)*rr*0.40);
       ctx.stroke();
     }
     ctx.restore();
@@ -673,161 +697,120 @@ function drawFamily(){
   const seatX = lpx(sacX + SIDE);
 
   if(isOttoman){
-    // ── 3+OTTOMAN L-SHAPE — 3 cushions in row + ottoman perpendicular south, no back behind ottoman ──
     ctx.fillStyle='rgba(0,0,0,.06)';
-    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SAC_E_OTT), f(SAC_N));
-    // erase shadow east of main bench at upper 3 rows (no furniture there)
-    ctx.clearRect(lpx(sacX + SAC_E_CUSH)+3, lpy(sacY)+3,
-                  f(SAC_E_OTT - SAC_E_CUSH), f(3*CUSH));
-
-    // Back panel — only along the 3-cushion main bench
-    box(ctx, backX, lpy(sacY), f(SIDE), f(3*CUSH), '#e8e3d2', '#8c8270', 1.3);
+    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(CHAISE), f(SAC_N));
+    ctx.clearRect(lpx(sacX+DEPTH_MAIN)+3, lpy(sacY)+3, f(CHAISE-DEPTH_MAIN), f(3*SEAT_W));
+    box(ctx, backX, lpy(sacY), f(SIDE), f(3*SEAT_W), '#e8e3d2', '#8c8270', 1.3);
     ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
-    for(let i=1; i<3; i++){
-      const yy = lpy(sacY + i*CUSH);
-      ln(ctx, backX, yy, backX+f(SIDE), yy);
-    }
-
-    // 3 main cushions stacked N-S
-    for(let row=0; row<3; row++){
-      drawCushion(seatX, lpy(sacY + row*CUSH), f(CUSH), f(CUSH));
-    }
-    // Ottoman — south end, 29" along row × 64" deep east, starts at west wall (no back)
-    drawCushion(lpx(sacX), lpy(sacY + 3*CUSH), f(OTT), f(CUSH));
-
-    // Label
-    ctx.save();
-    ctx.fillStyle='#7a6c4a'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
-    const lblX = lpx(sacX + SAC_E_OTT/2);
-    const lblY = lpy(sacY + 1.5*CUSH) - 6;
-    ctx.fillText('3 + Ottoman (L)', lblX, lblY);
-    ctx.font='8px sans-serif'; ctx.fillStyle='#a9a08c';
-    ctx.fillText('117″ × 64″  ·  cushions 29″, ottoman 64″', lblX, lblY + 12);
-    ctx.fillText('faces east →', lblX, lblY + 24);
-    ctx.restore();
-
-    // Arrow
-    { const ax = lpx(sacX + SAC_E_OTT) + 6, ay = lpy(sacY + 3.5*CUSH);
-      ctx.save(); ctx.strokeStyle='#b8a070'; ctx.fillStyle='#b8a070'; ctx.lineWidth=1.2;
-      ln(ctx, ax, ay, ax+22, ay);
-      ctx.beginPath(); ctx.moveTo(ax+22,ay); ctx.lineTo(ax+16,ay-4); ctx.lineTo(ax+16,ay+4); ctx.closePath(); ctx.fill();
-      ctx.restore(); }
-
+    for(let i=1;i<3;i++){ const yy=lpy(sacY+i*SEAT_W); ln(ctx, backX, yy, backX+f(SIDE), yy); }
+    for(let r=0;r<3;r++) drawCushion(seatX, lpy(sacY+r*SEAT_W), f(SEAT_D), f(SEAT_W));
+    drawCushion(lpx(sacX), lpy(sacY+3*SEAT_W), f(CHAISE), f(SEAT_W));  // ottoman chaise
   } else {
-    // ── 4×1 WITH DEEP 4TH — straight sofa, back along full length, 4th cushion is 64" deep ──
     ctx.fillStyle='rgba(0,0,0,.06)';
-    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SAC_E_DEEP4), f(SAC_N));
-    // erase shadow east of main cushions at top 3 positions
-    ctx.clearRect(lpx(sacX + SAC_E_CUSH)+3, lpy(sacY)+3,
-                  f(SAC_E_DEEP4 - SAC_E_CUSH), f(3*CUSH));
-
-    // Back panel — full length (4 cushions, including deep 4th)
-    box(ctx, backX, lpy(sacY), f(SIDE), f(4*CUSH), '#e8e3d2', '#8c8270', 1.3);
+    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SIDE+DEEP4_D), f(SAC_N));
+    ctx.clearRect(lpx(sacX+DEPTH_MAIN)+3, lpy(sacY)+3, f(SIDE+DEEP4_D-DEPTH_MAIN), f(3*SEAT_W));
+    box(ctx, backX, lpy(sacY), f(SIDE), f(SAC_N), '#e8e3d2', '#8c8270', 1.3);
     ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
-    for(let i=1; i<4; i++){
-      const yy = lpy(sacY + i*CUSH);
-      ln(ctx, backX, yy, backX+f(SIDE), yy);
-    }
+    for(let i=1;i<4;i++){ const yy=lpy(sacY+i*SEAT_W); ln(ctx, backX, yy, backX+f(SIDE), yy); }
+    for(let r=0;r<3;r++) drawCushion(seatX, lpy(sacY+r*SEAT_W), f(SEAT_D), f(SEAT_W));
+    drawCushion(seatX, lpy(sacY+3*SEAT_W), f(DEEP4_D), f(SEAT_W));     // deep 4th
+  }
 
-    // 3 regular cushions
-    for(let row=0; row<3; row++){
-      drawCushion(seatX, lpy(sacY + row*CUSH), f(CUSH), f(CUSH));
-    }
-    // Deep 4th cushion — east of back panel, 64" deep × 29" wide
-    drawCushion(seatX, lpy(sacY + 3*CUSH), f(OTT), f(CUSH));
-
-    // Label
-    ctx.save();
+  // Sofa label
+  {
+    const lblX = lpx(sacX + (isOttoman?CHAISE:DEPTH_MAIN)/2);
+    const lblY = lpy(sacY + 1.4*SEAT_W);
     ctx.fillStyle='#7a6c4a'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
-    const lblX = lpx(sacX + SAC_E_DEEP4/2);
-    const lblY = lpy(sacY + 1.5*CUSH) - 6;
-    ctx.fillText('4×1 (deep 4th)', lblX, lblY);
+    ctx.fillText(isOttoman?'LoveSac 3 + Ottoman (L)':'LoveSac 4×1 (deep 4th)', lblX, lblY);
     ctx.font='8px sans-serif'; ctx.fillStyle='#a9a08c';
-    ctx.fillText('116″ × 64″  ·  4th cushion rotated', lblX, lblY + 12);
-    ctx.fillText('faces east →', lblX, lblY + 24);
-    ctx.restore();
-
-    // Arrow
-    { const ax = lpx(sacX + SAC_E_DEEP4) + 6, ay = lpy(sacY + 3.5*CUSH);
-      ctx.save(); ctx.strokeStyle='#b8a070'; ctx.fillStyle='#b8a070'; ctx.lineWidth=1.2;
-      ln(ctx, ax, ay, ax+22, ay);
-      ctx.beginPath(); ctx.moveTo(ax+22,ay); ctx.lineTo(ax+16,ay-4); ctx.lineTo(ax+16,ay+4); ctx.closePath(); ctx.fill();
-      ctx.restore(); }
+    ctx.fillText('117″ × 64″  ·  faces east →', lblX, lblY+12);
   }
 
-  // ── HALLWAY ANNOTATION ──
-  {
-    const hY = lpy(FRH) - 14;
-    ctx.save();
-    ctx.strokeStyle='#cc8844'; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
-    ln(ctx, lpx(0)+4, hY, lpx(HALL)-2, hY);
-    ctx.setLineDash([]);
-    ln(ctx, lpx(0)+4, hY-4, lpx(0)+4, hY+4);
-    ln(ctx, lpx(HALL)-2, hY-4, lpx(HALL)-2, hY+4);
-    ctx.fillStyle='#cc8844'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
-    ctx.fillText(ftIn(HALL)+' hall', (lpx(0)+lpx(HALL))/2, hY-5);
-    ctx.restore();
-
-    // Hallway flow arrow (north from south doorway)
-    ctx.save();
-    ctx.strokeStyle='#cc8844'; ctx.fillStyle='#cc8844'; ctx.lineWidth=1;
-    const fx = lpx(HALL/2);
-    ln(ctx, fx, lpy(FRH)-22, fx, lpy(2));
-    ctx.beginPath(); ctx.moveTo(fx, lpy(2)); ctx.lineTo(fx-4, lpy(2)+6); ctx.lineTo(fx+4, lpy(2)+6); ctx.closePath(); ctx.fill();
-    ctx.restore();
+  // ── BILLY CORNER BOOKCASES (53½ × 53½ L, 11″ deep) ──
+  function bcLeg(x,y,w,h){ box(ctx, lpx(x), lpy(y), f(w), f(h), P.bc, P.bcS, 1.2); }
+  function bcLabel(x,y){
+    ctx.fillStyle='#6a4f2a'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Billy', lpx(x), lpy(y));
+    ctx.fillStyle='#8a7048'; ctx.font='7px sans-serif';
+    ctx.fillText('corner', lpx(x), lpy(y)+9);
   }
+  // NE (top-right): legs along north + east walls
+  bcLeg(FRW-BC_LEG, 0, BC_LEG, BC_DEP);
+  bcLeg(FRW-BC_DEP, 0, BC_DEP, BC_LEG);
+  bcLabel(FRW-BC_LEG/2+0.3, BC_DEP+0.8);
+  // SW (bottom-left): legs along south + west walls
+  bcLeg(0, FRH-BC_DEP, BC_LEG, BC_DEP);
+  bcLeg(0, FRH-BC_LEG, BC_DEP, BC_LEG);
+  bcLabel(BC_LEG/2-0.3, FRH-BC_DEP-0.6);
 
-  // East-of-sofa clear zone label
+  // ── MEDIA WALL / TV (east) ──
   {
-    const ezX = lpx(sacX + SAC_E);
-    const ezY = lpy(sacY + SAC_N/2);
-    const ezW = lpx(FRW) - ezX;
+    const ezX=lpx(FRW)-f(1.15), ezY=lpy(FRH/2);
     ctx.fillStyle='#9a9080'; ctx.font='italic 9px sans-serif'; ctx.textAlign='center';
-    ctx.fillText(ftIn((FRW - sacX - SAC_E))+' open', ezX + ezW/2, ezY-6);
-    ctx.fillText('(media wall / TV)', ezX + ezW/2, ezY+8);
+    ctx.fillText('media wall / TV', ezX, ezY-5);
+    ctx.fillText('(east wall)', ezX, ezY+8);
   }
 
   // ── WALLS ──
   ctx.strokeStyle=P.ext; ctx.lineWidth=3;
   ctx.strokeRect(lpx(0), lpy(0), f(FRW), f(FRH));
 
-  // ── DIMENSIONS ──
-  dimAnnot(ctx, lpx(0),  FROY-16, lpx(FRW), FROY-16, ftIn(FRW));
-  dimAnnot(ctx, lpx(FRW)+16, lpy(0), lpx(FRW)+16, lpy(FRH), ftIn(FRH));
+  // ── ROOM DIMENSIONS ──
+  dimAnnot(ctx, lpx(0), FROY-16, lpx(FRW), FROY-16, '8ʹ6½″ (102½″)');
+  dimAnnot(ctx, lpx(FRW)+18, lpy(0), lpx(FRW)+18, lpy(FRH), '15ʹ2″ (182″)');
 
-  // ── LABEL ──
+  // ── BOOKCASE LEG DIMS ──
+  dimAnnot(ctx, lpx(FRW-BC_LEG), FROY-2, lpx(FRW), FROY-2, '53½″');
+  dimAnnot(ctx, lpx(0), lpy(FRH)+14, lpx(BC_LEG), lpy(FRH)+14, '53½″');
+
+  // ── FRONT CLEARANCE (sofa → east wall) ──
+  function clr(x1, x2, y, label, col){
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
+    ln(ctx, x1, y, x2, y); ctx.setLineDash([]);
+    ln(ctx, x1, y-4, x1, y+4); ln(ctx, x2, y-4, x2, y+4);
+    ctx.fillStyle=col; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(label, (x1+x2)/2, y-6); ctx.restore();
+  }
+  clr(lpx(sacX+DEPTH_MAIN), lpx(FRW), lpy(sacY+SEAT_W*0.5), '61½″ clear', '#cc8844');
+  clr(lpx(sacX+CHAISE),     lpx(FRW), lpy(sacY+SEAT_W*3.5), '38½″',       '#e05050');
+
+  // ── GAP: sofa ↔ SW bookcase ──
+  {
+    const gx=lpx(0)+5, y1=lpy(sacY+SAC_N), y2=lpy(FRH-BC_LEG);
+    ctx.save(); ctx.strokeStyle='#2a8a4a'; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
+    ln(ctx, gx, y1, gx, y2); ctx.setLineDash([]);
+    ln(ctx, gx-4, y1, gx+4, y1); ln(ctx, gx-4, y2, gx+4, y2);
+    ctx.fillStyle='#2a8a4a'; ctx.font='bold 7px sans-serif'; ctx.textAlign='left';
+    ctx.fillText('5¾″', gx+5, (y1+y2)/2+3); ctx.restore();
+  }
+
+  // ── LABELS ──
   ctx.fillStyle='#222'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left';
   ctx.fillText('Family Room', lpx(0)+8, lpy(0)+16);
   ctx.fillStyle='#999'; ctx.font='9px sans-serif';
-  ctx.fillText('107 · 190 SF', lpx(0)+8, lpy(0)+29);
+  ctx.fillText('107 · ~'+SF+' SF', lpx(0)+8, lpy(0)+29);
 
   // ── NORTH ARROW ──
   {
-    const nx=lpx(FRW)-14, ny=lpy(FRH)+34;
-    ctx.save();
-    ctx.strokeStyle='#555'; ctx.fillStyle='#555'; ctx.lineWidth=1.5;
+    const nx=lpx(FRW)-14, ny=lpy(FRH)+42;
+    ctx.save(); ctx.strokeStyle='#555'; ctx.fillStyle='#555'; ctx.lineWidth=1.5;
     ln(ctx, nx, ny, nx-26, ny);
     ctx.beginPath(); ctx.moveTo(nx-26,ny); ctx.lineTo(nx-20,ny-5); ctx.lineTo(nx-20,ny+5); ctx.closePath(); ctx.fill();
     ctx.font='bold 11px sans-serif'; ctx.textAlign='right';
-    ctx.fillText('N', nx-30, ny+4);
-    ctx.restore();
+    ctx.fillText('N', nx-30, ny+4); ctx.restore();
   }
 
   // Title
   ctx.fillStyle='#444'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('461 Anderson — family room', lpx(FRW/2), FROY-42);
+  ctx.fillText('461 Anderson — family room', lpx(FRW/2), FROY-44);
   ctx.fillStyle='#aaa'; ctx.font='10px sans-serif';
-  ctx.fillText('scale: 1 ft = 22 px  ·  not for permitting', lpx(FRW/2), FROY-27);
+  ctx.fillText('scale: 1 ft = 22 px  ·  not for permitting', lpx(FRW/2), FROY-29);
 
   // Info bar
-  const eastClearMid  = (FRW - sacX - SAC_E_MID).toFixed(2);
-  const eastClearWide = (FRW - sacX - SAC_E_WIDE).toFixed(2);
-  const nClear = sacY.toFixed(2), sClear = (FRH - sacY - SAC_N).toFixed(2);
   const label = isOttoman ? '3 + Ottoman (L)' : '4×1 (deep 4th)';
-  const front = `<b>${eastClearMid}ʹ</b> at cushions / <b>${eastClearWide}ʹ</b> at ottoman`;
   document.getElementById('inf').innerHTML =
-    `<b>${label}</b> &nbsp;·&nbsp; hallway (W): <b>${HALL.toFixed(1)}ʹ</b> &nbsp;·&nbsp; ` +
-    `front clearance: ${front} &nbsp;·&nbsp; N/S: <b>${nClear}ʹ / ${sClear}ʹ</b>`;
+    `<b>LoveSac ${label} — 117″×64″</b> &nbsp;·&nbsp; front clear: <b>61½″</b> seats / <b>38½″</b> chaise &nbsp;·&nbsp; ` +
+    `Billy NE ✓ &nbsp; Billy SW ✓ <span style="color:#999">(sofa shifted ~27″ N to clear)</span>`;
 }
 
 draw();
