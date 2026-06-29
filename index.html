@@ -43,6 +43,7 @@ footer{font-size:11px;color:#bbb;margin-top:4px}
   <span class="lbl" style="margin-left:12px">Billy:</span>
   <button class="b on" onclick="setBC('corner')"   id="bBCcorner">Corner 53½″</button>
   <button class="b"    onclick="setBC('straight')" id="bBCstraight">Straight 31½″</button>
+  <button class="b"    onclick="setBC('double')"   id="bBCdouble">Double 63″</button>
 </div>
 <div id="inf"></div>
 <canvas id="c"></canvas>
@@ -214,6 +215,7 @@ function setBC(b){
   curBC = b;
   document.getElementById('bBCcorner').className   = 'b' + (b==='corner'  ?' on':'');
   document.getElementById('bBCstraight').className = 'b' + (b==='straight'?' on':'');
+  document.getElementById('bBCdouble').className   = 'b' + (b==='double'  ?' on':'');
   draw();
 }
 
@@ -777,6 +779,7 @@ function drawFamily(){
 
   // ── BILLY BOOKCASES — NE + SE (east wall); toggle corner vs straight, both 11″ deep ──
   const isCorner = (curBC === 'corner');
+  const isDouble = (curBC === 'double');
   const BC_W = 31.5/12;   // straight Billy width (along the wall)
   function bcRect(x,y,w,h){ box(ctx, lpx(x), lpy(y), f(w), f(h), P.bc, P.bcS, 1.2); }
   function bcLabel(x,y,t){
@@ -796,8 +799,16 @@ function drawFamily(){
     bcRect(TOTW-BC_DEP, FRH-BC_LEG, BC_DEP, BC_LEG);
     bcLabel(TOTW-BC_DEP-1.05, FRH-BC_LEG*0.5, 'corner');
     bcSliderClash = SGD_E > TOTW-BC_LEG;   // north leg vs slider
+  } else if(isDouble){
+    // Two straight Billys side by side (2× 31½″ = 63″) against east wall, top + bottom
+    bcRect(TOTW-BC_DEP, 0,           BC_DEP, BC_W);
+    bcRect(TOTW-BC_DEP, BC_W,        BC_DEP, BC_W);
+    bcLabel(TOTW-BC_DEP-1.05, BC_W, '2×31½″');
+    bcRect(TOTW-BC_DEP, FRH-2*BC_W,  BC_DEP, BC_W);
+    bcRect(TOTW-BC_DEP, FRH-BC_W,    BC_DEP, BC_W);
+    bcLabel(TOTW-BC_DEP-1.05, FRH-BC_W, '2×31½″');
   } else {
-    // Straight Billy 31½″W × 11″D against the east wall, top + bottom
+    // Single straight Billy 31½″W × 11″D against the east wall, top + bottom
     bcRect(TOTW-BC_DEP, 0,        BC_DEP, BC_W);
     bcLabel(TOTW-BC_DEP-1.0, BC_W*0.5, '31½″');
     bcRect(TOTW-BC_DEP, FRH-BC_W, BC_DEP, BC_W);
@@ -837,8 +848,8 @@ function drawFamily(){
 
   // ── BOOKCASE DIMENSIONS (both versions 11″ deep) ──
   {
-    const bcLen = isCorner ? BC_LEG : BC_W;
-    const bcLbl = isCorner ? "53½″" : "31½″";
+    const bcLen = isCorner ? BC_LEG : (isDouble ? 2*BC_W : BC_W);
+    const bcLbl = isCorner ? "53½″" : (isDouble ? "63″" : "31½″");
     dimAnnot(ctx, lpx(TOTW)+5, lpy(0), lpx(TOTW)+5, lpy(bcLen), bcLbl);                 // NE along east wall
     dimAnnot(ctx, lpx(TOTW-BC_DEP), lpy(bcLen)+11, lpx(TOTW), lpy(bcLen)+11, "11″");    // depth (11″)
     dimAnnot(ctx, lpx(TOTW)+5, lpy(FRH-bcLen), lpx(TOTW)+5, lpy(FRH), bcLbl);           // SE along east wall
@@ -902,7 +913,9 @@ function drawFamily(){
 
   // Info bar
   const label = isOttoman ? '3 + Ottoman (L)' : '4×1';
-  const bcName = isCorner ? 'Billy corner 53½×53½ (11″D)' : 'Billy straight 31½″ (11″D)';
+  const bcName = isCorner ? 'Billy corner 53½×53½ (11″D)'
+               : isDouble ? '2× Billy 31½″ = 63″ (11″D)'
+               : 'Billy straight 31½″ (11″D)';
   const bcNote = isCorner
     ? (bcSliderClash ? 'NE ⚠ overlaps slider ~11″ · SE ✓' : 'NE + SE ✓')
     : 'NE + SE ✓ — clears slider';
