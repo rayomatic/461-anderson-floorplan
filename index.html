@@ -624,34 +624,38 @@ function drawLiving(){
 // IKEA Billy corner bookcase: 53½″ × 53½″ L-footprint, 11″ deep, 93¼″ H
 // ══════════════════════════════════════════════════════════
 function drawFamily(){
-  // ── ROOM (measured) ──
-  const FRW = 102.5/12;             // 8.542 ft  E-W (east wall → hallway opening)
-  const FRH = 182/12;               // 15.167 ft N-S
-  const SF  = Math.round(FRW*FRH);  // ≈130 SF
+  // ── DIMENSIONS (per floorplan A602 + field) ──
+  const TOTW  = 138.5/12;    // 11'-6½" total width (E-W), incl. hallway
+  const HALLW = 36/12;       // 3'-0" hallway (west side)
+  const ROOMW = TOTW - HALLW;// 102½" family-room width (east of hallway)
+  const FRH   = 182/12;      // 15'-2" length (N-S, field; plan notes 14'-10")
 
-  // ── LOVESAC SACTIONAL (verified 117″ × 64″) ──
-  const SAC_N  = 117/12;            // 117″ overall length (N-S)
-  const SEAT_W = SAC_N/4;           // ≈29¼″ per module
-  const SEAT_D = 35/12;             // 35″ seat depth (E-W)
-  const SIDE   = 6/12;              // 6″ Side / back thickness
-  const CHAISE = 64/12;             // 64″ chaise / deep depth (E-W)
-  const DEPTH_MAIN = SIDE + SEAT_D; // 41″ deep at 3-seat run
-  const DEEP4_D = CHAISE - SIDE;    // deep-4th cushion depth (outer = 64″)
+  // ── LOVESAC SACTIONAL — 3 seats + ottoman (L): 110" × 64" ──
+  const SAC_N   = 110/12;            // 110" overall length (N-S)
+  const SEAT_N  = SAC_N/3;           // ≈36.7" per cushion (N-S)
+  const SEAT_D  = 29/12;             // 29" seat depth (E-W)
+  const SIDE    = 6/12;              // 6" back / side
+  const DEPTH_MAIN = SIDE + SEAT_D;       // 35" (back + seat)
+  const DEPTH_OTT  = SIDE + 2*SEAT_D;     // 64" (back + seat + ottoman)
   const isOttoman = (curSac === 'ottoman');
+  const sofaLen   = isOttoman ? SAC_N : 4*SEAT_N;
 
   // ── BILLY CORNER BOOKCASE ──
-  const BC_LEG = 53.5/12;           // leg length along each wall
-  const BC_DEP = 11/12;             // depth
+  const BC_LEG = 53.5/12;
+  const BC_DEP = 11/12;
 
-  // ── SOFA — back on west edge, shifted N to clear SW bookcase ──
-  const sacX = 0;
-  const sacAvail = FRH - BC_LEG;                  // west wall free of SW bookcase
-  const sacY = Math.max(0,(sacAvail - SAC_N)/2);  // ≈5¾″
+  // ── SLIDING GLASS DOOR (north wall) ──
+  const SGD_W = HALLW;               // west edge ≈ hallway line
+  const SGD_E = TOTW - 42.5/12;      // east edge — 3'-6½" from NE corner
+
+  // ── SOFA — back at hallway/room line, centered N-S ──
+  const sacX = HALLW;
+  const sacY = (FRH - sofaLen)/2;
 
   // ── CANVAS ──
-  const FROX = 60, FROY = 84;
-  const cW = FROX*2 + f(FRW) + 80;
-  const cH = FROY    + f(FRH) + 84;
+  const FROX = 76, FROY = 108;
+  const cW = FROX + f(TOTW) + 100;
+  const cH = FROY + f(FRH) + 100;
   const cv = document.getElementById('c');
   const dpr = window.devicePixelRatio || 1;
   cv.width = cW*dpr; cv.height = cH*dpr;
@@ -659,23 +663,30 @@ function drawFamily(){
   const ctx = cv.getContext('2d');
   ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,cW,cH);
-
   const lpx = x => FROX + x*S;
   const lpy = y => FROY + y*S;
 
   // ── ROOM FILL ──
-  box(ctx, lpx(0), lpy(0), f(FRW), f(FRH), P.liv);
-
-  // ── HALLWAY (open, west of room) ──
-  ctx.save();
-  ctx.fillStyle = P.hall; ctx.globalAlpha = .5;
-  ctx.fillRect(lpx(0)-f(0.85), lpy(0), f(0.85), f(FRH));
-  ctx.globalAlpha = 1; ctx.restore();
-  ctx.save();
-  ctx.translate(lpx(0)-f(0.42), lpy(FRH/2)); ctx.rotate(-Math.PI/2);
-  ctx.fillStyle='#9a8e78'; ctx.font='italic 8px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('open to hallway', 0, 3);
+  box(ctx, lpx(0), lpy(0), f(TOTW), f(FRH), P.liv);
+  // hallway shading (west 3')
+  ctx.save(); ctx.fillStyle=P.hall; ctx.globalAlpha=.55;
+  ctx.fillRect(lpx(0), lpy(0), f(HALLW), f(FRH)); ctx.globalAlpha=1; ctx.restore();
+  // hallway / room divider (dashed)
+  ctx.save(); ctx.strokeStyle='#b9b0a0'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+  ln(ctx, lpx(HALLW), lpy(0), lpx(HALLW), lpy(FRH)); ctx.setLineDash([]); ctx.restore();
+  // hallway label + N-S run arrow + doors
+  ctx.save(); ctx.translate(lpx(HALLW*0.62), lpy(FRH*0.5)); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='#8a7f6a'; ctx.font='italic 9px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('3′-0″ hallway', 0, 3); ctx.restore();
+  ctx.save(); ctx.strokeStyle='#cc8844'; ctx.fillStyle='#cc8844'; ctx.lineWidth=1.2;
+  const hax=lpx(HALLW*0.28);
+  ln(ctx, hax, lpy(FRH)-14, hax, lpy(0.6));
+  ctx.beginPath(); ctx.moveTo(hax,lpy(0.6)); ctx.lineTo(hax-4,lpy(0.6)+7); ctx.lineTo(hax+4,lpy(0.6)+7); ctx.closePath(); ctx.fill();
   ctx.restore();
+  ctx.fillStyle='#888'; ctx.font='7px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('107B', lpx(HALLW*0.62), lpy(0)-4);
+  ctx.save(); ctx.translate(lpx(0)+8, lpy(FRH*0.74)); ctx.rotate(-Math.PI/2);
+  ctx.fillText('108A', 0, 0); ctx.restore();
 
   // ── CUSHION HELPER ──
   function drawCushion(x, y, w, h){
@@ -695,38 +706,52 @@ function drawFamily(){
 
   const backX = lpx(sacX);
   const seatX = lpx(sacX + SIDE);
+  const nSeat = isOttoman ? 3 : 4;
 
-  if(isOttoman){
-    ctx.fillStyle='rgba(0,0,0,.06)';
-    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(CHAISE), f(SAC_N));
-    ctx.clearRect(lpx(sacX+DEPTH_MAIN)+3, lpy(sacY)+3, f(CHAISE-DEPTH_MAIN), f(3*SEAT_W));
-    box(ctx, backX, lpy(sacY), f(SIDE), f(3*SEAT_W), '#e8e3d2', '#8c8270', 1.3);
-    ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
-    for(let i=1;i<3;i++){ const yy=lpy(sacY+i*SEAT_W); ln(ctx, backX, yy, backX+f(SIDE), yy); }
-    for(let r=0;r<3;r++) drawCushion(seatX, lpy(sacY+r*SEAT_W), f(SEAT_D), f(SEAT_W));
-    drawCushion(lpx(sacX), lpy(sacY+3*SEAT_W), f(CHAISE), f(SEAT_W));  // ottoman chaise
-  } else {
-    ctx.fillStyle='rgba(0,0,0,.06)';
-    ctx.fillRect(lpx(sacX)+3, lpy(sacY)+3, f(SIDE+DEEP4_D), f(SAC_N));
-    ctx.clearRect(lpx(sacX+DEPTH_MAIN)+3, lpy(sacY)+3, f(SIDE+DEEP4_D-DEPTH_MAIN), f(3*SEAT_W));
-    box(ctx, backX, lpy(sacY), f(SIDE), f(SAC_N), '#e8e3d2', '#8c8270', 1.3);
-    ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
-    for(let i=1;i<4;i++){ const yy=lpy(sacY+i*SEAT_W); ln(ctx, backX, yy, backX+f(SIDE), yy); }
-    for(let r=0;r<3;r++) drawCushion(seatX, lpy(sacY+r*SEAT_W), f(SEAT_D), f(SEAT_W));
-    drawCushion(seatX, lpy(sacY+3*SEAT_W), f(DEEP4_D), f(SEAT_W));     // deep 4th
-  }
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,.06)';
+  ctx.fillRect(backX+3, lpy(sacY)+3, f(DEPTH_MAIN), f(sofaLen));
+  if(isOttoman) ctx.fillRect(lpx(sacX+DEPTH_MAIN)+3, lpy(sacY+2*SEAT_N)+3, f(SEAT_D), f(SEAT_N));
 
-  // Sofa label
+  // back panel (full length)
+  box(ctx, backX, lpy(sacY), f(SIDE), f(sofaLen), '#e8e3d2', '#8c8270', 1.3);
+  ctx.strokeStyle='#aaa099'; ctx.lineWidth=0.5;
+  for(let i=1;i<nSeat;i++){ const yy=lpy(sacY+i*SEAT_N); ln(ctx, backX, yy, backX+f(SIDE), yy); }
+  // seats
+  for(let r=0;r<nSeat;r++) drawCushion(seatX, lpy(sacY+r*SEAT_N), f(SEAT_D), f(SEAT_N));
+  // ottoman — same size, immediately EAST of the bottom (3rd) seat
+  if(isOttoman) drawCushion(lpx(sacX+SIDE+SEAT_D), lpy(sacY+2*SEAT_N), f(SEAT_D), f(SEAT_N));
+
+  // sofa label
   {
-    const lblX = lpx(sacX + (isOttoman?CHAISE:DEPTH_MAIN)/2);
-    const lblY = lpy(sacY + 1.4*SEAT_W);
+    const lblX = lpx(sacX + DEPTH_MAIN/2 + 0.35);
+    const lblY = lpy(sacY + SEAT_N*0.55);
     ctx.fillStyle='#7a6c4a'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
-    ctx.fillText(isOttoman?'LoveSac 3 + Ottoman (L)':'LoveSac 4×1 (deep 4th)', lblX, lblY);
+    ctx.fillText(isOttoman?'LoveSac 3 + Ottoman (L)':'LoveSac 4×1', lblX, lblY);
     ctx.font='8px sans-serif'; ctx.fillStyle='#a9a08c';
-    ctx.fillText('117″ × 64″  ·  faces east →', lblX, lblY+12);
+    ctx.fillText('faces east →', lblX, lblY+12);
+  }
+  // east arrow at ottoman row
+  if(isOttoman){
+    const ax=lpx(sacX+DEPTH_OTT)+6, ay=lpy(sacY+2.5*SEAT_N);
+    ctx.save(); ctx.strokeStyle='#b8a070'; ctx.fillStyle='#b8a070'; ctx.lineWidth=1.2;
+    ln(ctx, ax, ay, ax+20, ay);
+    ctx.beginPath(); ctx.moveTo(ax+20,ay); ctx.lineTo(ax+14,ay-4); ctx.lineTo(ax+14,ay+4); ctx.closePath(); ctx.fill();
+    ctx.restore();
   }
 
-  // ── BILLY CORNER BOOKCASES (53½ × 53½ L, 11″ deep) ──
+  // ── SLIDING GLASS DOOR (north wall) ──
+  {
+    const sd1=lpx(SGD_W), sd2=lpx(SGD_E), sdD=f(4/12), pw=(sd2-sd1)/2;
+    ctx.fillStyle='rgba(150,205,230,0.5)'; ctx.fillRect(sd1, lpy(0), sd2-sd1, sdD);
+    ctx.strokeStyle='#6899b8'; ctx.lineWidth=1;
+    ctx.strokeRect(sd1, lpy(0), pw, sdD);
+    ctx.strokeRect(sd1+pw*0.5, lpy(0), pw, sdD);
+    ctx.fillStyle='#4a7ea0'; ctx.font='7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('sliding glass door', (sd1+sd2)/2, lpy(0)+sdD+9);
+  }
+
+  // ── BILLY CORNER BOOKCASES — NE + SE (east wall) ──
   function bcLeg(x,y,w,h){ box(ctx, lpx(x), lpy(y), f(w), f(h), P.bc, P.bcS, 1.2); }
   function bcLabel(x,y){
     ctx.fillStyle='#6a4f2a'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
@@ -735,33 +760,50 @@ function drawFamily(){
     ctx.fillText('corner', lpx(x), lpy(y)+9);
   }
   // NE (top-right): legs along north + east walls
-  bcLeg(FRW-BC_LEG, 0, BC_LEG, BC_DEP);
-  bcLeg(FRW-BC_DEP, 0, BC_DEP, BC_LEG);
-  bcLabel(FRW-BC_LEG/2+0.3, BC_DEP+0.8);
-  // SW (bottom-left): legs along south + west walls
-  bcLeg(0, FRH-BC_DEP, BC_LEG, BC_DEP);
-  bcLeg(0, FRH-BC_LEG, BC_DEP, BC_LEG);
-  bcLabel(BC_LEG/2-0.3, FRH-BC_DEP-0.6);
+  bcLeg(TOTW-BC_LEG, 0, BC_LEG, BC_DEP);
+  bcLeg(TOTW-BC_DEP, 0, BC_DEP, BC_LEG);
+  bcLabel(TOTW-BC_DEP-1.05, BC_LEG*0.5);
+  // SE (bottom-right): legs along south + east walls
+  bcLeg(TOTW-BC_LEG, FRH-BC_DEP, BC_LEG, BC_DEP);
+  bcLeg(TOTW-BC_DEP, FRH-BC_LEG, BC_DEP, BC_LEG);
+  bcLabel(TOTW-BC_DEP-1.05, FRH-BC_LEG*0.5);
 
-  // ── MEDIA WALL / TV (east) ──
-  {
-    const ezX=lpx(FRW)-f(1.15), ezY=lpy(FRH/2);
-    ctx.fillStyle='#9a9080'; ctx.font='italic 9px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('media wall / TV', ezX, ezY-5);
-    ctx.fillText('(east wall)', ezX, ezY+8);
+  // slider ↔ NE bookcase conflict (north leg vs slider — only 42½" of wall)
+  const bcSliderClash = SGD_E > TOTW-BC_LEG;
+  if(bcSliderClash){
+    const ox1=lpx(TOTW-BC_LEG), ox2=lpx(SGD_E);
+    ctx.save();
+    ctx.fillStyle='rgba(224,80,80,0.20)'; ctx.fillRect(ox1, lpy(0), ox2-ox1, f(BC_DEP));
+    ctx.strokeStyle='#e05050'; ctx.lineWidth=0.9; ctx.setLineDash([3,2]);
+    ctx.strokeRect(ox1, lpy(0), ox2-ox1, f(BC_DEP)); ctx.setLineDash([]);
+    ctx.fillStyle='#d23030'; ctx.font='bold 7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('⚠ slider', (ox1+ox2)/2, lpy(BC_DEP)+9); ctx.restore();
   }
 
-  // ── WALLS ──
+  // ── WALLS (north wall split around slider) ──
   ctx.strokeStyle=P.ext; ctx.lineWidth=3;
-  ctx.strokeRect(lpx(0), lpy(0), f(FRW), f(FRH));
+  ln(ctx, lpx(0),     lpy(0), lpx(SGD_W), lpy(0));
+  ln(ctx, lpx(SGD_E), lpy(0), lpx(TOTW),  lpy(0));
+  ln(ctx, lpx(TOTW), lpy(0), lpx(TOTW), lpy(FRH));
+  ln(ctx, lpx(0),    lpy(0), lpx(0),    lpy(FRH));
+  ln(ctx, lpx(0),    lpy(FRH), lpx(TOTW), lpy(FRH));
 
   // ── ROOM DIMENSIONS ──
-  dimAnnot(ctx, lpx(0), FROY-16, lpx(FRW), FROY-16, '8ʹ6½″ (102½″)');
-  dimAnnot(ctx, lpx(FRW)+18, lpy(0), lpx(FRW)+18, lpy(FRH), '15ʹ2″ (182″)');
+  dimAnnot(ctx, lpx(0),       FROY-36, lpx(TOTW),  FROY-36, "11′-6½″ (138½″)");
+  dimAnnot(ctx, lpx(0),       FROY-20, lpx(HALLW), FROY-20, "3′-0″");
+  dimAnnot(ctx, lpx(HALLW),   FROY-20, lpx(TOTW),  FROY-20, "102½″");
+  dimAnnot(ctx, lpx(SGD_E),   FROY-4,  lpx(TOTW),  FROY-4,  "3′-6½″");
+  dimAnnot(ctx, lpx(TOTW)+20, lpy(0),  lpx(TOTW)+20, lpy(FRH), "15′-2″ (182″)");
 
-  // ── BOOKCASE LEG DIMS ──
-  dimAnnot(ctx, lpx(FRW-BC_LEG), FROY-2, lpx(FRW), FROY-2, '53½″');
-  dimAnnot(ctx, lpx(0), lpy(FRH)+14, lpx(BC_LEG), lpy(FRH)+14, '53½″');
+  // ── SOFA DIMENSIONS ──
+  dimAnnot(ctx, lpx(sacX)-13, lpy(sacY), lpx(sacX)-13, lpy(sacY+SAC_N), "110″");                 // length
+  dimAnnot(ctx, lpx(sacX), lpy(sacY)-12, lpx(sacX+DEPTH_MAIN), lpy(sacY)-12, "35″");             // seat depth
+  if(isOttoman) dimAnnot(ctx, lpx(sacX), lpy(sacY+sofaLen)+13, lpx(sacX+DEPTH_OTT), lpy(sacY+sofaLen)+13, "64″");  // ottoman depth
+
+  // ── BOOKCASE DIMENSIONS ──
+  dimAnnot(ctx, lpx(TOTW)+5, lpy(0), lpx(TOTW)+5, lpy(BC_LEG), "53½″");                          // NE east leg
+  dimAnnot(ctx, lpx(TOTW-BC_DEP), lpy(BC_LEG)+11, lpx(TOTW), lpy(BC_LEG)+11, "11″");             // depth
+  dimAnnot(ctx, lpx(TOTW-BC_LEG), lpy(FRH)+14, lpx(TOTW), lpy(FRH)+14, "53½″");                  // SE south leg
 
   // ── FRONT CLEARANCE (sofa → east wall) ──
   function clr(x1, x2, y, label, col){
@@ -771,28 +813,36 @@ function drawFamily(){
     ctx.fillStyle=col; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
     ctx.fillText(label, (x1+x2)/2, y-6); ctx.restore();
   }
-  clr(lpx(sacX+DEPTH_MAIN), lpx(FRW), lpy(sacY+SEAT_W*0.5), '61½″ clear', '#cc8844');
-  clr(lpx(sacX+CHAISE),     lpx(FRW), lpy(sacY+SEAT_W*3.5), '38½″',       '#e05050');
+  clr(lpx(sacX+DEPTH_MAIN), lpx(TOTW), lpy(sacY+SEAT_N*0.5), "67½″ clear", '#cc8844');
+  if(isOttoman) clr(lpx(sacX+DEPTH_OTT), lpx(TOTW), lpy(sacY+SEAT_N*2.5), "38½″", '#e05050');
 
-  // ── GAP: sofa ↔ SW bookcase ──
+  // ── SLIDER → SOFA gap (vertical, north wall to sofa) ──
   {
-    const gx=lpx(0)+5, y1=lpy(sacY+SAC_N), y2=lpy(FRH-BC_LEG);
-    ctx.save(); ctx.strokeStyle='#2a8a4a'; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
+    const gx=lpx(sacX+DEPTH_MAIN+0.2), y1=lpy(0), y2=lpy(sacY);
+    ctx.save(); ctx.strokeStyle='#3a7ad0'; ctx.lineWidth=0.9; ctx.setLineDash([3,3]);
     ln(ctx, gx, y1, gx, y2); ctx.setLineDash([]);
     ln(ctx, gx-4, y1, gx+4, y1); ln(ctx, gx-4, y2, gx+4, y2);
-    ctx.fillStyle='#2a8a4a'; ctx.font='bold 7px sans-serif'; ctx.textAlign='left';
-    ctx.fillText('5¾″', gx+5, (y1+y2)/2+3); ctx.restore();
+    ctx.fillStyle='#3a7ad0'; ctx.font='bold 8px sans-serif'; ctx.textAlign='left';
+    ctx.fillText("3′-0″ to sofa", gx+5, (y1+y2)/2+3); ctx.restore();
+  }
+
+  // ── MEDIA WALL / TV (east) ──
+  {
+    const ezX=lpx(TOTW)-f(1.25), ezY=lpy(FRH*0.5);
+    ctx.fillStyle='#9a9080'; ctx.font='italic 9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('media wall / TV', ezX, ezY-5);
+    ctx.fillText('(east wall)', ezX, ezY+8);
   }
 
   // ── LABELS ──
-  ctx.fillStyle='#222'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left';
-  ctx.fillText('Family Room', lpx(0)+8, lpy(0)+16);
+  ctx.fillStyle='#222'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Family Room', lpx(HALLW + ROOMW*0.48), lpy(FRH*0.88));
   ctx.fillStyle='#999'; ctx.font='9px sans-serif';
-  ctx.fillText('107 · ~'+SF+' SF', lpx(0)+8, lpy(0)+29);
+  ctx.fillText('107 · 190 SF (plan)', lpx(HALLW + ROOMW*0.48), lpy(FRH*0.88)+13);
 
   // ── NORTH ARROW ──
   {
-    const nx=lpx(FRW)-14, ny=lpy(FRH)+42;
+    const nx=lpx(TOTW)-14, ny=lpy(FRH)+46;
     ctx.save(); ctx.strokeStyle='#555'; ctx.fillStyle='#555'; ctx.lineWidth=1.5;
     ln(ctx, nx, ny, nx-26, ny);
     ctx.beginPath(); ctx.moveTo(nx-26,ny); ctx.lineTo(nx-20,ny-5); ctx.lineTo(nx-20,ny+5); ctx.closePath(); ctx.fill();
@@ -802,15 +852,18 @@ function drawFamily(){
 
   // Title
   ctx.fillStyle='#444'; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('461 Anderson — family room', lpx(FRW/2), FROY-44);
+  ctx.fillText('461 Anderson — family room', lpx(TOTW/2), FROY-62);
   ctx.fillStyle='#aaa'; ctx.font='10px sans-serif';
-  ctx.fillText('scale: 1 ft = 22 px  ·  not for permitting', lpx(FRW/2), FROY-29);
+  ctx.fillText('scale: 1 ft = 22 px  ·  not for permitting', lpx(TOTW/2), FROY-50);
 
   // Info bar
-  const label = isOttoman ? '3 + Ottoman (L)' : '4×1 (deep 4th)';
+  const label = isOttoman ? '3 + Ottoman (L)' : '4×1';
+  const bcNote = bcSliderClash
+    ? 'Billy SE ✓ · Billy NE ⚠ north leg overlaps slider ~11″'
+    : 'Billy NE + SE ✓';
   document.getElementById('inf').innerHTML =
-    `<b>LoveSac ${label} — 117″×64″</b> &nbsp;·&nbsp; front clear: <b>61½″</b> seats / <b>38½″</b> chaise &nbsp;·&nbsp; ` +
-    `Billy NE ✓ &nbsp; Billy SW ✓ <span style="color:#999">(sofa shifted ~27″ N to clear)</span>`;
+    `<b>LoveSac ${label} — 110″×64″</b> &nbsp;·&nbsp; front clear <b>67½″</b> seats / <b>38½″</b> ottoman &nbsp;·&nbsp; ` +
+    `${bcNote} &nbsp;·&nbsp; <span style="color:#999">3′ hallway kept</span>`;
 }
 
 draw();
