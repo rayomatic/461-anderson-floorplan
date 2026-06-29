@@ -32,16 +32,17 @@ footer{font-size:11px;color:#bbb;margin-top:4px}
   <button class="tab"    onclick="setView('family')" id="tabFamily">Family Room</button>
 </div>
 <div id="ctrl">
-  <span class="lbl">PB Comfort sofa:</span>
-  <button class="b"    onclick="go(78)"  id="b78">78"</button>
-  <button class="b on" onclick="go(87)"  id="b87">87"</button>
-  <button class="b"    onclick="go(98)"  id="b98">98"</button>
-  <button class="b"    onclick="go(115)" id="b115">115"</button>
+  <span class="lbl">Sloan accent chairs:</span>
+  <button class="b on" onclick="setChair('angled')" id="bChairAng">Angled 45°</button>
+  <button class="b"    onclick="setChair('facing')" id="bChairFace">Face sofa</button>
 </div>
 <div id="ctrl-family" style="display:none">
-  <span class="lbl">Sactional config:</span>
+  <span class="lbl">Sactional:</span>
   <button class="b on" onclick="setSac('ottoman')" id="bSacOtt">3 + ottoman (L)</button>
-  <button class="b"    onclick="setSac('deep4')"   id="bSacDeep">4×1 (deep 4th)</button>
+  <button class="b"    onclick="setSac('deep4')"   id="bSacDeep">4×1</button>
+  <span class="lbl" style="margin-left:12px">Billy:</span>
+  <button class="b on" onclick="setBC('corner')"   id="bBCcorner">Corner 53½″</button>
+  <button class="b"    onclick="setBC('straight')" id="bBCstraight">Straight 31½″</button>
 </div>
 <div id="inf"></div>
 <canvas id="c"></canvas>
@@ -189,15 +190,16 @@ const P={
   dim:    '#888',
 };
 
-let curSofa = 87;
+const curSofa = 87;        // 87" PB Comfort sofa (purchased)
 let curView = 'living';
 let curSac  = 'ottoman';   // 'ottoman' = 3 + ottoman L; 'deep4' = 4×1 with deep 4th cushion
+let curBC   = 'corner';    // 'corner' = Billy corner 53½×53½ L; 'straight' = Billy 31½ straight
+let curChair = 'angled';   // 'angled' = 45° flanking; 'facing' = squared, facing the sofa
 
-function go(s){
-  curSofa = s;
-  [78,87,98,115].forEach(x=>{
-    document.getElementById('b'+x).className = 'b' + (x===s?' on':'');
-  });
+function setChair(c){
+  curChair = c;
+  document.getElementById('bChairAng').className  = 'b' + (c==='angled'?' on':'');
+  document.getElementById('bChairFace').className = 'b' + (c==='facing'?' on':'');
   draw();
 }
 
@@ -205,6 +207,13 @@ function setSac(c){
   curSac = c;
   document.getElementById('bSacOtt').className  = 'b' + (c==='ottoman'?' on':'');
   document.getElementById('bSacDeep').className = 'b' + (c==='deep4'  ?' on':'');
+  draw();
+}
+
+function setBC(b){
+  curBC = b;
+  document.getElementById('bBCcorner').className   = 'b' + (b==='corner'  ?' on':'');
+  document.getElementById('bBCstraight').className = 'b' + (b==='straight'?' on':'');
   draw();
 }
 
@@ -440,19 +449,31 @@ function drawLiving(){
     ctx.restore();
   }
 
-  const acNX = ctX - acOff;
-  const acNY = Math.max(ctY - acOff, py(EGRESS) + acHalf);   // push S so chair clears egress
-  const acSX = ctX - acOff,  acSY = ctY + ctH + acOff;
-  drawAccentChair(ctx, acNX, acNY, -Math.PI/4,   acW, acD);   // N — back NW, seat SE
-  drawAccentChair(ctx, acSX, acSY, -3*Math.PI/4, acW, acD);   // S — back SW, seat NE
-
-  // North chair clears the slider
-  ctx.fillStyle='#2a8a4a'; ctx.font='italic 7px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('↑ clears slider', acNX, acNY-acHalf-3);
-
-  // Label
-  ctx.fillStyle=P.dim; ctx.font='8px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('Sloan chairs', (acNX+acSX)/2, (acNY+acSY)/2);
+  if(curChair === 'facing'){
+    // Squared, facing EAST toward the sofa; flank the coffee table N/S
+    const ang = -Math.PI/2;
+    const cx  = ctX - f(0.6) - acD/2;                 // just west of coffee table
+    let nY = py(imY - 2.0);
+    nY = Math.max(nY, py(EGRESS) + acW/2);            // clear egress
+    const sY = py(imY + 2.0);
+    drawAccentChair(ctx, cx, nY, ang, acW, acD);
+    drawAccentChair(ctx, cx, sY, ang, acW, acD);
+    ctx.fillStyle='#2a8a4a'; ctx.font='italic 7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('→ face sofa', cx, nY-acW/2-3);
+    ctx.fillStyle=P.dim; ctx.font='8px sans-serif';
+    ctx.fillText('Sloan chairs', cx, (nY+sY)/2);
+  } else {
+    // Angled 45° flanking the coffee-table corners (north chair clamped clear of egress)
+    const acNX = ctX - acOff;
+    const acNY = Math.max(ctY - acOff, py(EGRESS) + acHalf);   // push S so chair clears egress
+    const acSX = ctX - acOff,  acSY = ctY + ctH + acOff;
+    drawAccentChair(ctx, acNX, acNY, -Math.PI/4,   acW, acD);   // N — back NW, seat SE
+    drawAccentChair(ctx, acSX, acSY, -3*Math.PI/4, acW, acD);   // S — back SW, seat NE
+    ctx.fillStyle='#2a8a4a'; ctx.font='italic 7px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('↑ clears slider', acNX, acNY-acHalf-3);
+    ctx.fillStyle=P.dim; ctx.font='8px sans-serif';
+    ctx.fillText('Sloan chairs', (acNX+acSX)/2, (acNY+acSY)/2);
+  }
 
   // ── DINING TABLE + 6 CHAIRS — rotated 90°: 5ft E-W × 2.67ft N-S ──
   const dtW=f(5), dtH=f(2.67);
@@ -612,8 +633,11 @@ function drawLiving(){
   const nc  = (imY - curSofa/24).toFixed(1);
   const sc  = (LH  - imY - curSofa/24).toFixed(1);
   const aisle = (ISL_X - CTR_D).toFixed(1);
+  const chairNote = (curChair==='facing')
+    ? 'chairs face sofa (squared — frees ~6″ toward island)'
+    : 'chairs angled 45°';
   document.getElementById('inf').innerHTML =
-    `<b>${curSofa}" sofa</b> &nbsp;·&nbsp; N clearance: <b>${nc}ʹ</b> &nbsp;·&nbsp; S clearance: <b>${sc}ʹ</b> &nbsp;·&nbsp; kitchen aisle: <b>${aisle}ʹ</b>`;
+    `<b>${curSofa}" sofa</b> &nbsp;·&nbsp; N clr <b>${nc}ʹ</b> &nbsp;·&nbsp; S clr <b>${sc}ʹ</b> &nbsp;·&nbsp; aisle <b>${aisle}ʹ</b> &nbsp;·&nbsp; <span style="color:#999">${chairNote}</span>`;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -654,7 +678,7 @@ function drawFamily(){
 
   // ── CANVAS ──
   const FROX = 76, FROY = 108;
-  const cW = FROX + f(TOTW) + 100;
+  const cW = FROX + f(TOTW) + 118;
   const cH = FROY + f(FRH) + 100;
   const cv = document.getElementById('c');
   const dpr = window.devicePixelRatio || 1;
@@ -751,25 +775,36 @@ function drawFamily(){
     ctx.fillText('sliding glass door', (sd1+sd2)/2, lpy(0)+sdD+9);
   }
 
-  // ── BILLY CORNER BOOKCASES — NE + SE (east wall) ──
-  function bcLeg(x,y,w,h){ box(ctx, lpx(x), lpy(y), f(w), f(h), P.bc, P.bcS, 1.2); }
-  function bcLabel(x,y){
+  // ── BILLY BOOKCASES — NE + SE (east wall); toggle corner vs straight, both 11″ deep ──
+  const isCorner = (curBC === 'corner');
+  const BC_W = 31.5/12;   // straight Billy width (along the wall)
+  function bcRect(x,y,w,h){ box(ctx, lpx(x), lpy(y), f(w), f(h), P.bc, P.bcS, 1.2); }
+  function bcLabel(x,y,t){
     ctx.fillStyle='#6a4f2a'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
     ctx.fillText('Billy', lpx(x), lpy(y));
     ctx.fillStyle='#8a7048'; ctx.font='7px sans-serif';
-    ctx.fillText('corner', lpx(x), lpy(y)+9);
+    ctx.fillText(t, lpx(x), lpy(y)+9);
   }
-  // NE (top-right): legs along north + east walls
-  bcLeg(TOTW-BC_LEG, 0, BC_LEG, BC_DEP);
-  bcLeg(TOTW-BC_DEP, 0, BC_DEP, BC_LEG);
-  bcLabel(TOTW-BC_DEP-1.05, BC_LEG*0.5);
-  // SE (bottom-right): legs along south + east walls
-  bcLeg(TOTW-BC_LEG, FRH-BC_DEP, BC_LEG, BC_DEP);
-  bcLeg(TOTW-BC_DEP, FRH-BC_LEG, BC_DEP, BC_LEG);
-  bcLabel(TOTW-BC_DEP-1.05, FRH-BC_LEG*0.5);
+  let bcSliderClash = false;
+  if(isCorner){
+    // NE (top-right): legs along north + east walls
+    bcRect(TOTW-BC_LEG, 0, BC_LEG, BC_DEP);
+    bcRect(TOTW-BC_DEP, 0, BC_DEP, BC_LEG);
+    bcLabel(TOTW-BC_DEP-1.05, BC_LEG*0.5, 'corner');
+    // SE (bottom-right): legs along south + east walls
+    bcRect(TOTW-BC_LEG, FRH-BC_DEP, BC_LEG, BC_DEP);
+    bcRect(TOTW-BC_DEP, FRH-BC_LEG, BC_DEP, BC_LEG);
+    bcLabel(TOTW-BC_DEP-1.05, FRH-BC_LEG*0.5, 'corner');
+    bcSliderClash = SGD_E > TOTW-BC_LEG;   // north leg vs slider
+  } else {
+    // Straight Billy 31½″W × 11″D against the east wall, top + bottom
+    bcRect(TOTW-BC_DEP, 0,        BC_DEP, BC_W);
+    bcLabel(TOTW-BC_DEP-1.0, BC_W*0.5, '31½″');
+    bcRect(TOTW-BC_DEP, FRH-BC_W, BC_DEP, BC_W);
+    bcLabel(TOTW-BC_DEP-1.0, FRH-BC_W*0.5, '31½″');
+  }
 
-  // slider ↔ NE bookcase conflict (north leg vs slider — only 42½" of wall)
-  const bcSliderClash = SGD_E > TOTW-BC_LEG;
+  // slider ↔ NE corner bookcase conflict (north leg vs slider — only 42½" of wall)
   if(bcSliderClash){
     const ox1=lpx(TOTW-BC_LEG), ox2=lpx(SGD_E);
     ctx.save();
@@ -793,17 +828,21 @@ function drawFamily(){
   dimAnnot(ctx, lpx(0),       FROY-20, lpx(HALLW), FROY-20, "3′-0″");
   dimAnnot(ctx, lpx(HALLW),   FROY-20, lpx(TOTW),  FROY-20, "102½″");
   dimAnnot(ctx, lpx(SGD_E),   FROY-4,  lpx(TOTW),  FROY-4,  "3′-6½″");
-  dimAnnot(ctx, lpx(TOTW)+20, lpy(0),  lpx(TOTW)+20, lpy(FRH), "15′-2″ (182″)");
+  dimAnnot(ctx, lpx(TOTW)+34, lpy(0),  lpx(TOTW)+34, lpy(FRH), "15′-2″ (182″)");
 
   // ── SOFA DIMENSIONS ──
   dimAnnot(ctx, lpx(sacX)-13, lpy(sacY), lpx(sacX)-13, lpy(sacY+SAC_N), "110″");                 // length
   dimAnnot(ctx, lpx(sacX), lpy(sacY)-12, lpx(sacX+DEPTH_MAIN), lpy(sacY)-12, "35″");             // seat depth
   if(isOttoman) dimAnnot(ctx, lpx(sacX), lpy(sacY+sofaLen)+13, lpx(sacX+DEPTH_OTT), lpy(sacY+sofaLen)+13, "64″");  // ottoman depth
 
-  // ── BOOKCASE DIMENSIONS ──
-  dimAnnot(ctx, lpx(TOTW)+5, lpy(0), lpx(TOTW)+5, lpy(BC_LEG), "53½″");                          // NE east leg
-  dimAnnot(ctx, lpx(TOTW-BC_DEP), lpy(BC_LEG)+11, lpx(TOTW), lpy(BC_LEG)+11, "11″");             // depth
-  dimAnnot(ctx, lpx(TOTW-BC_LEG), lpy(FRH)+14, lpx(TOTW), lpy(FRH)+14, "53½″");                  // SE south leg
+  // ── BOOKCASE DIMENSIONS (both versions 11″ deep) ──
+  {
+    const bcLen = isCorner ? BC_LEG : BC_W;
+    const bcLbl = isCorner ? "53½″" : "31½″";
+    dimAnnot(ctx, lpx(TOTW)+5, lpy(0), lpx(TOTW)+5, lpy(bcLen), bcLbl);                 // NE along east wall
+    dimAnnot(ctx, lpx(TOTW-BC_DEP), lpy(bcLen)+11, lpx(TOTW), lpy(bcLen)+11, "11″");    // depth (11″)
+    dimAnnot(ctx, lpx(TOTW)+5, lpy(FRH-bcLen), lpx(TOTW)+5, lpy(FRH), bcLbl);           // SE along east wall
+  }
 
   // ── FRONT CLEARANCE (sofa → east wall) ──
   function clr(x1, x2, y, label, col){
@@ -826,12 +865,17 @@ function drawFamily(){
     ctx.fillText("3′-0″ to sofa", gx+5, (y1+y2)/2+3); ctx.restore();
   }
 
-  // ── MEDIA WALL / TV (east) ──
+  // ── 55" TV — center of east (far-right) wall; 55" is diagonal → ≈48½" wide ──
   {
-    const ezX=lpx(TOTW)-f(1.25), ezY=lpy(FRH*0.5);
-    ctx.fillStyle='#9a9080'; ctx.font='italic 9px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('media wall / TV', ezX, ezY-5);
-    ctx.fillText('(east wall)', ezX, ezY+8);
+    const tvW = 48.5/12, tvD = 4/12;          // ~48½" wide × ~4" deep on the wall
+    const tvY1 = (FRH - tvW)/2;
+    box(ctx, lpx(TOTW-tvD), lpy(tvY1), f(tvD), f(tvW), '#2b2b2b', '#000', 1.3);
+    dimAnnot(ctx, lpx(TOTW)+5, lpy(tvY1), lpx(TOTW)+5, lpy(tvY1+tvW), '48½″');
+    ctx.textAlign='right';
+    ctx.fillStyle='#333'; ctx.font='bold 9px sans-serif';
+    ctx.fillText('55″ TV', lpx(TOTW-tvD)-4, lpy(FRH*0.5)-1);
+    ctx.fillStyle='#9a9080'; ctx.font='italic 7px sans-serif';
+    ctx.fillText('48½″ wide · east wall', lpx(TOTW-tvD)-4, lpy(FRH*0.5)+9);
   }
 
   // ── LABELS ──
@@ -858,12 +902,13 @@ function drawFamily(){
 
   // Info bar
   const label = isOttoman ? '3 + Ottoman (L)' : '4×1';
-  const bcNote = bcSliderClash
-    ? 'Billy SE ✓ · Billy NE ⚠ north leg overlaps slider ~11″'
-    : 'Billy NE + SE ✓';
+  const bcName = isCorner ? 'Billy corner 53½×53½ (11″D)' : 'Billy straight 31½″ (11″D)';
+  const bcNote = isCorner
+    ? (bcSliderClash ? 'NE ⚠ overlaps slider ~11″ · SE ✓' : 'NE + SE ✓')
+    : 'NE + SE ✓ — clears slider';
   document.getElementById('inf').innerHTML =
     `<b>LoveSac ${label} — 110″×64″</b> &nbsp;·&nbsp; front clear <b>67½″</b> seats / <b>38½″</b> ottoman &nbsp;·&nbsp; ` +
-    `${bcNote} &nbsp;·&nbsp; <span style="color:#999">3′ hallway kept</span>`;
+    `<b>${bcName}</b>: ${bcNote} &nbsp;·&nbsp; <span style="color:#999">3′ hall kept</span>`;
 }
 
 draw();
