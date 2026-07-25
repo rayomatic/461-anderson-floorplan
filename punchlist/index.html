@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>461 Anderson St — Punch List</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --card: #ffffff; --ink: #1e2430; --muted: #67707f;
+    --line: #e3e1db; --accent: #1f4e79; --accent-ink: #ffffff;
+    --done: #2e7d32; --chip: #eef1f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171c; --card: #1d2129; --ink: #e8eaee; --muted: #9aa3b0;
+      --line: #2c313a; --accent: #6ea8d8; --accent-ink: #10151c;
+      --done: #7bc47f; --chip: #262c36;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  header {
+    background: var(--accent); color: var(--accent-ink);
+    padding: 18px 16px 14px;
+  }
+  header h1 { margin: 0; font-size: 19px; letter-spacing: .2px; }
+  header .sub { opacity: .85; font-size: 13px; margin-top: 2px; }
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .stat {
+    background: rgba(255,255,255,.14); border-radius: 8px;
+    padding: 4px 10px; font-size: 12.5px;
+  }
+  @media (prefers-color-scheme: dark) { .stat { background: rgba(0,0,0,.25); } }
+  .stat b { font-size: 14px; }
+  .toolbar {
+    position: sticky; top: 0; z-index: 5; background: var(--bg);
+    padding: 10px 16px; border-bottom: 1px solid var(--line);
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .toolbar select, .toolbar input[type=search] {
+    font: inherit; font-size: 13.5px; color: var(--ink);
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 8px; padding: 6px 8px;
+  }
+  .toolbar input[type=search] { flex: 1 1 140px; min-width: 120px; }
+  .toolbar label.hide-done {
+    font-size: 13px; color: var(--muted); display: flex; gap: 5px; align-items: center;
+    user-select: none; cursor: pointer;
+  }
+  main { max-width: 780px; margin: 0 auto; padding: 14px 12px 60px; }
+  section.loc { margin-bottom: 18px; }
+  .loc h2 {
+    font-size: 14px; text-transform: uppercase; letter-spacing: .8px;
+    color: var(--muted); margin: 14px 4px 8px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .loc h2 .n { font-weight: normal; font-size: 12px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    overflow: hidden;
+  }
+  .row {
+    display: flex; gap: 10px; padding: 11px 12px; align-items: flex-start;
+    border-top: 1px solid var(--line); cursor: pointer;
+  }
+  .row:first-child { border-top: none; }
+  .row input[type=checkbox] {
+    width: 19px; height: 19px; margin: 2px 0 0; flex: none; accent-color: var(--done);
+    cursor: pointer;
+  }
+  .row .body { flex: 1; min-width: 0; }
+  .row .desc { }
+  .row .notes { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+  .row .meta { margin-top: 5px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px;
+    background: var(--chip); color: var(--muted); white-space: nowrap;
+  }
+  .badge.cat { color: var(--accent); font-weight: 600; }
+  @media (prefers-color-scheme: dark) { .badge.cat { color: var(--accent); } }
+  .row.done .desc, .row.done .notes { text-decoration: line-through; opacity: .5; }
+  .row.done .badge { opacity: .5; }
+  .empty { text-align: center; color: var(--muted); padding: 40px 0; }
+  footer { text-align: center; font-size: 12px; color: var(--muted); padding: 20px; }
+  @media print {
+    .toolbar, header .stats { display: none; }
+    header { background: none; color: var(--ink); border-bottom: 2px solid var(--ink); }
+    .card, .row { break-inside: avoid; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>461 Anderson Street — Renovation Punch List</h1>
+  <div class="sub">Grouped by location, then by trade</div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<div class="toolbar">
+  <input type="search" id="q" placeholder="Search items…">
+  <select id="fLoc"><option value="">All locations</option></select>
+  <select id="fCat"><option value="">All trades</option></select>
+  <label class="hide-done"><input type="checkbox" id="hideDone"> Hide done</label>
+</div>
+
+<main id="list"></main>
+<footer>Check-offs are saved on this device. Last list update: <span id="updated"></span></footer>
+
+<script>
+const UPDATED = "2026-07-25";
+const LOCATION_ORDER = ["Whole House","Exterior","Kitchen","Family Room","Sitting Room",
+  "Living Room","Dining","Powder Room","Downstairs Bathroom","Hallway","Linen Closet",
+  "Laundry Room","Upstairs Bathroom","Concierge Bathroom","Primary Bedroom","Bedroom 1",
+  "Bedroom 2","Study/Den","Attic","Garage","Bath 1"];
+
+const DATA = [
+ {"location":"Kitchen","category":"Electrical","item":"Install power receptacles on both sides of the kitchen island","notes":""},
+ {"location":"Kitchen","category":"Electrical","item":"Replace pendant light bulbs with rounded white globe bulbs","notes":"Bulbs need to be purchased first"},
+ {"location":"Family Room","category":"Electrical","item":"Put all interior lights on dimmers - the light in front of the bathroom is currently not on a dimmer","notes":""},
+ {"location":"Family Room","category":"Electrical","item":"Change exterior light from dimmer to standard on/off switch","notes":"Currently on a dimmer"},
+ {"location":"Family Room","category":"Painting","item":"Repaint to cover up plaster touch-ups","notes":""},
+ {"location":"Family Room","category":"Windows & Doors","item":"Remove tape from top of the door between bedroom and family room, including the rail guide at the top","notes":""},
+ {"location":"Sitting Room","category":"Electrical","item":"Find and install slope-ceiling adapter from Wayfair","notes":"Adapter needs to be located first"},
+ {"location":"Sitting Room","category":"Electrical","item":"Install reading light in the corner","notes":""},
+ {"location":"Powder Room","category":"General Contractor","item":"Set up powder room (general)","notes":""},
+ {"location":"Downstairs Bathroom","category":"Drywall","item":"Fill in sheetrock in the area under the medicine cabinet","notes":""},
+ {"location":"Downstairs Bathroom","category":"General Contractor","item":"Remove protective film from the medicine cabinet - still on, making the mirror look dark","notes":""},
+ {"location":"Downstairs Bathroom","category":"Painting","item":"Clean up pencil lines above the medicine cabinet","notes":""},
+ {"location":"Hallway","category":"Electrical","item":"Change front foyer exterior light from dimmer to standard on/off switch","notes":"Front foyer"},
+ {"location":"Hallway","category":"Painting","item":"Apply another coat of stain to handrail - darker, to closer match the treads","notes":""},
+ {"location":"Linen Closet","category":"Carpentry","item":"Install closet poles","notes":"Poles expected to arrive Mon Jul 27"},
+ {"location":"Laundry Room","category":"Carpentry","item":"Install tools on the upper cabinet","notes":"Arriving Mon Jul 27"},
+ {"location":"Upstairs Bathroom","category":"Electrical","item":"Fix vanity light - flickers when turned on","notes":""},
+ {"location":"Upstairs Bathroom","category":"Electrical","item":"Put both light switches on occupancy sensors - remove the switch with the 60-minute timer","notes":""},
+ {"location":"Upstairs Bathroom","category":"Electrical","item":"Replace 2700K vanity bulb with 4000K (cool white), 60W equivalent - current warm color not liked","notes":"Buy: 4000K, ~800 lumens (60W equivalent), E26 base. Current bulb is only 450 lm (~40W equiv)"},
+ {"location":"Upstairs Bathroom","category":"General Contractor","item":"Install medicine cabinet","notes":"Cabinet arriving Mon Jul 27"},
+ {"location":"Concierge Bathroom","category":"Electrical","item":"Put both switches on vacancy sensors","notes":"Dimmer already removed"},
+ {"location":"Primary Bedroom","category":"Electrical","item":"Replace on/off switch with Aqara dimmer","notes":"Aqara dimmer already purchased"},
+ {"location":"Bedroom 1","category":"Electrical","item":"Install lighting inside closet","notes":""},
+ {"location":"Bedroom 2","category":"Electrical","item":"Install lighting inside closet","notes":""},
+ {"location":"Attic","category":"HVAC","item":"Confirm HVAC is working - clear the error still showing on the HVAC/thermostat screen","notes":""},
+ {"location":"Attic","category":"HVAC","item":"Turn on whole-home dehumidifier, set to 45%, and confirm working","notes":""},
+ {"location":"Garage","category":"Carpentry","item":"Install shelving on north wall of garage","notes":""},
+ {"location":"Garage","category":"Carpentry","item":"Install one kitchen cabinet to the right of the existing one","notes":""},
+ {"location":"Garage","category":"Electrical","item":"Install missing plate over light switch (near garage door)","notes":""},
+ {"location":"Garage","category":"Garage Door","item":"Service garage door - very shaky as it starts, creaky as it stops","notes":""}
+];
+
+const KEY = "punchlist-461-anderson";
+const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+const idOf = it => it.location + "::" + it.item;
+DATA.forEach(it => { it.done = !!saved[idOf(it)]; });
+
+const $ = s => document.querySelector(s);
+const locSel = $("#fLoc"), catSel = $("#fCat");
+
+const locs = [...new Set(DATA.map(i => i.location))]
+  .sort((a,b) => LOCATION_ORDER.indexOf(a) - LOCATION_ORDER.indexOf(b));
+const cats = [...new Set(DATA.map(i => i.category))].sort();
+locs.forEach(l => locSel.add(new Option(l, l)));
+cats.forEach(c => catSel.add(new Option(c, c)));
+
+function save() {
+  const out = {};
+  DATA.forEach(it => { if (it.done) out[idOf(it)] = 1; });
+  localStorage.setItem(KEY, JSON.stringify(out));
+}
+
+function render() {
+  const q = $("#q").value.trim().toLowerCase();
+  const fl = locSel.value, fc = catSel.value, hd = $("#hideDone").checked;
+  const list = $("#list");
+  list.innerHTML = "";
+  let shown = 0;
+
+  locs.forEach(loc => {
+    if (fl && loc !== fl) return;
+    const items = DATA.filter(it =>
+      it.location === loc &&
+      (!fc || it.category === fc) &&
+      (!hd || !it.done) &&
+      (!q || (it.item + " " + it.notes + " " + it.category).toLowerCase().includes(q))
+    ).sort((a,b) => a.category.localeCompare(b.category));
+    if (!items.length) return;
+
+    const sec = document.createElement("section");
+    sec.className = "loc";
+    const doneCount = DATA.filter(i => i.location === loc && i.done).length;
+    const total = DATA.filter(i => i.location === loc).length;
+    sec.innerHTML = `<h2>${loc} <span class="n">${doneCount}/${total} done</span></h2>`;
+    const card = document.createElement("div");
+    card.className = "card";
+
+    items.forEach(it => {
+      shown++;
+      const row = document.createElement("div");
+      row.className = "row" + (it.done ? " done" : "");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = it.done;
+      const body = document.createElement("div");
+      body.className = "body";
+      body.innerHTML =
+        `<div class="desc">${esc(it.item)}</div>` +
+        (it.notes ? `<div class="notes">${esc(it.notes)}</div>` : "") +
+        `<div class="meta"><span class="badge cat">${esc(it.category)}</span></div>`;
+      row.append(cb, body);
+      const toggle = () => { it.done = !it.done; save(); render(); };
+      cb.addEventListener("click", e => { e.stopPropagation(); toggle(); });
+      row.addEventListener("click", e => { if (e.target !== cb) toggle(); });
+      card.appendChild(row);
+    });
+    sec.appendChild(card);
+    list.appendChild(sec);
+  });
+
+  if (!shown) list.innerHTML = `<div class="empty">No items match.</div>`;
+
+  const done = DATA.filter(i => i.done).length;
+  $("#stats").innerHTML =
+    `<span class="stat"><b>${DATA.length}</b> items</span>` +
+    `<span class="stat"><b>${DATA.length - done}</b> open</span>` +
+    `<span class="stat"><b>${done}</b> done</span>` +
+    `<span class="stat"><b>${locs.length}</b> locations</span>`;
+}
+
+function esc(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+["q","fLoc","fCat","hideDone"].forEach(id =>
+  $("#" + id).addEventListener(id === "q" ? "input" : "change", render));
+$("#updated").textContent = UPDATED;
+render();
+</script>
+</body>
+</html>
