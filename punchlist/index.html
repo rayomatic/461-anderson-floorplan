@@ -108,7 +108,7 @@
 </div>
 
 <main id="list"></main>
-<footer>Check-offs are saved on this device. Last list update: <span id="updated"></span></footer>
+<footer><span id="syncnote">Connecting…</span> Last list update: <span id="updated"></span></footer>
 
 <script>
 const UPDATED = "2026-07-25";
@@ -151,9 +151,43 @@ const DATA = [
 ];
 
 const KEY = "punchlist-461-anderson";
+const API = "/api/state";
+let synced = false;
 const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
 const idOf = it => it.location + "::" + it.item;
 DATA.forEach(it => { it.done = !!saved[idOf(it)]; });
+
+function setSyncNote(msg) { $("#syncnote").textContent = msg; }
+
+async function loadRemote() {
+  try {
+    const r = await fetch(API);
+    if (!r.ok) throw new Error("api " + r.status);
+    const remote = await r.json();
+    DATA.forEach(it => { it.done = !!remote[idOf(it)]; });
+    synced = true;
+    setSyncNote("Progress syncs across all devices.");
+    save();
+    render();
+  } catch (e) {
+    synced = false;
+    setSyncNote("Sync unavailable — progress saved on this device only.");
+  }
+}
+
+async function pushRemote(it) {
+  if (!synced) return;
+  try {
+    await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: idOf(it), done: it.done }),
+    });
+  } catch (e) {
+    synced = false;
+    setSyncNote("Sync unavailable — progress saved on this device only.");
+  }
+}
 
 const $ = s => document.querySelector(s);
 const locSel = $("#fLoc"), catSel = $("#fCat");
@@ -209,7 +243,7 @@ function render() {
         (it.notes ? `<div class="notes">${esc(it.notes)}</div>` : "") +
         `<div class="meta"><span class="badge cat">${esc(it.category)}</span></div>`;
       row.append(cb, body);
-      const toggle = () => { it.done = !it.done; save(); render(); };
+      const toggle = () => { it.done = !it.done; save(); pushRemote(it); render(); };
       cb.addEventListener("click", e => { e.stopPropagation(); toggle(); });
       row.addEventListener("click", e => { if (e.target !== cb) toggle(); });
       card.appendChild(row);
@@ -236,6 +270,8 @@ function esc(s) {
   $("#" + id).addEventListener(id === "q" ? "input" : "change", render));
 $("#updated").textContent = UPDATED;
 render();
+loadRemote();
+setInterval(loadRemote, 20000);
 </script>
 </body>
 </html>
