@@ -73,6 +73,7 @@
   }
   .row .body { flex: 1; min-width: 0; }
   .row .desc { }
+  .row .num { color: var(--muted); font-weight: 600; }
   .row .notes { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
   .row .meta { margin-top: 5px; display: flex; gap: 6px; flex-wrap: wrap; }
   .badge {
@@ -118,35 +119,35 @@ const LOCATION_ORDER = ["Whole House","Exterior","Kitchen","Family Room","Sittin
   "Bedroom 2","Study/Den","Attic","Garage","Bath 1"];
 
 const DATA = [
- {"location":"Kitchen","category":"Electrical","item":"Replace pendant light bulbs with rounded white globe bulbs","notes":"Bulbs need to be purchased first"},
- {"location":"Family Room","category":"Electrical","item":"Put all interior lights on dimmers - the light in front of the bathroom is currently not on a dimmer","notes":""},
- {"location":"Family Room","category":"Electrical","item":"Change exterior light from dimmer to standard on/off switch","notes":"Currently on a dimmer"},
- {"location":"Family Room","category":"General","item":"Repaint to cover up plaster touch-ups","notes":""},
- {"location":"Family Room","category":"General","item":"Remove tape from top of the door between bedroom and family room, including the rail guide at the top","notes":""},
- {"location":"Sitting Room","category":"Electrical","item":"Find and install slope-ceiling adapter from Wayfair","notes":"Adapter needs to be located first"},
- {"location":"Sitting Room","category":"Electrical","item":"Install reading light in the corner","notes":""},
- {"location":"Powder Room","category":"General","item":"Set up powder room (general)","notes":""},
- {"location":"Downstairs Bathroom","category":"Drywall","item":"Fill in sheetrock in the area under the medicine cabinet","notes":""},
- {"location":"Downstairs Bathroom","category":"General","item":"Remove protective film from the medicine cabinet - still on, making the mirror look dark","notes":""},
- {"location":"Downstairs Bathroom","category":"General","item":"Clean up pencil lines above the medicine cabinet","notes":""},
- {"location":"Hallway","category":"Electrical","item":"Change front foyer exterior light from dimmer to standard on/off switch","notes":"Front foyer"},
- {"location":"Hallway","category":"General","item":"Apply another coat of stain to handrail - darker, to closer match the treads","notes":""},
- {"location":"Linen Closet","category":"General","item":"Install closet poles","notes":"Poles expected to arrive Mon Jul 27"},
- {"location":"Laundry Room","category":"General","item":"Install pulls on the upper cabinet","notes":"Pulls arrived Fri Jul 24"},
- {"location":"Upstairs Bathroom","category":"Electrical","item":"Fix vanity light - flickers when turned on","notes":""},
- {"location":"Upstairs Bathroom","category":"Electrical","item":"Put both light switches on occupancy sensors - remove the switch with the 60-minute timer","notes":""},
- {"location":"Upstairs Bathroom","category":"Electrical","item":"Replace 2700K vanity bulb with 4000K (cool white), 60W equivalent - current warm color not liked","notes":"Buy: 4000K, ~800 lumens (60W equivalent), E26 base. Current bulb is only 450 lm (~40W equiv)"},
- {"location":"Upstairs Bathroom","category":"General","item":"Install medicine cabinet","notes":"Cabinet arriving Mon Jul 27"},
- {"location":"Concierge Bathroom","category":"Electrical","item":"Put both switches on vacancy sensors","notes":"Dimmer already removed"},
- {"location":"Primary Bedroom","category":"Electrical","item":"Replace on/off switch with Aqara dimmer","notes":"Aqara dimmer already purchased"},
- {"location":"Bedroom 1","category":"Electrical","item":"Install lighting inside closet","notes":""},
- {"location":"Bedroom 2","category":"Electrical","item":"Install lighting inside closet","notes":""},
- {"location":"Attic","category":"HVAC","item":"Confirm HVAC is working - clear the error still showing on the HVAC/thermostat screen","notes":""},
- {"location":"Attic","category":"HVAC","item":"Turn on whole-home dehumidifier, set to 45%, and confirm working","notes":""},
- {"location":"Garage","category":"General","item":"Install shelving on north wall of garage","notes":""},
- {"location":"Garage","category":"General","item":"Install one kitchen cabinet to the right of the existing one","notes":""},
- {"location":"Garage","category":"Electrical","item":"Install missing plate over light switch (near garage door)","notes":""},
- {"location":"Garage","category":"Garage Door","item":"Service garage door - very shaky as it starts, creaky as it stops","notes":""}
+ {"num": 1, "location": "Kitchen", "category": "Electrical", "item": "Replace pendant light bulbs with rounded white globe bulbs", "notes": "Bulbs need to be purchased first"},
+ {"num": 2, "location": "Family Room", "category": "Electrical", "item": "Put all interior lights on dimmers - the light in front of the bathroom is currently not on a dimmer", "notes": ""},
+ {"num": 3, "location": "Family Room", "category": "Electrical", "item": "Change exterior light from dimmer to standard on/off switch", "notes": "Currently on a dimmer"},
+ {"num": 4, "location": "Family Room", "category": "General", "item": "Repaint to cover up plaster touch-ups", "notes": ""},
+ {"num": 5, "location": "Family Room", "category": "General", "item": "Remove tape from top of the door between bedroom and family room, including the rail guide at the top", "notes": ""},
+ {"num": 6, "location": "Sitting Room", "category": "Electrical", "item": "Find and install slope-ceiling adapter from Wayfair", "notes": "Adapter needs to be located first"},
+ {"num": 7, "location": "Sitting Room", "category": "Electrical", "item": "Install reading light in the corner", "notes": ""},
+ {"num": 8, "location": "Powder Room", "category": "General", "item": "Set up powder room (general)", "notes": ""},
+ {"num": 9, "location": "Downstairs Bathroom", "category": "Drywall", "item": "Fill in sheetrock in the area under the medicine cabinet", "notes": ""},
+ {"num": 10, "location": "Downstairs Bathroom", "category": "General", "item": "Remove protective film from the medicine cabinet - still on, making the mirror look dark", "notes": ""},
+ {"num": 11, "location": "Downstairs Bathroom", "category": "General", "item": "Clean up pencil lines above the medicine cabinet", "notes": ""},
+ {"num": 12, "location": "Hallway", "category": "Electrical", "item": "Change front foyer exterior light from dimmer to standard on/off switch", "notes": "Front foyer"},
+ {"num": 13, "location": "Hallway", "category": "General", "item": "Apply another coat of stain to handrail - darker, to closer match the treads", "notes": ""},
+ {"num": 14, "location": "Linen Closet", "category": "General", "item": "Install closet poles", "notes": "Poles expected to arrive Mon Jul 27"},
+ {"num": 15, "location": "Laundry Room", "category": "General", "item": "Install pulls on the upper cabinet", "notes": "Pulls arrived Fri Jul 24"},
+ {"num": 16, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Fix vanity light - flickers when turned on", "notes": ""},
+ {"num": 17, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Put both light switches on occupancy sensors - remove the switch with the 60-minute timer", "notes": ""},
+ {"num": 18, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Replace 2700K vanity bulb with 4000K (cool white), 60W equivalent - current warm color not liked", "notes": "Buy: 4000K, ~800 lumens (60W equivalent), E26 base. Current bulb is only 450 lm (~40W equiv)"},
+ {"num": 19, "location": "Upstairs Bathroom", "category": "General", "item": "Install medicine cabinet", "notes": "Cabinet arriving Mon Jul 27"},
+ {"num": 20, "location": "Concierge Bathroom", "category": "Electrical", "item": "Put both switches on vacancy sensors", "notes": "Dimmer already removed"},
+ {"num": 21, "location": "Primary Bedroom", "category": "Electrical", "item": "Replace on/off switch with Aqara dimmer", "notes": "Aqara dimmer already purchased"},
+ {"num": 22, "location": "Bedroom 1", "category": "Electrical", "item": "Install lighting inside closet", "notes": ""},
+ {"num": 23, "location": "Bedroom 2", "category": "Electrical", "item": "Install lighting inside closet", "notes": ""},
+ {"num": 24, "location": "Attic", "category": "HVAC", "item": "Confirm HVAC is working - clear the error still showing on the HVAC/thermostat screen", "notes": ""},
+ {"num": 25, "location": "Attic", "category": "HVAC", "item": "Turn on whole-home dehumidifier, set to 45%, and confirm working", "notes": ""},
+ {"num": 28, "location": "Garage", "category": "General", "item": "Install shelving on north wall of garage", "notes": ""},
+ {"num": 29, "location": "Garage", "category": "General", "item": "Install one kitchen cabinet to the right of the existing one", "notes": ""},
+ {"num": 26, "location": "Garage", "category": "Electrical", "item": "Install missing plate over light switch (near garage door)", "notes": ""},
+ {"num": 27, "location": "Garage", "category": "Garage Door", "item": "Service garage door - very shaky as it starts, creaky as it stops", "notes": ""}
 ];
 
 const KEY = "punchlist-461-anderson";
@@ -216,7 +217,7 @@ function render() {
       it.location === loc &&
       (!fc || it.category === fc) &&
       (!hd || !it.done) &&
-      (!q || (it.item + " " + it.notes + " " + it.category).toLowerCase().includes(q))
+      (!q || (it.num + " " + it.item + " " + it.notes + " " + it.category).toLowerCase().includes(q))
     ).sort((a,b) => a.category.localeCompare(b.category));
     if (!items.length) return;
 
@@ -238,7 +239,7 @@ function render() {
       const body = document.createElement("div");
       body.className = "body";
       body.innerHTML =
-        `<div class="desc">${esc(it.item)}</div>` +
+        `<div class="desc"><span class="num">${it.num}.</span> ${esc(it.item)}</div>` +
         (it.notes ? `<div class="notes">${esc(it.notes)}</div>` : "") +
         `<div class="meta"><span class="badge cat">${esc(it.category)}</span></div>`;
       row.append(cb, body);
