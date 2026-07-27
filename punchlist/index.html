@@ -92,12 +92,29 @@
     .card, .row { break-inside: avoid; }
     body { background: #fff; }
   }
+
+  header { position: relative; }
+  header h1 { padding-right: 130px; }
+  .lang-toggle {
+    position: absolute; top: 16px; right: 16px; display: flex;
+    border: 2px solid rgba(255,255,255,.75); border-radius: 999px; overflow: hidden;
+  }
+  .lang-toggle button {
+    font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: .5px;
+    background: transparent; color: var(--accent-ink); border: none;
+    padding: 9px 16px; cursor: pointer;
+  }
+  .lang-toggle button.active { background: #ffffff; color: var(--accent); }
+  @media (prefers-color-scheme: dark) {
+    .lang-toggle button.active { background: var(--accent-ink); color: var(--accent); }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>461 Anderson Street — Renovation Punch List</h1>
-  <div class="sub">Grouped by location, then by trade</div>
+  <div class="lang-toggle"><button id="langEn" class="active">EN</button><button id="langEs">ES</button></div>
+  <h1 id="title">461 Anderson Street — Renovation Punch List</h1>
+  <div class="sub" id="sub">Grouped by location, then by trade</div>
   <div class="stats" id="stats"></div>
 </header>
 
@@ -105,14 +122,14 @@
   <input type="search" id="q" placeholder="Search items…">
   <select id="fLoc"><option value="">All locations</option></select>
   <select id="fCat"><option value="">All trades</option></select>
-  <label class="hide-done"><input type="checkbox" id="hideDone"> Hide done</label>
+  <label class="hide-done"><input type="checkbox" id="hideDone"> <span id="hideDoneLabel">Hide done</span></label>
 </div>
 
 <main id="list"></main>
-<footer><span id="syncnote">Connecting…</span> Last list update: <span id="updated"></span></footer>
+<footer><span id="syncnote">Connecting…</span> <span id="updatedLabel">Last list update:</span> <span id="updated"></span></footer>
 
 <script>
-const UPDATED = "2026-07-25";
+const UPDATED = "2026-07-26";
 const LOCATION_ORDER = ["Whole House","Exterior","Kitchen","Family Room","Sitting Room",
   "Living Room","Dining","Powder Room","Downstairs Bathroom","Hallway",
   "Laundry Room","Upstairs Bathroom","Primary Bedroom","Bedroom 1",
@@ -162,6 +179,62 @@ const DATA = [
  {"num": 27, "location": "Garage", "category": "Garage Door", "item": "Service garage door - very shaky as it starts, creaky as it stops", "notes": ""}
 ];
 
+const TR = {
+ loc: {"Kitchen":"Cocina","Family Room":"Sala familiar","Sitting Room":"Sala de estar","Living Room":"Sala","Dining":"Comedor","Powder Room":"Medio baño","Downstairs Bathroom":"Baño de abajo","Hallway":"Pasillo","Laundry Room":"Cuarto de lavado","Upstairs Bathroom":"Baño de arriba","Primary Bedroom":"Dormitorio principal","Bedroom 1":"Dormitorio 1","Bedroom 2":"Dormitorio 2","Study/Den":"Estudio","Attic":"Ático","Garage":"Garaje","Exterior":"Exterior","Whole House":"Toda la casa","Bath 1":"Baño 1"},
+ cat: {"Electrical":"Eléctrico","General":"General","Drywall":"Tablaroca","HVAC":"Climatización","Garage Door":"Puerta de garaje"},
+ items: {
+ 40:["Instalar cámara de seguridad frente al garaje",""],
+ 30:["Instalar tomacorrientes en ambos lados de la isla de la cocina",""],
+ 1:["Reemplazar los focos de la lámpara colgante por focos globo blancos redondeados","Focos: Feit #BPG1640W927CAFIL2 (globo esmerilado blanco G16.5, base E12, 2700K) x8 - llegan lun 27 jul, 10am-2pm (pedido HD WK33270664). Se retiran los focos Luxrite B11 tipo torpedo actuales"],
+ 3:["Cambiar la luz exterior de dimmer a interruptor estándar de encendido/apagado","Actualmente tiene dimmer"],
+ 4:["Repintar para cubrir los retoques de yeso",""],
+ 5:["Quitar la cinta de la parte superior de la puerta entre el dormitorio y la sala familiar, incluida la guía del riel superior",""],
+ 6:["Encontrar e instalar el adaptador para techo inclinado de Wayfair","Adaptador (blanco) entregado el jue 11 jun - pedido Wayfair #4444000847, foto de entrega en el correo. Está en la casa; primero hay que encontrarlo"],
+ 7:["Instalar lámpara de lectura en la esquina","Montar a 57 pulg. del piso y a 20 pulg. de la pared"],
+ 8:["Acondicionar el medio baño (general)",""],
+ 9:["Rellenar el panel de yeso en el área debajo del botiquín",""],
+ 10:["Quitar la película protectora del botiquín - sigue puesta y oscurece el espejo",""],
+ 11:["Limpiar las líneas de lápiz arriba del botiquín",""],
+ 12:["Cambiar la luz exterior del vestíbulo delantero de dimmer a interruptor estándar","Vestíbulo delantero. La lámpara tiene sensor de movimiento integrado - el interruptor queda ENCENDIDO para armarla; apagar y encender rápido la deja fija en la mayoría de los modelos. Nunca usar dimmer"],
+ 13:["Aplicar otra capa de tinte al pasamanos - más oscuro, para que combine mejor con los escalones",""],
+ 14:["Instalar tiradores en el clóset de blancos","Llegaron el vie 24 jul"],
+ 15:["Instalar tiradores en el gabinete superior","Los tiradores llegaron el vie 24 jul"],
+ 16:["Reparar la luz del tocador - parpadea al encenderla",""],
+ 17:["Reemplazar los 3 focos 2700K del tocador por 4000K (blanco frío), equivalente a 60W - no gusta el color cálido actual","Focos: Feit #OM60DM/5CCTCA/4 (A19 equiv. 60W, 800 lm, CRI 90, regulable, seleccionable 2700K-5000K) - llegan lun 27 jul, 10am-2pm. Instalar 3 + 1 de repuesto, poner el selector de cada foco en 4000K. Lámpara: Spherical Vanity 5708, 3x E26, máx 60W"],
+ 18:["Poner los interruptores de luz en sensores de vacancia Leviton DVS02 (encendido manual / apagado automático) - retirar el interruptor con temporizador de 60 minutos","Interruptor: Leviton #DVS02-1LW (encendido manual / apagado automático, sin regulación) - llega 31 jul - 4 ago"],
+ 19:["Instalar el botiquín","El botiquín llega el lun 27 jul"],
+ 42:["Instalar el tope de puerta Emtek","El tope llegó el sáb 25 jul"],
+ 20:["Poner ambos interruptores en sensores de vacancia","Interruptor: Leviton #DVS02-1LW - llega 31 jul - 4 ago (hay 4 DVS02 más del pedido de junio)"],
+ 43:["Instalar el tope de puerta Emtek","El tope llegó el sáb 25 jul"],
+ 21:["Reemplazar el interruptor de encendido/apagado por el dimmer Aqara","El dimmer Aqara ya está comprado"],
+ 34:["Reemplazar los interruptores de luz del clóset por interruptores con temporizador",""],
+ 35:["Instalar apliques de pared",""],
+ 22:["Instalar iluminación dentro del clóset",""],
+ 36:["Instalar apliques de pared",""],
+ 37:["Reemplazar el foco del plafón por un LED brillante regulable - el foco actual es muy tenue","Foco: Luxrite #LR21440-4PK (A19 equiv. 100W ~1600 lm, 2700K, regulable, apto para luminaria cerrada) - llega lun 4 ago. Actual: Philips equiv. 60W WarmGlow (~800 lm)"],
+ 23:["Instalar iluminación dentro del clóset",""],
+ 38:["Reemplazar el foco del plafón por un LED brillante regulable - el foco actual es muy tenue","Foco: Luxrite #LR21440-4PK (A19 equiv. 100W ~1600 lm, 2700K, regulable, apto para luminaria cerrada) - llega lun 4 ago. Actual: Philips equiv. 60W WarmGlow (~800 lm)"],
+ 24:["Confirmar que el sistema HVAC funciona - borrar el error que aún aparece en la pantalla del termostato",""],
+ 25:["Encender el deshumidificador de toda la casa, ajustarlo al 45% y confirmar que funciona",""],
+ 28:["Instalar estantería en la pared norte del garaje",""],
+ 29:["Instalar un gabinete de cocina a la derecha del existente",""],
+ 31:["Quitar el saliente de concreto de la pared este",""],
+ 32:["Instalar la caja de Internet en una ubicación temporal",""],
+ 33:["Quitar el subpanel viejo y reemplazarlo con la caja de Internet",""],
+ 41:["Arreglar el disparo del interruptor del cargador del auto eléctrico - subir a 50A Y diagnosticar el disparo instantáneo","Se dispara al instante al conectar (no es sobrecarga; el mismo auto y cable funcionan bien en casa del primo). 1) Verificar el cableado del interruptor GFCI: neutro de carga al interruptor, coleta a la barra de neutros, sin contacto neutro-tierra aguas abajo. 2) Si el cableado está bien, puede ser conflicto entre el autotest del cargador (EVSE) y el interruptor GFCI - se resuelve cableando el cargador directo con interruptor estándar sin GFCI. Verificar calibre 6 AWG Cu antes del cambio a 50A. Interruptor nuevo: Leviton #LB250-GFR (50A GFCI) llega el lun 27 jul. Mensaje enviado a Joe/Ivan el 25/7"],
+ 26:["Instalar la placa faltante del interruptor de luz (cerca de la puerta del garaje)",""],
+ 27:["Dar servicio a la puerta del garaje - tiembla mucho al arrancar y rechina al detenerse",""]
+ }
+};
+
+const UI = {
+ en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideDone:"Hide done", items:"items", open:"open", done:"done", locations:"locations", secDone:"done", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:"},
+ es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideDone:"Ocultar hechos", items:"elementos", open:"pendientes", done:"hechos", locations:"ubicaciones", secDone:"hechas", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:"}
+};
+
+let LANG = localStorage.getItem("punchlist-lang-461") || "en";
+let syncState = "connecting";
+
 const KEY = "punchlist-461-anderson";
 const API = "/api/state";
 let synced = false;
@@ -169,7 +242,46 @@ const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
 const idOf = it => it.location + "::" + it.item;
 DATA.forEach(it => { it.done = !!saved[idOf(it)]; });
 
-function setSyncNote(msg) { $("#syncnote").textContent = msg; }
+const $ = s => document.querySelector(s);
+const locSel = $("#fLoc"), catSel = $("#fCat");
+
+const tLoc = l => LANG === "es" ? (TR.loc[l] || l) : l;
+const tCat = c => LANG === "es" ? (TR.cat[c] || c) : c;
+const tItem = it => (LANG === "es" && TR.items[it.num]) ? TR.items[it.num][0] : it.item;
+const tNotes = it => (LANG === "es" && TR.items[it.num]) ? TR.items[it.num][1] : it.notes;
+
+const locs = [...new Set(DATA.map(i => i.location))]
+  .sort((a,b) => LOCATION_ORDER.indexOf(a) - LOCATION_ORDER.indexOf(b));
+const cats = [...new Set(DATA.map(i => i.category))].sort();
+locs.forEach(l => locSel.add(new Option(l, l)));
+cats.forEach(c => catSel.add(new Option(c, c)));
+
+function updateSyncNote() {
+  const u = UI[LANG];
+  $("#syncnote").textContent = syncState === "ok" ? u.syncOk : syncState === "off" ? u.syncOff : u.connecting;
+}
+
+function applyLang() {
+  const u = UI[LANG];
+  $("#sub").textContent = u.sub;
+  $("#q").placeholder = u.search;
+  $("#hideDoneLabel").textContent = u.hideDone;
+  $("#updatedLabel").textContent = u.updated;
+  $("#langEn").classList.toggle("active", LANG === "en");
+  $("#langEs").classList.toggle("active", LANG === "es");
+  locSel.options[0].text = u.allLoc;
+  catSel.options[0].text = u.allCat;
+  for (let i = 1; i < locSel.options.length; i++) locSel.options[i].text = tLoc(locSel.options[i].value);
+  for (let i = 1; i < catSel.options.length; i++) catSel.options[i].text = tCat(catSel.options[i].value);
+  updateSyncNote();
+  render();
+}
+
+function save() {
+  const out = {};
+  DATA.forEach(it => { if (it.done) out[idOf(it)] = 1; });
+  localStorage.setItem(KEY, JSON.stringify(out));
+}
 
 async function loadRemote() {
   try {
@@ -178,12 +290,14 @@ async function loadRemote() {
     const remote = await r.json();
     DATA.forEach(it => { it.done = !!remote[idOf(it)]; });
     synced = true;
-    setSyncNote("Progress syncs across all devices.");
+    syncState = "ok";
+    updateSyncNote();
     save();
     render();
   } catch (e) {
     synced = false;
-    setSyncNote("Sync unavailable — progress saved on this device only.");
+    syncState = "off";
+    updateSyncNote();
   }
 }
 
@@ -197,26 +311,13 @@ async function pushRemote(it) {
     });
   } catch (e) {
     synced = false;
-    setSyncNote("Sync unavailable — progress saved on this device only.");
+    syncState = "off";
+    updateSyncNote();
   }
 }
 
-const $ = s => document.querySelector(s);
-const locSel = $("#fLoc"), catSel = $("#fCat");
-
-const locs = [...new Set(DATA.map(i => i.location))]
-  .sort((a,b) => LOCATION_ORDER.indexOf(a) - LOCATION_ORDER.indexOf(b));
-const cats = [...new Set(DATA.map(i => i.category))].sort();
-locs.forEach(l => locSel.add(new Option(l, l)));
-cats.forEach(c => catSel.add(new Option(c, c)));
-
-function save() {
-  const out = {};
-  DATA.forEach(it => { if (it.done) out[idOf(it)] = 1; });
-  localStorage.setItem(KEY, JSON.stringify(out));
-}
-
 function render() {
+  const u = UI[LANG];
   const q = $("#q").value.trim().toLowerCase();
   const fl = locSel.value, fc = catSel.value, hd = $("#hideDone").checked;
   const list = $("#list");
@@ -229,7 +330,7 @@ function render() {
       it.location === loc &&
       (!fc || it.category === fc) &&
       (!hd || !it.done) &&
-      (!q || (it.num + " " + it.item + " " + it.notes + " " + it.category).toLowerCase().includes(q))
+      (!q || (it.num + " " + it.item + " " + it.notes + " " + it.category + " " + tItem(it) + " " + tNotes(it) + " " + tLoc(it.location) + " " + tCat(it.category)).toLowerCase().includes(q))
     ).sort((a,b) => a.category.localeCompare(b.category));
     if (!items.length) return;
 
@@ -237,7 +338,7 @@ function render() {
     sec.className = "loc";
     const doneCount = DATA.filter(i => i.location === loc && i.done).length;
     const total = DATA.filter(i => i.location === loc).length;
-    sec.innerHTML = `<h2>${loc} <span class="n">${doneCount}/${total} done</span></h2>`;
+    sec.innerHTML = `<h2>${esc(tLoc(loc))} <span class="n">${doneCount}/${total} ${u.secDone}</span></h2>`;
     const card = document.createElement("div");
     card.className = "card";
 
@@ -250,10 +351,11 @@ function render() {
       cb.checked = it.done;
       const body = document.createElement("div");
       body.className = "body";
+      const notes = tNotes(it);
       body.innerHTML =
-        `<div class="desc"><span class="num">${it.num}.</span> ${esc(it.item)}</div>` +
-        (it.notes ? `<div class="notes">${esc(it.notes)}</div>` : "") +
-        `<div class="meta"><span class="badge cat">${esc(it.category)}</span></div>`;
+        `<div class="desc"><span class="num">${it.num}.</span> ${esc(tItem(it))}</div>` +
+        (notes ? `<div class="notes">${esc(notes)}</div>` : "") +
+        `<div class="meta"><span class="badge cat">${esc(tCat(it.category))}</span></div>`;
       row.append(cb, body);
       const toggle = () => { it.done = !it.done; save(); pushRemote(it); render(); };
       cb.addEventListener("click", e => { e.stopPropagation(); toggle(); });
@@ -264,14 +366,14 @@ function render() {
     list.appendChild(sec);
   });
 
-  if (!shown) list.innerHTML = `<div class="empty">No items match.</div>`;
+  if (!shown) list.innerHTML = `<div class="empty">${u.empty}</div>`;
 
   const done = DATA.filter(i => i.done).length;
   $("#stats").innerHTML =
-    `<span class="stat"><b>${DATA.length}</b> items</span>` +
-    `<span class="stat"><b>${DATA.length - done}</b> open</span>` +
-    `<span class="stat"><b>${done}</b> done</span>` +
-    `<span class="stat"><b>${locs.length}</b> locations</span>`;
+    `<span class="stat"><b>${DATA.length}</b> ${u.items}</span>` +
+    `<span class="stat"><b>${DATA.length - done}</b> ${u.open}</span>` +
+    `<span class="stat"><b>${done}</b> ${u.done}</span>` +
+    `<span class="stat"><b>${locs.length}</b> ${u.locations}</span>`;
 }
 
 function esc(s) {
@@ -280,8 +382,10 @@ function esc(s) {
 
 ["q","fLoc","fCat","hideDone"].forEach(id =>
   $("#" + id).addEventListener(id === "q" ? "input" : "change", render));
+$("#langEn").addEventListener("click", () => { LANG = "en"; localStorage.setItem("punchlist-lang-461", "en"); applyLang(); });
+$("#langEs").addEventListener("click", () => { LANG = "es"; localStorage.setItem("punchlist-lang-461", "es"); applyLang(); });
 $("#updated").textContent = UPDATED;
-render();
+applyLang();
 loadRemote();
 setInterval(loadRemote, 20000);
 </script>
