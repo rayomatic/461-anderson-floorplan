@@ -88,6 +88,10 @@
   .row.done .badge { opacity: .5; }
   .row.done .badge.st-v { opacity: 1; }
   .empty { text-align: center; color: var(--muted); padding: 40px 0; }
+  .total-open {
+    text-align: right; font-weight: 600; font-size: 14px;
+    margin: 6px 4px 0; padding-top: 10px; border-top: 1px solid var(--line);
+  }
   footer { text-align: center; font-size: 12px; color: var(--muted); padding: 20px; }
   @media print {
     .toolbar, header .stats { display: none; }
@@ -139,24 +143,30 @@ const LOCATION_ORDER = ["Whole House","Exterior","Kitchen","Family Room","Sittin
   "Bedroom 2","Study/Den","Attic","Garage","Bath 1"];
 
 const DATA = [
+ {"num": 70, "location": "Whole House", "category": "Electrical", "item": "Turn off BSS Transition on the BlueBot WiFi network", "notes": "802.11v - cheap IoT radios mishandle transition requests and drop instead of roaming. Everything else on BlueBot verified correct"},
  {"num": 40, "location": "Exterior", "category": "Electrical", "item": "Install security camera in front of the garage", "notes": "", "status": "validated"},
  {"num": 44, "location": "Exterior", "category": "Electrical", "item": "Replace Google Nest doorbell with hardwired version", "notes": "", "status": "validated"},
- {"num": 45, "location": "Exterior", "category": "Electrical", "item": "Wire power to the new Google Nest doorbell", "notes": "Doorbell replaced (#44) but has no power yet"},
+ {"num": 45, "location": "Exterior", "category": "Electrical", "item": "Wire power to the new Google Nest doorbell", "notes": "Doorbell replaced (#44) but dead - no status LED. Open circuit in the 24V run; worked pre-reno, transformer verified good then. Trace order: (a) measure AC at button terminals, (b) at transformer secondary, (c) Spore chime wiring (mechanical chime sits in series), (d) remove any surviving 1st-gen chime connector (4 wires - incompatible with 2nd/3rd gen's 2). If it later blinks yellow, upgrade the 16V 10VA transformer to 30VA (~$20)"},
  {"num": 30, "location": "Kitchen", "category": "Electrical", "item": "Install power receptacles on both sides of the kitchen island", "notes": "", "status": "validated"},
  {"num": 46, "location": "Kitchen", "category": "Electrical", "item": "Install a USB-C power receptacle on the west-facing island outlet", "notes": "Use a Leviton USB-C receptacle"},
  {"num": 1, "location": "Kitchen", "category": "Electrical", "item": "Replace pendant light bulbs with rounded white globe bulbs", "notes": "Bulbs: Feit #BPG1640W927CAFIL2 (G16.5 frosted white globe, E12, 2700K) x8 - arriving Mon Jul 27, 10am-2pm (HD order WK33270664). Current Luxrite B11 torpedo bulbs coming out", "status": "validated"},
  {"num": 3, "location": "Family Room", "category": "Electrical", "item": "Change exterior light from dimmer to standard on/off switch", "notes": "Currently on a dimmer", "status": "validated"},
  {"num": 4, "location": "Family Room", "category": "General", "item": "Repaint to cover up plaster touch-ups", "notes": "", "status": "validated"},
  {"num": 5, "location": "Family Room", "category": "General", "item": "Remove tape from top of the door between bedroom and family room, including the rail guide at the top", "notes": "", "status": "validated"},
+ {"num": 57, "location": "Family Room", "category": "Electrical", "item": "Swap the order of the dimmers for the cabinet lights", "notes": "Match switch order to fixture layout left to right. Do before BlueBot onboarding"},
+ {"num": 64, "location": "Family Room", "category": "Hardware", "item": "Replace passage set with privacy set on the hallway passageway door into the bedroom suite", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Part of one fulfillment error with Golden Gate (Roman Sanchez) - pursue credit + reship. Also confirm a privacy set didn't land on the garage door - it correctly takes passage (Homestead order #25149)"},
  {"num": 6, "location": "Sitting Room", "category": "Electrical", "item": "Install ceiling hooks for hanging lights", "notes": "Hooks: Adcssynd 3-pack aluminum swag hooks, white (Amazon B0CGV4HG83) - arrived"},
  {"num": 7, "location": "Sitting Room", "category": "Electrical", "item": "Install reading light in the corner", "notes": "Mount 57 in. up from the floor and 20 in. away from the wall", "status": "validated"},
+ {"num": 58, "location": "Living Room", "category": "Electrical", "item": "Replace on/off switch with a smart dimmer for the can lights", "notes": "Confirm 3-way (needs a DAWDC battery companion at the 2nd location). Verify the cans are dimmable and pull a model number. Open question: Leviton or Lutron - architect spec'd Lutron Maestro + Claro plates for this room"},
+ {"num": 59, "location": "Dining", "category": "General", "item": "Mount the Velux skylight blind remote to the left of the light switches", "notes": "Vertical center aligned with the center of the adjacent switch gang. Gap 1/4 in.-3/8 in. matching the plate spacing. Drywall anchors, not adhesive alone"},
  {"num": 8, "location": "Powder Room", "category": "General", "item": "Install mirror in powder room", "notes": ""},
  {"num": 9, "location": "Downstairs Bathroom", "category": "Drywall", "item": "Fill in sheetrock in the area under the medicine cabinet", "notes": "", "status": "validated"},
  {"num": 10, "location": "Downstairs Bathroom", "category": "General", "item": "Remove protective film from the medicine cabinet - still on, making the mirror look dark", "notes": "", "status": "validated"},
  {"num": 11, "location": "Downstairs Bathroom", "category": "General", "item": "Clean up pencil lines above the medicine cabinet", "notes": "", "status": "validated"},
  {"num": 12, "location": "Hallway", "category": "Electrical", "item": "Change front foyer exterior light from dimmer to standard on/off switch", "notes": "Front foyer. Fixture has built-in motion sensor - plain switch stays ON to arm it; quick off-on flip forces constant-on on most models. Never a dimmer", "status": "validated"},
  {"num": 13, "location": "Hallway", "category": "General", "item": "Apply another coat of stain to handrail - darker, to closer match the treads", "notes": "", "status": "validated"},
- {"num": 48, "location": "Hallway", "category": "General", "item": "Smooth out handrail finish - feels sticky to the hand", "notes": "Follow-up to #13 (handrail re-stain)"},
+ {"num": 48, "location": "Hallway", "category": "General", "item": "Smooth out handrail finish - feels sticky to the hand", "notes": "Follow-up to #13 (handrail re-stain). Finish: Rubio Monocoat Oil Plus 2C Natural - never Pure (Pure ambers and clashes with the Mirage DuraMatt white oak)"},
+ {"num": 53, "location": "Hallway", "category": "Electrical", "item": "Straighten the crooked paper lantern pendant", "notes": "AllModern Workshop lantern on AusPower swag hooks (B0CGV4HG83). Check hook placement, cord grip square, and whether the wire frame is sprung"},
  {"num": 14, "location": "Hallway", "category": "General", "item": "Install pulls on linen closet", "notes": "Items arrived Fri Jul 24", "status": "validated"},
  {"num": 15, "location": "Laundry Room", "category": "General", "item": "Install pulls on the upper cabinet", "notes": "Pulls arrived Fri Jul 24", "status": "validated"},
  {"num": 16, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Fix vanity light - flickers when turned on", "notes": "", "status": "validated"},
@@ -164,16 +174,23 @@ const DATA = [
  {"num": 18, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Put light switches on Leviton DVS02 vacancy sensors (manual-on/auto-off) - remove the switch with the 60-minute timer", "notes": "Switch: Leviton #DVS02-1LW vacancy sensor (manual-on/auto-off, non-dimming) - expected Jul 31 - Aug 4", "status": "validated"},
  {"num": 19, "location": "Upstairs Bathroom", "category": "General", "item": "Install medicine cabinet", "notes": "Cabinet arriving Mon Jul 27", "status": "validated"},
  {"num": 42, "location": "Upstairs Bathroom", "category": "General", "item": "Install Emtek doorstop", "notes": "Doorstop arrived Sat Jul 25", "status": "validated"},
+ {"num": 55, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Swap the order of the two light switches", "notes": "Do before BlueBot onboarding if these are Leviton smart switches - the app tracks by MAC, so names follow the device, not the position"},
+ {"num": 63, "location": "Upstairs Bathroom", "category": "Hardware", "item": "Replace door passage set with the specified privacy set", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Verify rosette shape is Modern Rectangular. Part of one fulfillment error with Golden Gate (Roman Sanchez) - pursue credit + reship"},
  {"num": 20, "location": "Downstairs Bathroom", "category": "Electrical", "item": "Put both switches on vacancy sensors", "notes": "Switch: Leviton #DVS02-1LW - expected Jul 31 - Aug 4 (4 more DVS02 owned from June order)", "status": "validated"},
  {"num": 43, "location": "Downstairs Bathroom", "category": "General", "item": "Install Emtek doorstop", "notes": "Doorstop arrived Sat Jul 25", "status": "validated"},
+ {"num": 56, "location": "Downstairs Bathroom", "category": "Electrical", "item": "Power on and commission the Mysa in-floor heating thermostat", "notes": "Circuit #13 (20A AF). Mysa's built-in Class A 5 mA GFCI is what keeps this circuit code-compliant (424.44(G)) - if it's ever swapped for a plain thermostat, the breaker must change. 2.4 GHz - join to BlueBot"},
+ {"num": 62, "location": "Downstairs Bathroom", "category": "Hardware", "item": "Replace door passage set with the specified privacy set", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Verify rosette shape is Modern Rectangular. Part of one fulfillment error with Golden Gate (Roman Sanchez) - pursue credit + reship"},
  {"num": 21, "location": "Primary Bedroom", "category": "Electrical", "item": "Replace on/off switch with Aqara dimmer", "notes": "Dimmer: Aqara Dimmer H2 US (already purchased) - no-neutral OK; no wired 3-way support. Box extender: Arlington BE1 (adjustable to 1-1/2 in., trim to minimum protrusion) - arriving Mon Aug 3; delivery-confirmation reminders set for Mon & Tue", "status": "validated"},
  {"num": 34, "location": "Primary Bedroom", "category": "Electrical", "item": "Replace closet light switches with timer switches", "notes": "", "status": "validated"},
  {"num": 35, "location": "Primary Bedroom", "category": "Electrical", "item": "Install wall sconces", "notes": "", "status": "validated"},
  {"num": 22, "location": "Bedroom 1", "category": "Electrical", "item": "Install lighting inside closet", "notes": "", "status": "validated"},
  {"num": 36, "location": "Bedroom 1", "category": "Electrical", "item": "Install wall sconces", "notes": "", "status": "validated"},
  {"num": 37, "location": "Bedroom 1", "category": "Electrical", "item": "Replace ceiling light bulb with bright dimmable LED - current bulb too dim", "notes": "Bulb: Luxrite #LR21440-4PK (A19 100W-equiv ~1600 lm, 2700K, dimmable, enclosed-rated) - expected Mon Aug 4. Current: Philips 60W-equiv WarmGlow (~800 lm)", "status": "reopened", "rev": 2},
+ {"num": 60, "location": "Bedroom 1", "category": "Hardware", "item": "Replace door hardware: privacy set instead of passage, Modern Rectangular rosettes instead of round", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Part of one fulfillment error with Golden Gate (Roman Sanchez) - ask what was picked vs. quoted, pursue credit + reship. Confirm whether Emtek sells rosettes separately"},
  {"num": 23, "location": "Bedroom 2", "category": "Electrical", "item": "Install lighting inside closet", "notes": "", "status": "validated"},
- {"num": 38, "location": "Bedroom 2", "category": "Electrical", "item": "Replace ceiling light bulb with bright dimmable LED - current bulb too dim", "notes": "Bulb: Luxrite #LR21440-4PK (A19 100W-equiv ~1600 lm, 2700K, dimmable, enclosed-rated) - expected Mon Aug 4. Current: Philips 60W-equiv WarmGlow (~800 lm)", "status": "reopened", "rev": 2},
+ {"num": 38, "location": "Bedroom 2", "category": "Electrical", "item": "Replace ceiling light bulb with bright dimmable LED - current bulb too dim", "notes": "Bulb: Luxrite #LR21440-4PK (A19 100W-equiv ~1600 lm, 2700K, dimmable, enclosed-rated). Neighbor has the Luxrite bulbs. Current: Philips 60W-equiv WarmGlow (~800 lm)", "status": "reopened", "rev": 2},
+ {"num": 54, "location": "Bedroom 2", "category": "Electrical", "item": "Swap receptacles so the USB-C units are on the south wall", "notes": "Circuit #28 (20A AF). Check south-wall box depth first - USB-C receptacles are deep"},
+ {"num": 61, "location": "Bedroom 2", "category": "Hardware", "item": "Replace door hardware: privacy set instead of passage, Modern Rectangular rosettes instead of round", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Part of one fulfillment error with Golden Gate (Roman Sanchez) - ask what was picked vs. quoted, pursue credit + reship. Confirm whether Emtek sells rosettes separately"},
  {"num": 47, "location": "Study/Den", "category": "General", "item": "Remove tape from the pocket door in the office", "notes": ""},
  {"num": 24, "location": "Attic", "category": "HVAC", "item": "Confirm HVAC is working - clear the error still showing on the HVAC/thermostat screen", "notes": "", "status": "validated"},
  {"num": 25, "location": "Attic", "category": "HVAC", "item": "Turn on whole-home dehumidifier, set to 45%, and confirm working", "notes": "", "status": "validated"},
@@ -181,23 +198,28 @@ const DATA = [
  {"num": 29, "location": "Garage", "category": "General", "item": "Install one kitchen cabinet to the right of the existing one", "notes": "", "status": "validated"},
  {"num": 31, "location": "Garage", "category": "General", "item": "Remove concrete overhang on east wall", "notes": "", "status": "validated"},
  {"num": 32, "location": "Garage", "category": "Electrical", "item": "Install Internet box in temporary location", "notes": "", "status": "validated"},
- {"num": 33, "location": "Garage", "category": "Electrical", "item": "Remove old subpanel and replace with Internet box", "notes": ""},
+ {"num": 33, "location": "Garage", "category": "Electrical", "item": "Remove old subpanel and replace with Internet box", "notes": "", "status": "validated"},
  {"num": 49, "location": "Garage", "category": "Electrical", "item": "Label all ethernet cables clearly", "notes": ""},
  {"num": 50, "location": "Garage", "category": "Electrical", "item": "Lengthen the ethernet cable that is too short to reach into the box", "notes": ""},
  {"num": 51, "location": "Garage", "category": "Electrical", "item": "Adjust the ends of all ethernet cables so they fit into the Trendnet box", "notes": ""},
  {"num": 52, "location": "Garage", "category": "Electrical", "item": "Screw in the UniFi box and its power supply", "notes": ""},
+ {"num": 65, "location": "Garage", "category": "Electrical", "item": "Install whole-home energy monitor (Leviton LWHEM)", "notes": "Requires an LDATA hub - not currently installed (also why the existing smart breakers aren't reachable in the app). Confirm CT config and 200A sizing with Leviton (1-800-824-3005). Decide mains-only vs. per-circuit before ordering"},
+ {"num": 66, "location": "Garage", "category": "Electrical", "item": "Correct GFCI/AFCI breaker assignments in the panel", "notes": "To dual-function: #7 microwave, #11 dishwasher, #19 instant-hot tank, #21 fridge, #39 exterior plugs, #43 garage ceiling plugs, #45 attic, #48 island. To GFCI: #42 garage door opener, #47 UniFi rack, #10/12 washer (240V), #30/32 dryer (240V). A GFCI receptacle at the device satisfies any of these - best call for UniFi rack and garage ceiling. Verify first: #4/#14 baths (may already have GFCI receptacles), #18/20 jacuzzi (30A vs. Watkins 50-70A spec; spa subpanel GFCI must sit 5+ ft from water), #1/3 oven, #22/24 water heater vs. Navien MOCP, #23/25 stove, #15/17 EV charger, #5 hood, #40 smokes (confirm not tripped). Heat pump #44/46: NO CHANGE - 40A 2-pole GFCI is correct as installed"},
+ {"num": 67, "location": "Garage", "category": "Electrical", "item": "Cover the open metal enclosure beside the network rack", "notes": "Conductors currently exposed, no dead front - an inspection failure and a real hazard"},
+ {"num": 68, "location": "Garage", "category": "Electrical", "item": "Remove the power strip serving as permanent supply on the plywood backer", "notes": "Relocatable power taps aren't permitted as fixed wiring"},
+ {"num": 69, "location": "Garage", "category": "Electrical", "item": "Update the panel directory card", "notes": "#37 - 'Family Room' (was 'living room DS'); #42 - 'Garage Door Opener' (was 'Gate Door'); label #41 (20A AF, unlabeled) and #49/51 (2-pole 15A, likely surge protector); amend 'A.C.' to note it feeds condenser AND air handler via single-point power"},
  {"num": 41, "location": "Garage", "category": "Electrical", "item": "Fix EV charger breaker tripping - upgrade to 50A AND diagnose instant trip", "notes": "Trips instantly at plug-in (not overload; same car+cable works fine at cousin's). 1) Verify GFCI breaker wiring: load neutral on breaker, pigtail to neutral bar, no neutral-ground contact downstream. 2) If wiring clean, suspect EVSE self-test vs GFCI breaker conflict - fix by hardwiring EVSE with standard non-GFCI breaker. Verify wire gauge is 6 AWG Cu before 50A swap. New breaker: Leviton #LB250-GFR (50A GFCI) arriving Mon Jul 27. Joe/Ivan messaged 7/25", "status": "validated"},
  {"num": 26, "location": "Garage", "category": "Electrical", "item": "Install missing plate over light switch (near garage door)", "notes": "", "status": "validated"},
- {"num": 27, "location": "Garage", "category": "Garage Door", "item": "Service garage door - very shaky as it starts, creaky as it stops", "notes": "", "status": "reopened", "rev": 2}
+ {"num": 27, "location": "Garage", "category": "General", "item": "Service garage door - very shaky as it starts, creaky as it stops", "notes": "", "status": "reopened", "rev": 2}
 ];
 
 const TR = {
  loc: {"Kitchen":"Cocina","Family Room":"Sala familiar","Sitting Room":"Sala de estar","Living Room":"Sala","Dining":"Comedor","Powder Room":"Medio baño","Downstairs Bathroom":"Baño de abajo","Hallway":"Pasillo","Laundry Room":"Cuarto de lavado","Upstairs Bathroom":"Baño de arriba","Primary Bedroom":"Dormitorio principal","Bedroom 1":"Dormitorio 1","Bedroom 2":"Dormitorio 2","Study/Den":"Estudio","Attic":"Ático","Garage":"Garaje","Exterior":"Exterior","Whole House":"Toda la casa","Bath 1":"Baño 1"},
- cat: {"Electrical":"Eléctrico","General":"General","Drywall":"Tablaroca","HVAC":"Climatización","Garage Door":"Puerta de garaje"},
+ cat: {"Electrical":"Eléctrico","General":"General","Drywall":"Tablaroca","HVAC":"Climatización","Garage Door":"Puerta de garaje","Hardware":"Herrajes"},
  items: {
  40:["Instalar cámara de seguridad frente al garaje",""],
  44:["Reemplazar el timbre Google Nest por la versión cableada",""],
- 45:["Cablear la corriente al nuevo timbre Google Nest","El timbre ya se reemplazó (#44) pero aún no tiene corriente"],
+ 45:["Cablear la corriente al nuevo timbre Google Nest","El timbre ya se reemplazó (#44) pero está muerto - sin LED de estado. Circuito abierto en el cableado de 24V; funcionaba antes de la remodelación y el transformador se verificó bueno en ese momento. Orden de diagnóstico: (a) medir voltaje AC en las terminales del botón, (b) en el secundario del transformador, (c) el cableado del timbre Spore (el timbre mecánico está en serie), (d) quitar cualquier conector de chime de 1a generación que quede (4 cables - incompatible con la 2a/3a gen que usa 2). Si después parpadea en amarillo, cambiar el transformador de 16V 10VA a uno de 30VA (~$20)"],
  30:["Instalar tomacorrientes en ambos lados de la isla de la cocina",""],
  46:["Instalar un tomacorriente con puertos USB-C en el contacto de la isla que da al oeste","Usar un tomacorriente Leviton con USB-C"],
  1:["Reemplazar los focos de la lámpara colgante por focos globo blancos redondeados","Focos: Feit #BPG1640W927CAFIL2 (globo esmerilado blanco G16.5, base E12, 2700K) x8 - llegan lun 27 jul, 10am-2pm (pedido HD WK33270664). Se retiran los focos Luxrite B11 tipo torpedo actuales"],
@@ -212,7 +234,8 @@ const TR = {
  11:["Limpiar las líneas de lápiz arriba del botiquín",""],
  12:["Cambiar la luz exterior del vestíbulo delantero de dimmer a interruptor estándar","Vestíbulo delantero. La lámpara tiene sensor de movimiento integrado - el interruptor queda ENCENDIDO para armarla; apagar y encender rápido la deja fija en la mayoría de los modelos. Nunca usar dimmer"],
  13:["Aplicar otra capa de tinte al pasamanos - más oscuro, para que combine mejor con los escalones",""],
- 48:["Alisar el acabado del pasamanos - se siente pegajoso al tacto","Seguimiento del #13 (nueva capa de tinte del pasamanos)"],
+ 48:["Alisar el acabado del pasamanos - se siente pegajoso al tacto","Seguimiento del #13 (nueva capa de tinte del pasamanos). Acabado: Rubio Monocoat Oil Plus 2C Natural - nunca Pure (Pure amarillea y choca con el roble blanco Mirage DuraMatt)"],
+ 53:["Enderezar la lámpara colgante de papel que está torcida","Lámpara AllModern Workshop sobre ganchos de techo AusPower (B0CGV4HG83). Revisar la colocación de los ganchos, que el sujetacable esté cuadrado y si el armazón de alambre está deformado"],
  14:["Instalar tiradores en el clóset de blancos","Llegaron el vie 24 jul"],
  15:["Instalar tiradores en el gabinete superior","Los tiradores llegaron el vie 24 jul"],
  16:["Reparar la luz del tocador - parpadea al encenderla",""],
@@ -229,8 +252,19 @@ const TR = {
  36:["Instalar apliques de pared",""],
  37:["Reemplazar el foco del plafón por un LED brillante regulable - el foco actual es muy tenue","Foco: Luxrite #LR21440-4PK (A19 equiv. 100W ~1600 lm, 2700K, regulable, apto para luminaria cerrada) - llega lun 4 ago. Actual: Philips equiv. 60W WarmGlow (~800 lm)"],
  23:["Instalar iluminación dentro del clóset",""],
- 38:["Reemplazar el foco del plafón por un LED brillante regulable - el foco actual es muy tenue","Foco: Luxrite #LR21440-4PK (A19 equiv. 100W ~1600 lm, 2700K, regulable, apto para luminaria cerrada) - llega lun 4 ago. Actual: Philips equiv. 60W WarmGlow (~800 lm)"],
+ 38:["Reemplazar el foco del plafón por un LED brillante regulable - el foco actual es muy tenue","Foco: Luxrite #LR21440-4PK (A19 equiv. 100W ~1600 lm, 2700K, regulable, apto para luminaria cerrada). El vecino tiene los focos Luxrite. Actual: Philips equiv. 60W WarmGlow (~800 lm)"],
  47:["Quitar la cinta de la puerta corrediza de bolsillo en la oficina",""],
+ 54:["Intercambiar los tomacorrientes para que las unidades USB-C queden en la pared sur","Circuito #28 (20A AF). Revisar primero la profundidad de la caja de la pared sur - los tomacorrientes USB-C son profundos"],
+ 55:["Intercambiar el orden de los dos interruptores de luz","Hacerlo antes de dar de alta en BlueBot si son interruptores inteligentes Leviton - la app los registra por MAC, así que los nombres siguen al dispositivo, no a la posición"],
+ 56:["Encender y poner en marcha el termostato Mysa del piso radiante","Circuito #13 (20A AF). El GFCI Clase A de 5 mA integrado del Mysa es lo que mantiene este circuito en cumplimiento del código (424.44(G)) - si algún día se cambia por un termostato normal, hay que cambiar el interruptor del panel. 2.4 GHz - conectar a BlueBot"],
+ 57:["Intercambiar el orden de los dimmers de las luces de los gabinetes","El orden de los interruptores debe coincidir con las luces de izquierda a derecha. Hacerlo antes de dar de alta en BlueBot"],
+ 58:["Reemplazar el interruptor de encendido/apagado por un dimmer inteligente para las luces empotradas","Confirmar si es 3-way (necesita un control companion de batería DAWDC en la segunda ubicación). Verificar que las luces empotradas sean regulables y anotar el número de modelo. Pendiente: ¿Leviton o Lutron? - el arquitecto especificó Lutron Maestro + placas Claro para esta sala"],
+ 59:["Montar el control remoto de la persiana del tragaluz Velux a la izquierda de los interruptores","Centro vertical alineado con el centro del grupo de interruptores adyacente. Separación de 1/4 a 3/8 pulg., igual al espacio entre placas. Usar taquetes para tablaroca, no solo adhesivo"],
+ 60:["Reemplazar los herrajes de la puerta: juego de privacidad en lugar de paso, y rosetas Modern Rectangular en lugar de redondas","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Parte de un solo error de surtido de Golden Gate (Roman Sanchez) - preguntar qué se surtió vs. qué se cotizó y pedir crédito + reenvío. Confirmar si Emtek vende las rosetas por separado"],
+ 61:["Reemplazar los herrajes de la puerta: juego de privacidad en lugar de paso, y rosetas Modern Rectangular en lugar de redondas","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Parte de un solo error de surtido de Golden Gate (Roman Sanchez) - preguntar qué se surtió vs. qué se cotizó y pedir crédito + reenvío. Confirmar si Emtek vende las rosetas por separado"],
+ 62:["Reemplazar el juego de paso de la puerta por el juego de privacidad especificado","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Verificar que la roseta sea Modern Rectangular. Parte de un solo error de surtido de Golden Gate (Roman Sanchez) - pedir crédito + reenvío"],
+ 63:["Reemplazar el juego de paso de la puerta por el juego de privacidad especificado","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Verificar que la roseta sea Modern Rectangular. Parte de un solo error de surtido de Golden Gate (Roman Sanchez) - pedir crédito + reenvío"],
+ 64:["Reemplazar el juego de paso por uno de privacidad en la puerta del pasillo hacia los dormitorios","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Parte de un solo error de surtido de Golden Gate (Roman Sanchez) - pedir crédito + reenvío. Confirmar también que no haya quedado un juego de privacidad en la puerta del garaje - esa lleva paso (pedido Homestead #25149)"],
  24:["Confirmar que el sistema HVAC funciona - borrar el error que aún aparece en la pantalla del termostato",""],
  25:["Encender el deshumidificador de toda la casa, ajustarlo al 45% y confirmar que funciona",""],
  28:["Instalar estantería en la pared norte del garaje",""],
@@ -242,6 +276,12 @@ const TR = {
  50:["Alargar el cable ethernet que es demasiado corto para llegar a la caja",""],
  51:["Ajustar las puntas de todos los cables ethernet para que entren en la caja Trendnet",""],
  52:["Atornillar la caja UniFi y su fuente de poder",""],
+ 65:["Instalar el monitor de energía de toda la casa (Leviton LWHEM)","Requiere un hub LDATA - no está instalado (también por eso los interruptores inteligentes existentes no aparecen en la app). Confirmar configuración de CTs y capacidad de 200A con Leviton (1-800-824-3005). Decidir si solo acometida o por circuito antes de ordenar"],
+ 66:["Corregir las asignaciones de interruptores GFCI/AFCI en el panel","A doble función: #7 microondas, #11 lavavajillas, #19 tanque de agua caliente instantánea, #21 refrigerador, #39 contactos exteriores, #43 contactos del techo del garaje, #45 ático, #48 isla. A GFCI: #42 abrepuertas del garaje, #47 rack UniFi, #10/12 lavadora (240V), #30/32 secadora (240V). Un tomacorriente GFCI en el aparato cumple igual - lo mejor para el rack UniFi y el techo del garaje. Verificar primero: #4/#14 baños (quizá ya tienen tomacorrientes GFCI), #18/20 jacuzzi (30A vs. especificación Watkins de 50-70A; el GFCI del subpanel del spa debe estar a 5+ pies del agua), #1/3 horno, #22/24 calentador de agua vs. MOCP del Navien, #23/25 estufa, #15/17 cargador del auto, #5 campana, #40 detectores de humo (confirmar que no esté disparado). Bomba de calor #44/46: SIN CAMBIO - el GFCI bipolar de 40A está correcto como está"],
+ 67:["Tapar el gabinete metálico abierto junto al rack de red","Hay conductores expuestos, sin frente muerto - falla de inspección y un peligro real"],
+ 68:["Quitar la barra multicontacto que sirve de alimentación permanente sobre el tablero de madera","Las barras multicontacto no están permitidas como cableado fijo"],
+ 69:["Actualizar la tarjeta del directorio del panel","#37 - 'Family Room' (decía 'living room DS'); #42 - 'Garage Door Opener' (decía 'Gate Door'); etiquetar #41 (20A AF, sin etiqueta) y #49/51 (bipolar 15A, probablemente supresor de picos); corregir 'A.C.' para indicar que alimenta el condensador Y el manejador de aire con alimentación de un solo punto"],
+ 70:["Desactivar BSS Transition en la red WiFi BlueBot","802.11v - los radios IoT económicos manejan mal las solicitudes de transición y se desconectan en lugar de cambiar de AP. Todo lo demás en BlueBot está verificado y correcto"],
  41:["Arreglar el disparo del interruptor del cargador del auto eléctrico - subir a 50A Y diagnosticar el disparo instantáneo","Se dispara al instante al conectar (no es sobrecarga; el mismo auto y cable funcionan bien en casa del primo). 1) Verificar el cableado del interruptor GFCI: neutro de carga al interruptor, coleta a la barra de neutros, sin contacto neutro-tierra aguas abajo. 2) Si el cableado está bien, puede ser conflicto entre el autotest del cargador (EVSE) y el interruptor GFCI - se resuelve cableando el cargador directo con interruptor estándar sin GFCI. Verificar calibre 6 AWG Cu antes del cambio a 50A. Interruptor nuevo: Leviton #LB250-GFR (50A GFCI) llega el lun 27 jul. Mensaje enviado a Joe/Ivan el 25/7"],
  26:["Instalar la placa faltante del interruptor de luz (cerca de la puerta del garaje)",""],
  27:["Dar servicio a la puerta del garaje - tiembla mucho al arrancar y rechina al detenerse",""]
@@ -249,8 +289,8 @@ const TR = {
 };
 
 const UI = {
- en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", done:"done", validated:"validated", locations:"locations", secDone:"done", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened"},
- es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", done:"hechos", validated:"validados", locations:"ubicaciones", secDone:"hechas", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto"}
+ en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened"},
+ es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto"}
 };
 
 let LANG = localStorage.getItem("punchlist-lang-461") || "en";
@@ -362,9 +402,13 @@ function render() {
 
     const sec = document.createElement("section");
     sec.className = "loc";
-    const doneCount = DATA.filter(i => i.location === loc && i.done).length;
-    const total = DATA.filter(i => i.location === loc).length;
-    sec.innerHTML = `<h2>${esc(tLoc(loc))} <span class="n">${doneCount}/${total} ${u.secDone}</span></h2>`;
+    const openHere = DATA.filter(i => i.location === loc && !i.done);
+    const byCat = {};
+    openHere.forEach(i => { byCat[i.category] = (byCat[i.category] || 0) + 1; });
+    const openLbl = openHere.length
+      ? Object.entries(byCat).map(([c, n]) => `${n} ${esc(tCat(c))}`).join(" · ") + ` ${u.open}`
+      : `0 ${u.open}`;
+    sec.innerHTML = `<h2>${esc(tLoc(loc))} <span class="n">${openLbl}</span></h2>`;
     const card = document.createElement("div");
     card.className = "card";
 
@@ -396,12 +440,18 @@ function render() {
   });
 
   if (!shown) list.innerHTML = `<div class="empty">${u.empty}</div>`;
+  else {
+    const totalOpen = DATA.filter(i => !i.done).length;
+    list.insertAdjacentHTML("beforeend", `<div class="total-open">${u.totalOpen}: ${totalOpen}</div>`);
+  }
 
   const done = DATA.filter(i => i.done).length;
   const validated = DATA.filter(i => i.status === "validated").length;
+  const reopened = DATA.filter(i => i.status === "reopened" && !i.done).length;
   $("#stats").innerHTML =
     `<span class="stat"><b>${DATA.length}</b> ${u.items}</span>` +
     `<span class="stat"><b>${DATA.length - done}</b> ${u.open}</span>` +
+    `<span class="stat"><b>${reopened}</b> ${u.reopened}</span>` +
     `<span class="stat"><b>${done}</b> ${u.done}</span>` +
     `<span class="stat"><b>${validated}</b> ${u.validated}</span>` +
     `<span class="stat"><b>${locs.length}</b> ${u.locations}</span>`;
