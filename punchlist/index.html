@@ -211,7 +211,7 @@ const DATA = [
  {"num": 76, "location": "Garage", "category": "Electrical", "item": "Add GFCI protection to the UniFi rack circuit (panel #47)", "notes": "Currently a plain 15A breaker. Prefer a GFCI receptacle at the rack so a trip is easy to reset - mount it accessibly; a trip still takes down the network"},
  {"num": 41, "location": "Garage", "category": "Electrical", "item": "Fix EV charger breaker tripping - upgrade to 50A AND diagnose instant trip", "notes": "Trips instantly at plug-in (not overload; same car+cable works fine at cousin's). 1) Verify GFCI breaker wiring: load neutral on breaker, pigtail to neutral bar, no neutral-ground contact downstream. 2) If wiring clean, suspect EVSE self-test vs GFCI breaker conflict - fix by hardwiring EVSE with standard non-GFCI breaker. Verify wire gauge is 6 AWG Cu before 50A swap. New breaker: Leviton #LB250-GFR (50A GFCI) arriving Mon Jul 27. Joe/Ivan messaged 7/25", "status": "validated"},
  {"num": 26, "location": "Garage", "category": "Electrical", "item": "Install missing plate over light switch (near garage door)", "notes": "", "status": "validated"},
- {"num": 27, "location": "Garage", "category": "General", "item": "Service garage door - very shaky as it starts, creaky as it stops", "notes": "", "status": "reopened", "rev": 2}
+ {"num": 27, "location": "Garage", "category": "General", "item": "Service garage door - very shaky as it starts, creaky as it stops", "notes": "Reopened: door is still shaky when it starts", "status": "reopened", "rev": 2}
 ];
 
 const TR = {
@@ -286,7 +286,7 @@ const TR = {
  76:["Agregar protección GFCI al circuito del rack UniFi (posición #47 del panel)","Hoy tiene un interruptor sencillo de 15A. Mejor un tomacorriente GFCI en el rack para que un disparo sea fácil de restablecer - montarlo accesible; un disparo de todas formas apaga la red"],
  41:["Arreglar el disparo del interruptor del cargador del auto eléctrico - subir a 50A Y diagnosticar el disparo instantáneo","Se dispara al instante al conectar (no es sobrecarga; el mismo auto y cable funcionan bien en casa del primo). 1) Verificar el cableado del interruptor GFCI: neutro de carga al interruptor, coleta a la barra de neutros, sin contacto neutro-tierra aguas abajo. 2) Si el cableado está bien, puede ser conflicto entre el autotest del cargador (EVSE) y el interruptor GFCI - se resuelve cableando el cargador directo con interruptor estándar sin GFCI. Verificar calibre 6 AWG Cu antes del cambio a 50A. Interruptor nuevo: Leviton #LB250-GFR (50A GFCI) llega el lun 27 jul. Mensaje enviado a Joe/Ivan el 25/7"],
  26:["Instalar la placa faltante del interruptor de luz (cerca de la puerta del garaje)",""],
- 27:["Dar servicio a la puerta del garaje - tiembla mucho al arrancar y rechina al detenerse",""]
+ 27:["Dar servicio a la puerta del garaje - tiembla mucho al arrancar y rechina al detenerse","Reabierto: la puerta todavía tiembla al arrancar"]
  }
 };
 
