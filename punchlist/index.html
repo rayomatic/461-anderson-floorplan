@@ -125,7 +125,7 @@
   <input type="search" id="q" placeholder="Search items…">
   <select id="fLoc"><option value="">All locations</option></select>
   <select id="fCat"><option value="">All trades</option></select>
-  <label class="hide-done"><input type="checkbox" id="hideDone"> <span id="hideDoneLabel">Hide done</span></label>
+  <label class="hide-done"><input type="checkbox" id="hideVal"> <span id="hideValLabel">Hide validated</span></label>
 </div>
 
 <main id="list"></main>
@@ -249,8 +249,8 @@ const TR = {
 };
 
 const UI = {
- en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideDone:"Hide done", items:"items", open:"open", done:"done", validated:"validated", locations:"locations", secDone:"done", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened"},
- es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideDone:"Ocultar hechos", items:"elementos", open:"pendientes", done:"hechos", validated:"validados", locations:"ubicaciones", secDone:"hechas", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto"}
+ en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", done:"done", validated:"validated", locations:"locations", secDone:"done", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened"},
+ es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", done:"hechos", validated:"validados", locations:"ubicaciones", secDone:"hechas", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto"}
 };
 
 let LANG = localStorage.getItem("punchlist-lang-461") || "en";
@@ -290,7 +290,7 @@ function applyLang() {
   const u = UI[LANG];
   $("#sub").textContent = u.sub;
   $("#q").placeholder = u.search;
-  $("#hideDoneLabel").textContent = u.hideDone;
+  $("#hideValLabel").textContent = u.hideValidated;
   $("#updatedLabel").textContent = u.updated;
   $("#langEn").classList.toggle("active", LANG === "en");
   $("#langEs").classList.toggle("active", LANG === "es");
@@ -345,7 +345,7 @@ async function pushRemote(it) {
 function render() {
   const u = UI[LANG];
   const q = $("#q").value.trim().toLowerCase();
-  const fl = locSel.value, fc = catSel.value, hd = $("#hideDone").checked;
+  const fl = locSel.value, fc = catSel.value, hv = $("#hideVal").checked;
   const list = $("#list");
   list.innerHTML = "";
   let shown = 0;
@@ -355,7 +355,7 @@ function render() {
     const items = DATA.filter(it =>
       it.location === loc &&
       (!fc || it.category === fc) &&
-      (!hd || !it.done) &&
+      (!hv || it.status !== "validated") &&
       (!q || (it.num + " " + it.item + " " + it.notes + " " + it.category + " " + tItem(it) + " " + tNotes(it) + " " + tLoc(it.location) + " " + tCat(it.category)).toLowerCase().includes(q))
     ).sort((a,b) => a.category.localeCompare(b.category));
     if (!items.length) return;
@@ -411,7 +411,7 @@ function esc(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-["q","fLoc","fCat","hideDone"].forEach(id =>
+["q","fLoc","fCat","hideVal"].forEach(id =>
   $("#" + id).addEventListener(id === "q" ? "input" : "change", render));
 $("#langEn").addEventListener("click", () => { LANG = "en"; localStorage.setItem("punchlist-lang-461", "en"); applyLang(); });
 $("#langEs").addEventListener("click", () => { LANG = "es"; localStorage.setItem("punchlist-lang-461", "es"); applyLang(); });
