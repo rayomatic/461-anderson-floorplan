@@ -21,10 +21,13 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { op = 'add', num, text, idx, ridx } = req.body || {};
     const n = parseInt(num, 10);
-    if (!Number.isInteger(n) || typeof text !== 'string' || !text.trim() || text.length > 2000) {
+    if (!Number.isInteger(n)) {
       return res.status(400).json({ error: 'bad-request' });
     }
-    const t = text.trim();
+    if (op !== 'delete' && (typeof text !== 'string' || !text.trim() || text.length > 2000)) {
+      return res.status(400).json({ error: 'bad-request' });
+    }
+    const t = op !== 'delete' ? text.trim() : '';
     const now = new Date().toISOString();
     const state = (await kv.get(KEY)) || {};
     const list = Array.isArray(state[n]) ? state[n] : [];
@@ -47,6 +50,17 @@ export default async function handler(req, res) {
       } else {
         c.text = t;
         c.edited = now;
+      }
+    } else if (op === 'delete') {
+      const c = Number.isInteger(idx) ? list[idx] : null;
+      if (!c) return res.status(400).json({ error: 'bad-index' });
+      if (ridx !== undefined && ridx !== null) {
+        if (!(Number.isInteger(ridx) && Array.isArray(c.replies) && c.replies[ridx])) {
+          return res.status(400).json({ error: 'bad-index' });
+        }
+        c.replies.splice(ridx, 1);
+      } else {
+        list.splice(idx, 1);
       }
     } else {
       return res.status(400).json({ error: 'bad-op' });

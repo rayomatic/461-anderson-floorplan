@@ -350,8 +350,8 @@ const TR = {
 };
 
 const UI = {
- en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened", addComment:"Add comment", cmtSave:"Save", cmtPh:"Write a comment…", cmtErr:"Couldn't save - check connection and try again.", cmtEdit:"Edit", cmtReply:"Reply", cmtEdited:"edited"},
- es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto", addComment:"Agregar comentario", cmtSave:"Guardar", cmtPh:"Escribe un comentario…", cmtErr:"No se pudo guardar - revisa la conexión e intenta de nuevo.", cmtEdit:"Editar", cmtReply:"Responder", cmtEdited:"editado"}
+ en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened", addComment:"Add comment", cmtSave:"Save", cmtPh:"Write a comment…", cmtErr:"Couldn't save - check connection and try again.", cmtEdit:"Edit", cmtReply:"Reply", cmtEdited:"edited", cmtDelete:"Delete", cmtConfirm:"Delete?"},
+ es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto", addComment:"Agregar comentario", cmtSave:"Guardar", cmtPh:"Escribe un comentario…", cmtErr:"No se pudo guardar - revisa la conexión e intenta de nuevo.", cmtEdit:"Editar", cmtReply:"Responder", cmtEdited:"editado", cmtDelete:"Eliminar", cmtConfirm:"¿Eliminar?"}
 };
 
 let LANG = localStorage.getItem("punchlist-lang-461") || "en";
@@ -486,6 +486,27 @@ function cmtActBtn(label, fn) {
   return b;
 }
 
+// Two-tap delete: first tap arms ("Delete?"), second tap within 3s deletes
+function cmtDelBtn(u, payload) {
+  const b = document.createElement("button");
+  let armed = false, timer;
+  b.textContent = u.cmtDelete;
+  b.addEventListener("click", async e => {
+    e.stopPropagation();
+    if (!armed) {
+      armed = true;
+      b.textContent = u.cmtConfirm;
+      b.style.color = "var(--reopen)";
+      timer = setTimeout(() => { armed = false; b.textContent = u.cmtDelete; b.style.color = ""; }, 3000);
+      return;
+    }
+    clearTimeout(timer);
+    b.disabled = true;
+    try { await postComment(payload); } catch (err) { b.disabled = false; }
+  });
+  return b;
+}
+
 function cmtLine(prefix, c, u) {
   const line = document.createElement("div");
   line.className = "cmt-line";
@@ -522,6 +543,7 @@ function buildComments(it, u) {
       d.insertBefore(box, acts);
       ta.focus();
     }));
+    acts.appendChild(cmtDelBtn(u, { op: "delete", num: it.num, idx }));
 
     (c.replies || []).forEach((r, ridx) => {
       const rd = document.createElement("div");
@@ -537,6 +559,7 @@ function buildComments(it, u) {
         racts.remove();
         ta.focus();
       }));
+      racts.appendChild(cmtDelBtn(u, { op: "delete", num: it.num, idx, ridx }));
       rd.appendChild(racts);
       d.appendChild(rd);
     });
