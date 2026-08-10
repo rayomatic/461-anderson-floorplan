@@ -103,6 +103,15 @@
     padding: 7px 12px; background: var(--accent); color: var(--accent-ink); cursor: pointer;
   }
   .cmt-err { font-size: 12px; color: var(--reopen); margin-top: 3px; }
+  .cmt-acts { margin-top: 2px; }
+  .cmt-acts button {
+    font: inherit; font-size: 11.5px; color: var(--accent); background: none;
+    border: none; padding: 0; margin-right: 12px; cursor: pointer;
+  }
+  .cmt-rep {
+    margin: 5px 0 0 12px; padding-left: 8px;
+    border-left: 2px solid var(--line);
+  }
   .row.done .cmts { text-decoration: none; opacity: .8; }
   .badge {
     display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px;
@@ -341,8 +350,8 @@ const TR = {
 };
 
 const UI = {
- en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened", addComment:"Add comment", cmtSave:"Save", cmtPh:"Write a comment…", cmtErr:"Couldn't save - check connection and try again."},
- es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto", addComment:"Agregar comentario", cmtSave:"Guardar", cmtPh:"Escribe un comentario…", cmtErr:"No se pudo guardar - revisa la conexión e intenta de nuevo."}
+ en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened", addComment:"Add comment", cmtSave:"Save", cmtPh:"Write a comment…", cmtErr:"Couldn't save - check connection and try again.", cmtEdit:"Edit", cmtReply:"Reply", cmtEdited:"edited"},
+ es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto", addComment:"Agregar comentario", cmtSave:"Guardar", cmtPh:"Escribe un comentario…", cmtErr:"No se pudo guardar - revisa la conexión e intenta de nuevo.", cmtEdit:"Editar", cmtReply:"Responder", cmtEdited:"editado"}
 };
 
 let LANG = localStorage.getItem("punchlist-lang-461") || "en";
@@ -429,55 +438,120 @@ function fmtCmtDate(iso) {
     { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
+async function postComment(payload) {
+  const r = await fetch(CAPI, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!r.ok) throw new Error("api " + r.status);
+  COMMENTS = await r.json();
+  render();
+}
+
+// Inline composer: textarea + save button; onSave(text) should throw on failure
+function cmtComposer(u, initial, onSave) {
+  const box = document.createElement("div");
+  box.className = "cmt-box";
+  const ta = document.createElement("textarea");
+  ta.placeholder = u.cmtPh;
+  if (initial) ta.value = initial;
+  const btn = document.createElement("button");
+  btn.textContent = u.cmtSave;
+  btn.addEventListener("click", async e => {
+    e.stopPropagation();
+    const text = ta.value.trim();
+    if (!text) return;
+    btn.disabled = true;
+    try {
+      await onSave(text);
+    } catch (err) {
+      btn.disabled = false;
+      if (!box.querySelector(".cmt-err")) {
+        const msg = document.createElement("div");
+        msg.className = "cmt-err";
+        msg.textContent = u.cmtErr;
+        box.appendChild(msg);
+      }
+    }
+  });
+  box.append(ta, btn);
+  return { box, ta };
+}
+
+function cmtActBtn(label, fn) {
+  const b = document.createElement("button");
+  b.textContent = label;
+  b.addEventListener("click", e => { e.stopPropagation(); fn(); });
+  return b;
+}
+
+function cmtLine(prefix, c, u) {
+  const line = document.createElement("div");
+  line.className = "cmt-line";
+  line.textContent = prefix + c.text + " ";
+  const dt = document.createElement("span");
+  dt.className = "cmt-d";
+  dt.textContent = fmtCmtDate(c.at) + (c.edited ? " · " + u.cmtEdited : "");
+  line.appendChild(dt);
+  return line;
+}
+
 function buildComments(it, u) {
   const wrap = document.createElement("div");
   wrap.className = "cmts";
-  (COMMENTS[it.num] || []).forEach(c => {
+
+  (COMMENTS[it.num] || []).forEach((c, idx) => {
     const d = document.createElement("div");
     d.className = "cmt";
-    d.textContent = "💬 " + c.text + " ";
-    const dt = document.createElement("span");
-    dt.className = "cmt-d";
-    dt.textContent = fmtCmtDate(c.at);
-    d.appendChild(dt);
+    const line = cmtLine("💬 ", c, u);
+    d.appendChild(line);
+
+    const acts = document.createElement("div");
+    acts.className = "cmt-acts";
+    acts.appendChild(cmtActBtn(u.cmtEdit, () => {
+      const { box, ta } = cmtComposer(u, c.text, text =>
+        postComment({ op: "edit", num: it.num, idx, text }));
+      d.replaceChild(box, line);
+      acts.remove();
+      ta.focus();
+    }));
+    acts.appendChild(cmtActBtn(u.cmtReply, () => {
+      const { box, ta } = cmtComposer(u, "", text =>
+        postComment({ op: "reply", num: it.num, idx, text }));
+      d.insertBefore(box, acts);
+      ta.focus();
+    }));
+
+    (c.replies || []).forEach((r, ridx) => {
+      const rd = document.createElement("div");
+      rd.className = "cmt-rep";
+      const rline = cmtLine("↳ ", r, u);
+      rd.appendChild(rline);
+      const racts = document.createElement("div");
+      racts.className = "cmt-acts";
+      racts.appendChild(cmtActBtn(u.cmtEdit, () => {
+        const { box, ta } = cmtComposer(u, r.text, text =>
+          postComment({ op: "edit", num: it.num, idx, ridx, text }));
+        rd.replaceChild(box, rline);
+        racts.remove();
+        ta.focus();
+      }));
+      rd.appendChild(racts);
+      d.appendChild(rd);
+    });
+
+    d.appendChild(acts);
     wrap.appendChild(d);
   });
+
   const add = document.createElement("button");
   add.className = "cmt-add";
   add.textContent = "💬 " + u.addComment;
   add.addEventListener("click", e => {
     e.stopPropagation();
-    const box = document.createElement("div");
-    box.className = "cmt-box";
-    const ta = document.createElement("textarea");
-    ta.placeholder = u.cmtPh;
-    const btn = document.createElement("button");
-    btn.textContent = u.cmtSave;
-    btn.addEventListener("click", async e2 => {
-      e2.stopPropagation();
-      const text = ta.value.trim();
-      if (!text) return;
-      btn.disabled = true;
-      try {
-        const r = await fetch(CAPI, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ num: it.num, text }),
-        });
-        if (!r.ok) throw new Error("api " + r.status);
-        COMMENTS = await r.json();
-        render();
-      } catch (err) {
-        btn.disabled = false;
-        if (!box.querySelector(".cmt-err")) {
-          const msg = document.createElement("div");
-          msg.className = "cmt-err";
-          msg.textContent = u.cmtErr;
-          box.appendChild(msg);
-        }
-      }
-    });
-    box.append(ta, btn);
+    const { box, ta } = cmtComposer(u, "", text =>
+      postComment({ op: "add", num: it.num, text }));
     wrap.replaceChild(box, add);
     ta.focus();
   });

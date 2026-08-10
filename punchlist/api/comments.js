@@ -19,14 +19,39 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { num, text } = req.body || {};
+    const { op = 'add', num, text, idx, ridx } = req.body || {};
     const n = parseInt(num, 10);
     if (!Number.isInteger(n) || typeof text !== 'string' || !text.trim() || text.length > 2000) {
       return res.status(400).json({ error: 'bad-request' });
     }
+    const t = text.trim();
+    const now = new Date().toISOString();
     const state = (await kv.get(KEY)) || {};
     const list = Array.isArray(state[n]) ? state[n] : [];
-    list.push({ text: text.trim(), at: new Date().toISOString() });
+
+    if (op === 'add') {
+      list.push({ text: t, at: now });
+    } else if (op === 'reply') {
+      const c = Number.isInteger(idx) ? list[idx] : null;
+      if (!c) return res.status(400).json({ error: 'bad-index' });
+      c.replies = Array.isArray(c.replies) ? c.replies : [];
+      c.replies.push({ text: t, at: now });
+    } else if (op === 'edit') {
+      const c = Number.isInteger(idx) ? list[idx] : null;
+      if (!c) return res.status(400).json({ error: 'bad-index' });
+      if (ridx !== undefined && ridx !== null) {
+        const r = Number.isInteger(ridx) && Array.isArray(c.replies) ? c.replies[ridx] : null;
+        if (!r) return res.status(400).json({ error: 'bad-index' });
+        r.text = t;
+        r.edited = now;
+      } else {
+        c.text = t;
+        c.edited = now;
+      }
+    } else {
+      return res.status(400).json({ error: 'bad-op' });
+    }
+
     state[n] = list;
     await kv.set(KEY, state);
     return res.status(200).json(state);
