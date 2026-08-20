@@ -124,6 +124,11 @@
   .row.done .desc, .row.done .notes { text-decoration: line-through; opacity: .5; }
   .row.done .badge { opacity: .5; }
   .row.done .badge.st-v { opacity: 1; }
+  .floor-h {
+    font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--ink); margin: 26px 4px 0; padding-bottom: 5px;
+    border-bottom: 2px solid var(--line);
+  }
   .empty { text-align: center; color: var(--muted); padding: 40px 0; }
   .total-open {
     text-align: right; font-weight: 600; font-size: 14px;
@@ -145,6 +150,7 @@
     header .sub { opacity: 1; color: #333; }
     main { max-width: none; padding: 8px 0 0; }
     .loc h2 { color: #000; }
+    .floor-h { color: #000; border-bottom-color: #000; break-after: avoid; }
     .loc h2 .n { color: #000; }
     .card { border: 1px solid #999; border-radius: 0; background: #fff; }
     .row { break-inside: avoid; padding: 7px 8px; }
@@ -204,11 +210,16 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-19 21:36";
-const LOCATION_ORDER = ["Whole House","Exterior","Kitchen","Family Room","Sitting Room",
-  "Living Room","Dining","Powder Room","Downstairs Bathroom","Hallway",
-  "Laundry Room","Upstairs Bathroom","Primary Bedroom","Bedroom 1",
-  "Bedroom 2","Study/Den","Attic","Garage","Bath 1"];
+const UPDATED = "2026-08-19 21:39";
+const LOCATION_ORDER = ["Whole House","Exterior",
+  "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
+  "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
+  "Attic"];
+const FLOOR_OF = {"Garage":"floor1","Study/Den":"floor1","Hallway":"floor1","Laundry Room":"floor1",
+  "Downstairs Bathroom":"floor1","Family Room":"floor1","Primary Bedroom":"floor1",
+  "Bedroom 1":"floor2","Bedroom 2":"floor2","Upstairs Bathroom":"floor2","Powder Room":"floor2",
+  "Kitchen":"floor2","Sitting Room":"floor2","Living Room":"floor2","Dining":"floor2"};
+const LOC_EN = {"Study/Den":"Office","Primary Bedroom":"Downstairs Bedroom"};
 
 const DATA = [
  {"num": 72, "location": "Whole House", "category": "Electrical", "item": "Debug random smoke alarm activations", "notes": "First Alert SMCO100V-AC, hardwired. 1) At the next event record the exact spoken phrase and location - fire vs. carbon monoxide are different problems. 2) Check the latching alarm indicator to see which head initiated. 3) Solvent VOCs cross-react with the CO cell - active finish work (incl. the handrail re-coat, #48) is a strong candidate. 4) Vacuum construction dust from every head; bag heads during sanding and unbag the same day. 5) Confirm nothing non-First Alert/BRK is on the interconnect loop"},
@@ -304,7 +315,7 @@ const DATA = [
 ];
 
 const TR = {
- loc: {"Kitchen":"Cocina","Family Room":"Sala familiar","Sitting Room":"Sala de estar","Living Room":"Sala","Dining":"Comedor","Powder Room":"Medio baño","Downstairs Bathroom":"Baño de abajo","Hallway":"Pasillo","Laundry Room":"Cuarto de lavado","Upstairs Bathroom":"Baño de arriba","Primary Bedroom":"Dormitorio principal","Bedroom 1":"Dormitorio 1","Bedroom 2":"Dormitorio 2","Study/Den":"Estudio","Attic":"Ático","Garage":"Garaje","Exterior":"Exterior","Whole House":"Toda la casa","Bath 1":"Baño 1"},
+ loc: {"Kitchen":"Cocina","Family Room":"Sala familiar","Sitting Room":"Sala de estar","Living Room":"Sala","Dining":"Comedor","Powder Room":"Medio baño","Downstairs Bathroom":"Baño de abajo","Hallway":"Pasillo","Laundry Room":"Cuarto de lavado","Upstairs Bathroom":"Baño de arriba","Primary Bedroom":"Dormitorio de abajo","Bedroom 1":"Dormitorio 1","Bedroom 2":"Dormitorio 2","Study/Den":"Oficina","Attic":"Ático","Garage":"Garaje","Exterior":"Exterior","Whole House":"Toda la casa","Bath 1":"Baño 1"},
  cat: {"Electrical":"Eléctrico","General":"General","Drywall":"Tablaroca","HVAC":"Climatización","Garage Door":"Puerta de garaje","Plumbing":"Plomería"},
  items: {
  40:["Instalar cámara de seguridad frente al garaje",""],
@@ -402,8 +413,8 @@ const TR = {
 };
 
 const UI = {
- en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened", addComment:"Add comment", cmtSave:"Save", cmtPh:"Write a comment…", cmtErr:"Couldn't save - check connection and try again.", cmtEdit:"Edit", cmtReply:"Reply", cmtEdited:"edited", cmtDelete:"Delete", cmtConfirm:"Delete?"},
- es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto", addComment:"Agregar comentario", cmtSave:"Guardar", cmtPh:"Escribe un comentario…", cmtErr:"No se pudo guardar - revisa la conexión e intenta de nuevo.", cmtEdit:"Editar", cmtReply:"Responder", cmtEdited:"editado", cmtDelete:"Eliminar", cmtConfirm:"¿Eliminar?"}
+ en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", floor1:"First Floor", floor2:"Second Floor", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened", addComment:"Add comment", cmtSave:"Save", cmtPh:"Write a comment…", cmtErr:"Couldn't save - check connection and try again.", cmtEdit:"Edit", cmtReply:"Reply", cmtEdited:"edited", cmtDelete:"Delete", cmtConfirm:"Delete?"},
+ es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", floor1:"Primer piso", floor2:"Segundo piso", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto", addComment:"Agregar comentario", cmtSave:"Guardar", cmtPh:"Escribe un comentario…", cmtErr:"No se pudo guardar - revisa la conexión e intenta de nuevo.", cmtEdit:"Editar", cmtReply:"Responder", cmtEdited:"editado", cmtDelete:"Eliminar", cmtConfirm:"¿Eliminar?"}
 };
 
 let LANG = localStorage.getItem("punchlist-lang-461") || "en";
@@ -425,7 +436,7 @@ applyStatus();
 const $ = s => document.querySelector(s);
 const locSel = $("#fLoc"), catSel = $("#fCat");
 
-const tLoc = l => LANG === "es" ? (TR.loc[l] || l) : l;
+const tLoc = l => LANG === "es" ? (TR.loc[l] || l) : (LOC_EN[l] || l);
 const tCat = c => LANG === "es" ? (TR.cat[c] || c) : c;
 const tItem = it => (LANG === "es" && TR.items[it.num]) ? TR.items[it.num][0] : it.item;
 const tNotes = it => (LANG === "es" && TR.items[it.num]) ? TR.items[it.num][1] : it.notes;
@@ -656,6 +667,7 @@ function render() {
   const list = $("#list");
   list.innerHTML = "";
   let shown = 0;
+  let lastFloor = null;
 
   locs.forEach(loc => {
     if (fl && loc !== fl) return;
@@ -666,6 +678,15 @@ function render() {
       (!q || (it.num + " " + it.item + " " + it.notes + " " + it.category + " " + tItem(it) + " " + tNotes(it) + " " + tLoc(it.location) + " " + tCat(it.category)).toLowerCase().includes(q))
     ).sort((a,b) => a.category.localeCompare(b.category));
     if (!items.length) return;
+
+    const floor = FLOOR_OF[loc] || null;
+    if (floor && floor !== lastFloor) {
+      const fh = document.createElement("h2");
+      fh.className = "floor-h";
+      fh.textContent = u[floor];
+      list.appendChild(fh);
+    }
+    lastFloor = floor;
 
     const sec = document.createElement("section");
     sec.className = "loc";
