@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" role="img" aria-label="Elevation of five pendant globes at staggered heights">
+  <rect width="720" height="560" fill="#14171E"/>
+  <defs>
+    <radialGradient id="bulb"><stop offset="0%" stop-color="#FFF8EA"/>
+      <stop offset="55%" stop-color="#FFEBC4"/><stop offset="100%" stop-color="#F2B968"/></radialGradient>
+    <radialGradient id="glow"><stop offset="0%" stop-color="#F2B968" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#F2B968" stop-opacity="0"/></radialGradient>
+    <marker id="ar" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 z" fill="#5FCFC0"/>
+    </marker>
+  </defs>
+  <rect x="238" y="4" width="244" height="20" fill="#232833"/>
+  <line x1="40" y1="24" x2="600" y2="24" stroke="#4A515F" stroke-width="1.5"/>
+  <rect x="160" y="24" width="400" height="10" rx="1.5" fill="#4A515F"/>
+  <line x1="40" y1="480" x2="600" y2="480" stroke="#4A515F" stroke-width="1.5"/>
+  <g stroke="#333A47" stroke-width="1">
+    <line x1="52" y1="480" x2="40" y2="492"/>
+    <line x1="92" y1="480" x2="80" y2="492"/>
+    <line x1="132" y1="480" x2="120" y2="492"/>
+    <line x1="172" y1="480" x2="160" y2="492"/>
+    <line x1="212" y1="480" x2="200" y2="492"/>
+    <line x1="252" y1="480" x2="240" y2="492"/>
+    <line x1="292" y1="480" x2="280" y2="492"/>
+    <line x1="332" y1="480" x2="320" y2="492"/>
+    <line x1="372" y1="480" x2="360" y2="492"/>
+    <line x1="412" y1="480" x2="400" y2="492"/>
+    <line x1="452" y1="480" x2="440" y2="492"/>
+    <line x1="492" y1="480" x2="480" y2="492"/>
+    <line x1="532" y1="480" x2="520" y2="492"/>
+    <line x1="572" y1="480" x2="560" y2="492"/>
+  </g>
+  <rect x="216" y="360" width="330" height="7" rx="1" fill="#3E4552"/>
+  <rect x="240" y="367" width="5" height="113" fill="#333A47"/>
+  <rect x="518" y="367" width="5" height="113" fill="#333A47"/>
+  <line x1="112" y1="24" x2="112" y2="480" stroke="#333A47" stroke-width="1"/>
+  <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#7C8595" text-anchor="end">
+    <line x1="106" y1="24" x2="118" y2="24" stroke="#4A515F"/><text x="100" y="28">114&#8243; CEILING</text>
+    <line x1="106" y1="216" x2="118" y2="216" stroke="#5FCFC0"/>
+    <text x="100" y="220" fill="#5FCFC0">66&#8243; ANCHOR</text>
+    <line x1="106" y1="360" x2="118" y2="360" stroke="#4A515F"/><text x="100" y="364">30&#8243; TABLE</text>
+    <line x1="106" y1="480" x2="118" y2="480" stroke="#4A515F"/><text x="100" y="475">0&#8243; FLOOR</text>
+  </g>
+  <line x1="600" y1="216" x2="628" y2="216" stroke="#5FCFC0" stroke-width=".8" opacity=".6"/>
+  <line x1="556" y1="360" x2="628" y2="360" stroke="#5FCFC0" stroke-width=".8" opacity=".6"/>
+  <line x1="620" y1="216" x2="620" y2="360" stroke="#5FCFC0" stroke-width="1" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <text x="632" y="284" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5FCFC0">36&#8243;</text>
+  <text x="632" y="300" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5A6272">CLEAR</text>
+  <line x1="580" y1="100" x2="676" y2="100" stroke="#5FCFC0" stroke-width=".8" opacity=".4"/>
+  <line x1="668" y1="24" x2="668" y2="100" stroke="#5FCFC0" stroke-width="1" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <text x="676" y="58" font-family="IBM Plex Mono, monospace" font-size="12" fill="#5FCFC0">19&#8243;</text>
+  <text x="676" y="74" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5A6272">CABLE</text>
+  <line x1="200" y1="34" x2="200" y2="110" stroke="#5A6272" stroke-width="1"/>
+  <g>
+    <circle cx="200" cy="128" r="26" fill="url(#glow)"/>
+    <rect x="194" y="110" width="12" height="7" rx="2" fill="#A98B52"/>
+    <circle cx="200" cy="128" r="12" fill="url(#bulb)"/>
+    <text x="219" y="132" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#9AA3B2">85&#8243;</text>
+    <text x="200" y="52" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5A6272">1</text>
+  </g>
+  <line x1="280" y1="34" x2="280" y2="186" stroke="#5A6272" stroke-width="1"/>
+  <g>
+    <circle cx="280" cy="204" r="26" fill="url(#glow)"/>
+    <rect x="274" y="186" width="12" height="7" rx="2" fill="#A98B52"/>
+    <circle cx="280" cy="204" r="12" fill="url(#bulb)"/>
+    <text x="299" y="208" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#5FCFC0">66&#8243;</text>
+    <text x="280" y="52" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5A6272">2</text>
+  </g>
+  <line x1="360" y1="34" x2="360" y2="142" stroke="#5A6272" stroke-width="1"/>
+  <g>
+    <circle cx="360" cy="160" r="26" fill="url(#glow)"/>
+    <rect x="354" y="142" width="12" height="7" rx="2" fill="#A98B52"/>
+    <circle cx="360" cy="160" r="12" fill="url(#bulb)"/>
+    <text x="379" y="164" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#9AA3B2">77&#8243;</text>
+    <text x="360" y="52" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5A6272">3</text>
+  </g>
+  <line x1="440" y1="34" x2="440" y2="166" stroke="#5A6272" stroke-width="1"/>
+  <g>
+    <circle cx="440" cy="184" r="26" fill="url(#glow)"/>
+    <rect x="434" y="166" width="12" height="7" rx="2" fill="#A98B52"/>
+    <circle cx="440" cy="184" r="12" fill="url(#bulb)"/>
+    <text x="459" y="188" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#9AA3B2">71&#8243;</text>
+    <text x="440" y="52" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5A6272">4</text>
+  </g>
+  <line x1="520" y1="34" x2="520" y2="94" stroke="#5A6272" stroke-width="1"/>
+  <g>
+    <circle cx="520" cy="112" r="26" fill="url(#glow)"/>
+    <rect x="514" y="94" width="12" height="7" rx="2" fill="#A98B52"/>
+    <circle cx="520" cy="112" r="12" fill="url(#bulb)"/>
+    <text x="539" y="116" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#9AA3B2">89&#8243;</text>
+    <text x="520" y="52" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#5A6272">5</text>
+  </g>
+</svg>
