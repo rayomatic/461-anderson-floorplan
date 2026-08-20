@@ -210,7 +210,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-19 22:10";
+const UPDATED = "2026-08-19 22:11";
 const LOCATION_ORDER = ["Whole House","Exterior",
   "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
   "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
@@ -240,6 +240,7 @@ const DATA = [
  {"num": 64, "location": "Family Room", "category": "General", "item": "Replace passage set with privacy set on the hallway passageway door into the bedroom suite", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Corrects a divergence from the spec - not a new requirement. Also confirm a privacy set didn't land on the garage door - it correctly takes passage"},
  {"num": 6, "location": "Sitting Room", "category": "Electrical", "item": "Install ceiling hooks for hanging lights", "notes": "Hooks: Adcssynd 3-pack aluminum swag hooks, white (Amazon B0CGV4HG83) - arrived"},
  {"num": 7, "location": "Sitting Room", "category": "Electrical", "item": "Install reading light in the corner", "notes": "Mount 57 in. up from the floor and 20 in. away from the wall", "status": "validated"},
+ {"num": 107, "location": "Sitting Room", "category": "Electrical", "item": "Replace the paper lantern pendant", "notes": "Same AllModern paper shade as the hallway (#53) - shade-only swap, existing cord and hooks stay"},
  {"num": 58, "location": "Living Room", "category": "Electrical", "item": "Replace on/off switch with a Leviton smart dimmer for the can lights", "notes": ""},
  {"num": 83, "location": "Living Room", "category": "Electrical", "item": "Replace receptacle with a Leviton smart receptacle", "notes": "The outlet on the wall by the couch, under the clerestory windows. Use Leviton Decora Smart"},
  {"num": 59, "location": "Dining", "category": "General", "item": "Mount the Velux skylight blind remote to the left of the light switches", "notes": "Vertical center aligned with the center of the adjacent switch gang. Gap 1/4 in.-3/8 in. matching the plate spacing. Drywall anchors, not adhesive alone"},
@@ -255,7 +256,7 @@ const DATA = [
  {"num": 13, "location": "Hallway", "category": "General", "item": "Apply another coat of stain to handrail - darker, to closer match the treads", "notes": "", "status": "validated"},
  {"num": 48, "location": "Hallway", "category": "General", "item": "Smooth out handrail finish - feels sticky to the hand", "notes": "Follow-up to #13 (handrail re-stain). Finish: Rubio Monocoat Oil Plus 2C Natural - never Pure (Pure ambers and clashes with the Mirage DuraMatt white oak)"},
  {"num": 96, "location": "Hallway", "category": "Electrical", "item": "Fix flickering hallway light outside the laundry room", "notes": ""},
- {"num": 53, "location": "Hallway", "category": "Electrical", "item": "Straighten the crooked paper lantern pendant", "notes": "AllModern Workshop lantern on AusPower swag hooks (B0CGV4HG83). Crew (Aug 10): shades have almost no adjustments and are cheaply made - a part broke off during adjustment; 'as balanced as we could get them.' ON HOLD pending Ray's decision: accept the tilt, warranty-replace same model, or upgrade the shade - no further crew time on this"},
+ {"num": 53, "location": "Hallway", "category": "Electrical", "item": "Replace the crooked paper lantern pendant", "notes": "Shade-only swap - the existing cord and swag hooks stay. Crew tried straightening multiple times; the AllModern shade has no adjustments (Aug 10). Planned replacement: HAY Rice Paper Shade, 60 cm, white"},
  {"num": 14, "location": "Hallway", "category": "General", "item": "Install pulls on linen closet", "notes": "Items arrived Fri Jul 24", "status": "validated"},
  {"num": 15, "location": "Laundry Room", "category": "General", "item": "Install pulls on the upper cabinet", "notes": "Pulls arrived Fri Jul 24", "status": "validated"},
  {"num": 81, "location": "Laundry Room", "category": "General", "item": "Fix alignment of the laundry room pocket door handle", "notes": "The recessed black pull is misaligned - an exposed line of white paint runs along its edge showing the offset"},
@@ -342,7 +343,7 @@ const TR = {
  12:["Cambiar la luz exterior del vestíbulo delantero de dimmer a interruptor estándar","Vestíbulo delantero. La lámpara tiene sensor de movimiento integrado - el interruptor queda ENCENDIDO para armarla; apagar y encender rápido la deja fija en la mayoría de los modelos. Nunca usar dimmer"],
  13:["Aplicar otra capa de tinte al pasamanos - más oscuro, para que combine mejor con los escalones",""],
  48:["Alisar el acabado del pasamanos - se siente pegajoso al tacto","Seguimiento del #13 (nueva capa de tinte del pasamanos). Acabado: Rubio Monocoat Oil Plus 2C Natural - nunca Pure (Pure amarillea y choca con el roble blanco Mirage DuraMatt)"],
- 53:["Enderezar la lámpara colgante de papel que está torcida","Lámpara AllModern Workshop sobre ganchos de techo AusPower (B0CGV4HG83). Cuadrilla (10 ago): las pantallas casi no tienen ajustes y son de baja calidad - una pieza se rompió al ajustarla; 'quedaron lo más balanceadas posible.' EN PAUSA hasta que Ray decida: aceptar la inclinación, reemplazo por garantía del mismo modelo, o cambiar la pantalla - no dedicar más tiempo de cuadrilla a esto"],
+ 53:["Reemplazar la lámpara colgante de papel que está torcida","Solo se cambia la pantalla - el cable y los ganchos de techo se quedan. La cuadrilla intentó enderezarla varias veces; la pantalla AllModern no tiene ajustes (10 ago). Reemplazo previsto: pantalla HAY Rice Paper, 60 cm, blanca"],
  14:["Instalar tiradores en el clóset de blancos","Llegaron el vie 24 jul"],
  15:["Instalar tiradores en el gabinete superior","Los tiradores llegaron el vie 24 jul"],
  81:["Corregir la alineación del jalador de la puerta corrediza de bolsillo del cuarto de lavado","El jalador negro embutido está desalineado - se ve una línea de pintura blanca a lo largo de su borde que muestra el desfase"],
@@ -371,6 +372,7 @@ const TR = {
  56:["Encender y poner en marcha el termostato Mysa del piso radiante","Circuito #13 (20A AF)"],
  105:["Invertir el agua caliente y fría en la llave del lavabo","Llave: Hansgrohe Tecturis S Single Hole Fine 110 (1.2 GPM, níquel cepillado - artículo #40 de Notion). La solución habitual es intercambiar las mangueras de suministro en las válvulas de paso bajo el lavabo; si ya están correctas, seguir las instrucciones de Hansgrohe para la orientación del cartucho"],
  57:["Intercambiar el orden de los dimmers","El orden de los interruptores debe coincidir con las luces de izquierda a derecha"],
+ 107:["Reemplazar la lámpara colgante de papel","La misma pantalla de papel AllModern que en el pasillo (#53) - solo se cambia la pantalla, el cable y los ganchos se quedan"],
  58:["Reemplazar el interruptor de encendido/apagado por un dimmer inteligente Leviton para las luces empotradas",""],
  83:["Reemplazar el tomacorriente por un tomacorriente inteligente Leviton","El contacto de la pared junto al sofá, bajo las ventanas altas. Usar Leviton Decora Smart"],
  59:["Montar el control remoto de la persiana del tragaluz Velux a la izquierda de los interruptores","Centro vertical alineado con el centro del grupo de interruptores adyacente. Separación de 1/4 a 3/8 pulg., igual al espacio entre placas. Usar taquetes para tablaroca, no solo adhesivo"],
