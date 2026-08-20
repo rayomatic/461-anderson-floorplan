@@ -159,6 +159,7 @@
     .row .photos img { border-color: #999; }
     .total-open { border-top: 2px solid #000; }
     footer { color: #000; text-align: left; padding: 10px 0 18px; }
+    header, main, footer { filter: grayscale(100%); }
     /* position:fixed repeats on every printed page */
     .print-rev {
       display: block; position: fixed; bottom: 4px; right: 8px;
@@ -203,7 +204,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-17 18:46";
+const UPDATED = "2026-08-19 18:25";
 const LOCATION_ORDER = ["Whole House","Exterior","Kitchen","Family Room","Sitting Room",
   "Living Room","Dining","Powder Room","Downstairs Bathroom","Hallway",
   "Laundry Room","Upstairs Bathroom","Primary Bedroom","Bedroom 1",
@@ -256,6 +257,7 @@ const DATA = [
  {"num": 55, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Swap the order of the two light switches", "notes": ""},
  {"num": 92, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Put the ceiling lights on an auto-off dimmer switch", "notes": "Switch purchased: Leviton D2MSD-1RW Decora Smart Motion Sensing Dimmer (Wi-Fi 2nd gen) - arriving Mon Aug 17. NEUTRAL WIRE REQUIRED - verify the box has one before install. Configure motion mode to auto-off. Replaces the DVS02 on the ceiling-light switch (DVS02 doesn't dim); Ray handles the My Leviton app setup"},
  {"num": 85, "location": "Upstairs Bathroom", "category": "Electrical", "item": "Replace ceiling lights: middle can becomes a flush mount fixture; can over the tub/shower becomes an Elco Koto", "notes": "Middle can: replace with the AllModern Pryor 3-Light 18 in. Simple Bowl Flush Mount (allmodern.com, SKU IVYB2013). Bulbs: 3x Feit #OM60DM/5CCTCA (A19 60W-equiv, dimmable, selectable CCT) - set each bulb's selector to 2700K. Can over the tub/shower: swap to a wet-location-rated Elco Koto module to match the rest of the house - check the housing accepts Koto engines"},
+ {"num": 106, "location": "Upstairs Bathroom", "category": "Plumbing", "item": "Clean out the showerhead nozzles - rub the silicone nozzles to clear the blockage", "notes": "Hansgrohe Raindance head: center jets not sealing/flowing in any position. Per Hansgrohe support via Stacey at Excel Plumbing (Aug 19): the nozzles are clogged with mineral deposits - rubbing them should clear it. If cleaning does not fix it, resume the defect/replacement claim with Excel Plumbing"},
  {"num": 93, "location": "Upstairs Bathroom", "category": "General", "item": "Move the hand towel rack 2 in. to the left", "notes": ""},
  {"num": 63, "location": "Upstairs Bathroom", "category": "General", "item": "Replace door passage set with the specified privacy set", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Verify rosette shape is Modern Rectangular. Corrects a divergence from the spec - not a new requirement"},
  {"num": 20, "location": "Downstairs Bathroom", "category": "Electrical", "item": "Put both switches on vacancy sensors", "notes": "Switch: Leviton #DVS02-1LW - expected Jul 31 - Aug 4 (4 more DVS02 owned from June order)", "status": "validated"},
@@ -370,6 +372,7 @@ const TR = {
  61:["Reemplazar los herrajes de la puerta: juego de privacidad en lugar de paso, y rosetas Modern Rectangular en lugar de redondas","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Corrige una desviación de la especificación - no es un requisito nuevo"],
  82:["Ajustar el rodillo superior de la puerta de la regadera - roza contra la tira de plástico","En la puerta corrediza de vidrio de la regadera (DreamLine Enigma-XO) un rodillo superior está rozando la tira de plástico transparente del borde del vidrio - se ve el desgaste en el punto de contacto. Realinear el rodillo/la puerta para que corra por el riel sin tocar"],
  62:["Reemplazar el juego de paso de la puerta por el juego de privacidad especificado","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Verificar que la roseta sea Modern Rectangular. Corrige una desviación de la especificación - no es un requisito nuevo"],
+ 106:["Limpiar las boquillas de la regadera - frotar las boquillas de silicona para quitar la obstrucción","Regadera Hansgrohe Raindance: los chorros del centro no cierran/no fluyen en ninguna posición. Según soporte de Hansgrohe vía Stacey de Excel Plumbing (19 ago): las boquillas están tapadas con depósitos minerales - al frotarlas debe destaparse. Si la limpieza no lo resuelve, retomar el reclamo de defecto/reemplazo con Excel Plumbing"],
  93:["Mover el toallero de mano 2 pulg. a la izquierda",""],
  63:["Reemplazar el juego de paso de la puerta por el juego de privacidad especificado","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Verificar que la roseta sea Modern Rectangular. Corrige una desviación de la especificación - no es un requisito nuevo"],
  64:["Reemplazar el juego de paso por uno de privacidad en la puerta del pasillo hacia los dormitorios","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Corrige una desviación de la especificación - no es un requisito nuevo. Confirmar también que no haya quedado un juego de privacidad en la puerta del garaje - esa lleva paso"],
