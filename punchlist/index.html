@@ -204,7 +204,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-19 21:35";
+const UPDATED = "2026-08-19 21:36";
 const LOCATION_ORDER = ["Whole House","Exterior","Kitchen","Family Room","Sitting Room",
   "Living Room","Dining","Powder Room","Downstairs Bathroom","Hallway",
   "Laundry Room","Upstairs Bathroom","Primary Bedroom","Bedroom 1",
@@ -218,14 +218,14 @@ const DATA = [
  {"num": 87, "location": "Exterior", "category": "General", "item": "Touch up pink paint on the door where it has chipped off, exposing wood", "notes": ""}, {"num": 80, "location": "Exterior", "category": "Electrical", "item": "Install hot tub light fixture", "notes": ""},
  {"num": 45, "location": "Exterior", "category": "Electrical", "item": "Wire power to the new Google Nest doorbell", "notes": "A 24V transformer must be installed - it has arrived and is in the garage"},
  {"num": 30, "location": "Kitchen", "category": "Electrical", "item": "Install power receptacles on both sides of the kitchen island", "notes": "", "status": "validated"},
- {"num": 46, "location": "Kitchen", "category": "Electrical", "item": "Replace the west-facing island outlet with the Leviton GFCI + USB combo", "notes": "Leviton GUAC1 (GFCI + USB A/C in one device, in HD order) - island countertop receptacles require GFCI and this adds the USB charging"},
- {"num": 104, "location": "Kitchen", "category": "Electrical", "item": "Convert the second island outlet to GFCI (no USB)", "notes": "Use one of the Leviton GFTR1 GFCI tamper-resistant outlets from the 4-pack in the HD order"},
+ {"num": 46, "location": "Kitchen", "category": "Electrical", "item": "Replace the west-facing island outlet with the Leviton GFCI + USB combo", "notes": "Leviton GUAC1 (GFCI + USB A/C in one device, in the garage) - island countertop receptacles require GFCI and this adds the USB charging"},
+ {"num": 104, "location": "Kitchen", "category": "Electrical", "item": "Convert the second island outlet to GFCI (no USB)", "notes": "Use one of the Leviton GFTR1 GFCI tamper-resistant outlets from the HD order"},
  {"num": 94, "location": "Kitchen", "category": "General", "item": "Adjust the pull-out spice rack so it doesn't bang when it slides back in", "notes": ""},
  {"num": 1, "location": "Kitchen", "category": "Electrical", "item": "Replace pendant light bulbs with rounded white globe bulbs", "notes": "Bulbs: Feit #BPG1640W927CAFIL2 (G16.5 frosted white globe, E12, 2700K) x8 - arriving Mon Jul 27, 10am-2pm (HD order WK33270664). Current Luxrite B11 torpedo bulbs coming out", "status": "validated"},
  {"num": 3, "location": "Family Room", "category": "Electrical", "item": "Change exterior light from dimmer to standard on/off switch", "notes": "Currently on a dimmer", "status": "validated"},
  {"num": 4, "location": "Family Room", "category": "General", "item": "Repaint to cover up plaster touch-ups", "notes": "", "status": "validated"},
  {"num": 5, "location": "Family Room", "category": "General", "item": "Remove tape from top of the door between bedroom and family room, including the rail guide at the top", "notes": "", "status": "validated"},
- {"num": 57, "location": "Family Room", "category": "Electrical", "item": "Swap the order of the dimmers for the cabinet lights", "notes": "Match switch order to fixture layout left to right"},
+ {"num": 57, "location": "Family Room", "category": "Electrical", "item": "Swap the order of the dimmers", "notes": "Match switch order to fixture layout left to right"},
  {"num": 64, "location": "Family Room", "category": "General", "item": "Replace passage set with privacy set on the hallway passageway door into the bedroom suite", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Corrects a divergence from the spec - not a new requirement. Also confirm a privacy set didn't land on the garage door - it correctly takes passage"},
  {"num": 6, "location": "Sitting Room", "category": "Electrical", "item": "Install ceiling hooks for hanging lights", "notes": "Hooks: Adcssynd 3-pack aluminum swag hooks, white (Amazon B0CGV4HG83) - arrived"},
  {"num": 7, "location": "Sitting Room", "category": "Electrical", "item": "Install reading light in the corner", "notes": "Mount 57 in. up from the floor and 20 in. away from the wall", "status": "validated"},
@@ -314,8 +314,8 @@ const TR = {
  80:["Instalar la lámpara del jacuzzi",""],
  45:["Cablear la corriente al nuevo timbre Google Nest","Hay que instalar un transformador de 24V - ya llegó y está en el garaje"],
  30:["Instalar tomacorrientes en ambos lados de la isla de la cocina",""],
- 46:["Reemplazar el contacto de la isla que da al oeste con el combo Leviton GFCI + USB","Leviton GUAC1 (GFCI + USB A/C en un solo dispositivo, en el pedido de HD) - los contactos de la cubierta de la isla requieren GFCI y este además agrega carga USB"],
- 104:["Convertir el segundo contacto de la isla a GFCI (sin USB)","Usar uno de los tomacorrientes Leviton GFTR1 GFCI a prueba de manipulaciones del paquete de 4 del pedido de HD"],
+ 46:["Reemplazar el contacto de la isla que da al oeste con el combo Leviton GFCI + USB","Leviton GUAC1 (GFCI + USB A/C en un solo dispositivo, está en el garaje) - los contactos de la cubierta de la isla requieren GFCI y este además agrega carga USB"],
+ 104:["Convertir el segundo contacto de la isla a GFCI (sin USB)","Usar uno de los tomacorrientes Leviton GFTR1 GFCI a prueba de manipulaciones del pedido de HD"],
  94:["Ajustar el especiero deslizable para que no golpee al meterlo",""],
  1:["Reemplazar los focos de la lámpara colgante por focos globo blancos redondeados","Focos: Feit #BPG1640W927CAFIL2 (globo esmerilado blanco G16.5, base E12, 2700K) x8 - llegan lun 27 jul, 10am-2pm (pedido HD WK33270664). Se retiran los focos Luxrite B11 tipo torpedo actuales"],
  3:["Cambiar la luz exterior de dimmer a interruptor estándar de encendido/apagado","Actualmente tiene dimmer"],
@@ -361,7 +361,7 @@ const TR = {
  85:["Reemplazar las luces del techo: la luz empotrada del centro se cambia por una lámpara de sobreponer; la luz sobre la tina/regadera se cambia a Elco Koto","Luz del centro: reemplazar con la lámpara AllModern Pryor de 3 focos, 18 pulg., tipo tazón de sobreponer (allmodern.com, SKU IVYB2013). Focos: 3x Feit #OM60DM/5CCTCA (A19 equiv. 60W, regulable, temperatura seleccionable) - poner el selector de cada foco en 2700K. Luz de la tina/regadera: cambiar a un módulo Elco Koto con clasificación para ubicación húmeda, como en el resto de la casa - verificar que la carcasa acepte los módulos Koto"],
  56:["Encender y poner en marcha el termostato Mysa del piso radiante","Circuito #13 (20A AF)"],
  105:["Invertir el agua caliente y fría en la llave del lavabo","Llave: Hansgrohe Tecturis S Single Hole Fine 110 (1.2 GPM, níquel cepillado - artículo #40 de Notion). La solución habitual es intercambiar las mangueras de suministro en las válvulas de paso bajo el lavabo; si ya están correctas, seguir las instrucciones de Hansgrohe para la orientación del cartucho"],
- 57:["Intercambiar el orden de los dimmers de las luces de los gabinetes","El orden de los interruptores debe coincidir con las luces de izquierda a derecha"],
+ 57:["Intercambiar el orden de los dimmers","El orden de los interruptores debe coincidir con las luces de izquierda a derecha"],
  58:["Reemplazar el interruptor de encendido/apagado por un dimmer inteligente Leviton para las luces empotradas",""],
  83:["Reemplazar el tomacorriente por un tomacorriente inteligente Leviton","El contacto de la pared junto al sofá, bajo las ventanas altas. Usar Leviton Decora Smart"],
  59:["Montar el control remoto de la persiana del tragaluz Velux a la izquierda de los interruptores","Centro vertical alineado con el centro del grupo de interruptores adyacente. Separación de 1/4 a 3/8 pulg., igual al espacio entre placas. Usar taquetes para tablaroca, no solo adhesivo"],
