@@ -234,7 +234,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-22 22:51";
+const UPDATED = "2026-08-22 22:53";
 const LOCATION_ORDER = ["Whole House","Exterior",
   "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
   "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
@@ -256,6 +256,7 @@ const DATA = [
  {"num": 30, "location": "Kitchen", "category": "Electrical", "item": "Install power receptacles on both sides of the kitchen island", "notes": "", "status": "validated"},
  {"num": 46, "location": "Kitchen", "category": "Electrical", "item": "Replace the west-facing island outlet with the Leviton GFCI + USB combo", "notes": "Leviton GUAC1 (GFCI + USB A/C in one device, in the garage) - island countertop receptacles require GFCI and this adds the USB charging"},
  {"num": 104, "location": "Kitchen", "category": "Electrical", "item": "Convert the second island outlet to GFCI (no USB)", "notes": "Use one of the Leviton GFTR1 GFCI tamper-resistant outlets from the HD order"},
+ {"num": 112, "location": "Kitchen", "category": "Electrical", "item": "Swap the undercabinet dimmer from D36HD to the ELV dimmer", "notes": "Use Ivan's unused ELV Decora Smart dimmer (Matter QR 0641-211-8902). The HitLights 5-in-1 driver accepts both, but ELV (trailing-edge) gives a lower, smoother dimming floor and no buzz - worthwhile for undercabinet strips used at low levels. The freed D36HD becomes a spare. Ray re-pairs/renames in My Leviton after the swap"},
  {"num": 94, "location": "Kitchen", "category": "General", "item": "Adjust the pull-out spice rack so it doesn't bang when it slides back in", "notes": ""},
  {"num": 1, "location": "Kitchen", "category": "Electrical", "item": "Replace pendant light bulbs with rounded white globe bulbs", "notes": "Bulbs: Feit #BPG1640W927CAFIL2 (G16.5 frosted white globe, E12, 2700K) x8 - arriving Mon Jul 27, 10am-2pm (HD order WK33270664). Current Luxrite B11 torpedo bulbs coming out", "status": "validated"},
  {"num": 3, "location": "Family Room", "category": "Electrical", "item": "Change exterior light from dimmer to standard on/off switch", "notes": "Currently on a dimmer", "status": "validated"},
@@ -355,6 +356,7 @@ const TR = {
  30:["Instalar tomacorrientes en ambos lados de la isla de la cocina",""],
  46:["Reemplazar el contacto de la isla que da al oeste con el combo Leviton GFCI + USB","Leviton GUAC1 (GFCI + USB A/C en un solo dispositivo, está en el garaje) - los contactos de la cubierta de la isla requieren GFCI y este además agrega carga USB"],
  104:["Convertir el segundo contacto de la isla a GFCI (sin USB)","Usar uno de los tomacorrientes Leviton GFTR1 GFCI a prueba de manipulaciones del pedido de HD"],
+ 112:["Cambiar el dimmer de las luces bajo gabinetes de D36HD al dimmer ELV","Usar el dimmer ELV Decora Smart sin usar que tiene Ivan (QR Matter 0641-211-8902). El driver HitLights 5-en-1 acepta ambos, pero el ELV (flanco de bajada) da un piso de regulación más bajo y suave, sin zumbido - vale la pena para tiras bajo gabinetes que se usan a niveles bajos. El D36HD que se libere queda de repuesto. Ray lo vuelve a emparejar/renombrar en My Leviton después del cambio"],
  94:["Ajustar el especiero deslizable para que no golpee al meterlo",""],
  1:["Reemplazar los focos de la lámpara colgante por focos globo blancos redondeados","Focos: Feit #BPG1640W927CAFIL2 (globo esmerilado blanco G16.5, base E12, 2700K) x8 - llegan lun 27 jul, 10am-2pm (pedido HD WK33270664). Se retiran los focos Luxrite B11 tipo torpedo actuales"],
  3:["Cambiar la luz exterior de dimmer a interruptor estándar de encendido/apagado","Actualmente tiene dimmer"],
