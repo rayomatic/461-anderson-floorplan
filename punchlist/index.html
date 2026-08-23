@@ -234,7 +234,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-22 23:10";
+const UPDATED = "2026-08-22 23:16";
 const LOCATION_ORDER = ["Whole House","Exterior",
   "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
   "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
@@ -320,6 +320,7 @@ const DATA = [
  {"num": 60, "location": "Bedroom 1", "category": "General", "item": "Replace door hardware: privacy set instead of passage, Modern Rectangular rosettes instead of round", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Corrects a divergence from the spec - not a new requirement"},
  {"num": 23, "location": "Bedroom 2", "category": "Electrical", "item": "Install lighting inside closet", "notes": "", "status": "validated"},
  {"num": 38, "location": "Bedroom 2", "category": "Electrical", "item": "Replace ceiling light bulb with bright dimmable LED - current bulb too dim", "notes": "Bulb: Luxrite #LR21440-4PK (A19 100W-equiv ~1600 lm, 2700K, dimmable, enclosed-rated). Neighbor has the Luxrite bulbs. Current: Philips 60W-equiv WarmGlow (~800 lm)", "status": "reopened", "rev": 2},
+ {"num": 116, "location": "Bedroom 2", "category": "Electrical", "item": "Swap the closet light switch for a smart switch with auto-off", "notes": "Use Ivan's boxed D315S (Matter QR 2428-152-2236). Ray configures a 15-min auto-off timer in My Leviton - same behavior as the BR1 closet timer (#113) plus app control"},
  {"num": 54, "location": "Bedroom 2", "category": "Electrical", "item": "Swap receptacles so the USB-C units are on the south wall", "notes": "Circuit #28 (20A AF). Check south-wall box depth first - USB-C receptacles are deep"},
  {"num": 98, "location": "Bedroom 2", "category": "Electrical", "item": "Straighten the lopsided bedside outlet", "notes": "Susy's bedside. Hard-to-plug is normal tamper-resistant shutter behavior - only the alignment needs fixing. From Susy's list, Aug 10"},
  {"num": 61, "location": "Bedroom 2", "category": "General", "item": "Replace door hardware: privacy set instead of passage, Modern Rectangular rosettes instead of round", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Corrects a divergence from the spec - not a new requirement"},
@@ -399,6 +400,7 @@ const TR = {
  38:["Reemplazar el foco del plafón por un LED brillante regulable - el foco actual es muy tenue","Foco: Luxrite #LR21440-4PK (A19 equiv. 100W ~1600 lm, 2700K, regulable, apto para luminaria cerrada). El vecino tiene los focos Luxrite. Actual: Philips equiv. 60W WarmGlow (~800 lm)"],
  47:["Quitar la cinta de la puerta corrediza de bolsillo en la oficina",""],
  78:["Cambiar el interruptor de luz de la oficina por un sensor de vacancia","Encendido manual / apagado automático. Usar uno de los Leviton DVS02-1LW de repuesto del pedido de junio - no hay que comprar nada. El interruptor actual es un Leviton estándar de balancín"],
+ 116:["Cambiar el interruptor de la luz del clóset por un interruptor inteligente con apagado automático","Usar el D315S en caja de Ivan (QR Matter 2428-152-2236). Ray configura un temporizador de apagado de 15 min en My Leviton - el mismo comportamiento que el temporizador del clóset del dormitorio 1 (#113), más control desde la app"],
  54:["Intercambiar los tomacorrientes para que las unidades USB-C queden en la pared sur","Circuito #28 (20A AF). Revisar primero la profundidad de la caja de la pared sur - los tomacorrientes USB-C son profundos"],
  55:["Intercambiar el orden de los dos interruptores de luz",""],
  92:["Poner las luces del techo en un dimmer con apagado automático","Interruptor ya comprado: Leviton D2MSD-1RW Decora Smart con sensor de movimiento (Wi-Fi 2a gen) - llega lun 17 ago. REQUIERE CABLE NEUTRO - verificar que la caja tenga uno antes de instalar. Configurar el modo de movimiento en apagado automático. Reemplaza al DVS02 del interruptor de las luces del techo (el DVS02 no regula); Ray se encarga de la configuración en la app My Leviton"],
