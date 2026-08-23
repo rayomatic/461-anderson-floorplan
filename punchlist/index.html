@@ -234,7 +234,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-22 23:44";
+const UPDATED = "2026-08-22 23:45";
 const LOCATION_ORDER = ["Whole House","Exterior",
   "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
   "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
@@ -254,8 +254,7 @@ const DATA = [
  {"num": 87, "location": "Exterior", "category": "General", "item": "Touch up pink paint on the door where it has chipped off, exposing wood", "notes": ""}, {"num": 80, "location": "Exterior", "category": "Electrical", "item": "Install hot tub light fixture", "notes": ""},
  {"num": 45, "location": "Exterior", "category": "Electrical", "item": "Wire power to the new Google Nest doorbell", "notes": "A 24V transformer must be installed - it has arrived and is in the garage"},
  {"num": 30, "location": "Kitchen", "category": "Electrical", "item": "Install power receptacles on both sides of the kitchen island", "notes": "", "status": "validated"},
- {"num": 46, "location": "Kitchen", "category": "Electrical", "item": "Install the USB-C outlet on the west-facing island position", "notes": "Ivan's T5635-BW USB-C PD outlet (per the original BOM plan). Requires the island breaker swap in the panel item (#73 step 4) so the circuit is GFCI-protected. Ray returns the GUAC1"},
- {"num": 104, "location": "Kitchen", "category": "Electrical", "item": "Convert the second island outlet to a plain tamper-resistant receptacle", "notes": "With the island breaker now dual-function AFCI/GFCI (#73 step 4), no device-level GFCI is needed - use a plain Leviton T5325 TR Decora (spares from the June bulk order should be on site). Ray returns one GFTR1; the other still goes to its counter location"},
+ {"num": 46, "location": "Kitchen", "category": "Electrical", "item": "Swap the west-facing island outlet for the USB-C outlet", "notes": "Replace the existing standard outlet with Ivan's T5635-BW USB-C PD (per the original BOM plan). The island's other standard outlet stays as-is - it is covered once the circuit is GFCI-protected. Requires the island breaker swap in the panel item (#73 step 4) so the circuit is GFCI-protected. Ray returns the GUAC1"},
  {"num": 112, "location": "Kitchen", "category": "Electrical", "item": "Swap the undercabinet dimmer from D36HD to the ELV dimmer", "notes": "Use Ivan's unused ELV Decora Smart dimmer (Matter QR 0641-211-8902). The HitLights 5-in-1 driver accepts both, but ELV (trailing-edge) gives a lower, smoother dimming floor and no buzz - worthwhile for undercabinet strips used at low levels. The freed D36HD becomes a spare. Ray re-pairs/renames in My Leviton after the swap"},
  {"num": 94, "location": "Kitchen", "category": "General", "item": "Adjust the pull-out spice rack so it doesn't bang when it slides back in", "notes": ""},
  {"num": 1, "location": "Kitchen", "category": "Electrical", "item": "Replace pendant light bulbs with rounded white globe bulbs", "notes": "Bulbs: Feit #BPG1640W927CAFIL2 (G16.5 frosted white globe, E12, 2700K) x8 - arriving Mon Jul 27, 10am-2pm (HD order WK33270664). Current Luxrite B11 torpedo bulbs coming out", "status": "validated"},
@@ -358,8 +357,7 @@ const TR = {
  80:["Instalar la lámpara del jacuzzi",""],
  45:["Cablear la corriente al nuevo timbre Google Nest","Hay que instalar un transformador de 24V - ya llegó y está en el garaje"],
  30:["Instalar tomacorrientes en ambos lados de la isla de la cocina",""],
- 46:["Instalar el tomacorriente USB-C en la posición de la isla que da al oeste","El tomacorriente T5635-BW USB-C PD de Ivan (según el plan original del BOM). Requiere el cambio de interruptor de la isla del punto del panel (#73 paso 4) para que el circuito quede protegido con GFCI. Ray devuelve el GUAC1"],
- 104:["Convertir el segundo contacto de la isla a un tomacorriente sencillo a prueba de manipulaciones","Con el interruptor de la isla ahora de doble función AFCI/GFCI (#73 paso 4), no se necesita GFCI en el dispositivo - usar un Leviton T5325 TR Decora sencillo (debe haber repuestos en la obra del pedido de junio). Ray devuelve un GFTR1; el otro va a su lugar en la cubierta como estaba previsto"],
+ 46:["Cambiar el contacto de la isla que da al oeste por el tomacorriente USB-C","Reemplazar el contacto estándar existente con el T5635-BW USB-C PD de Ivan (según el plan original del BOM). El otro contacto estándar de la isla se queda como está - queda cubierto en cuanto el circuito tenga protección GFCI. Requiere el cambio de interruptor de la isla del punto del panel (#73 paso 4) para que el circuito quede protegido con GFCI. Ray devuelve el GUAC1"],
  112:["Cambiar el dimmer de las luces bajo gabinetes de D36HD al dimmer ELV","Usar el dimmer ELV Decora Smart sin usar que tiene Ivan (QR Matter 0641-211-8902). El driver HitLights 5-en-1 acepta ambos, pero el ELV (flanco de bajada) da un piso de regulación más bajo y suave, sin zumbido - vale la pena para tiras bajo gabinetes que se usan a niveles bajos. El D36HD que se libere queda de repuesto. Ray lo vuelve a emparejar/renombrar en My Leviton después del cambio"],
  94:["Ajustar el especiero deslizable para que no golpee al meterlo",""],
  1:["Reemplazar los focos de la lámpara colgante por focos globo blancos redondeados","Focos: Feit #BPG1640W927CAFIL2 (globo esmerilado blanco G16.5, base E12, 2700K) x8 - llegan lun 27 jul, 10am-2pm (pedido HD WK33270664). Se retiran los focos Luxrite B11 tipo torpedo actuales"],
