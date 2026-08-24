@@ -88,6 +88,10 @@
     height: 130px; aspect-ratio: 9 / 16; width: auto; object-fit: cover;
     border-radius: 8px; border: 1px solid var(--line); background: #000;
   }
+  .row .photos iframe {
+    height: 130px; aspect-ratio: 16 / 9; border: 1px solid var(--line);
+    border-radius: 8px; background: #000;
+  }
   .row.done .photos { opacity: .5; }
   .cmts { margin-top: 6px; }
   .cmt {
@@ -170,7 +174,7 @@
     .cmt { background: #fff; border: 1px solid #999; }
     .cmt .cmt-d { color: #333; }
     .row .photos img { border-color: #999; }
-    .row .photos video { display: none; }
+    .row .photos video, .row .photos iframe { display: none; }
     .total-open { border-top: 2px solid #000; }
     footer { color: #000; text-align: left; padding: 10px 0 18px; }
     header, main, footer { filter: grayscale(100%); }
@@ -234,7 +238,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-23 20:18";
+const UPDATED = "2026-08-23 22:02";
 const LOCATION_ORDER = ["Whole House","Exterior",
   "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
   "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
@@ -329,6 +333,8 @@ const DATA = [
  {"num": 95, "location": "Attic", "category": "Electrical", "item": "Fix flickering attic light", "notes": ""},
  {"num": 24, "location": "Attic", "category": "HVAC", "item": "Confirm HVAC is working - clear the error still showing on the HVAC/thermostat screen", "notes": "", "status": "validated"},
  {"num": 25, "location": "Attic", "category": "HVAC", "item": "Turn on whole-home dehumidifier, set to 45%, and confirm working", "notes": "", "status": "validated"},
+ {"num": 117, "location": "Garage", "category": "General", "item": "Remount the monTEK bike lift correctly - rail must sit flush on the floor", "notes": "Installed incorrectly: the vertical rail is currently hanging with its bottom end above the floor - it must rest flush on the floor to carry the load (see photo; install video embedded). Also move it one wall-slot further to the east when remounting", "photos": ["photos/117-montek-mount.jpg", "https://www.youtube.com/embed/-RroLZ5rCLc"]},
+ {"num": 118, "location": "Garage", "category": "General", "item": "Install the Steadyrack wide/fender rack in the monTEK\'s current spot", "notes": "Goes up where the monTEK rail is now, once the monTEK moves one slot east (#117)"},
  {"num": 28, "location": "Garage", "category": "General", "item": "Install two shelves on the north wall of the garage", "notes": "Top shelf: 6 ft high, 18 in. deep. Second shelf: 4 ft high, 12 in. deep. Both shelves 18 ft long", "status": "reopened", "rev": 4},
  {"num": 29, "location": "Garage", "category": "General", "item": "Install one kitchen cabinet to the right of the existing one", "notes": "", "status": "validated"},
  {"num": 31, "location": "Garage", "category": "General", "item": "Remove concrete overhang on east wall", "notes": "", "status": "validated"},
@@ -432,6 +438,8 @@ const TR = {
  101:["Mejorar la presión del agua de la regadera","Falta confirmar cuál regadera. De la lista de Susy, 10 ago"],
  96:["Reparar la luz del pasillo afuera del cuarto de lavado que parpadea",""],
  25:["Encender el deshumidificador de toda la casa, ajustarlo al 45% y confirmar que funciona",""],
+ 117:["Volver a montar correctamente el elevador de bicicleta monTEK - el riel debe apoyarse en el piso","Instalado incorrectamente: el riel vertical está colgado con el extremo inferior arriba del piso - debe apoyarse a ras del piso para cargar el peso (ver foto; video de instalación incluido). Al remontarlo, moverlo también una ranura de pared más hacia el este"],
+ 118:["Instalar el rack Steadyrack ancho/para salpicaderas en el lugar actual del monTEK","Va donde está ahora el riel del monTEK, una vez que el monTEK se mueva una ranura al este (#117)"],
  28:["Instalar dos repisas en la pared norte del garaje","Repisa superior: 6 pies de alto, 18 pulg. de fondo. Segunda repisa: 4 pies de alto, 12 pulg. de fondo. Ambas repisas de 18 pies de largo"],
  29:["Instalar un gabinete de cocina a la derecha del existente",""],
  31:["Quitar el saliente de concreto de la pared este",""],
@@ -796,7 +804,9 @@ function render() {
       const stBadge = it.status === "validated" ? `<span class="badge st-v">✓ ${u.badgeValidated}</span>`
                     : it.status === "reopened" ? `<span class="badge st-r">↻ ${u.badgeReopened}</span>` : "";
       const photos = (it.photos || []).map(p =>
-        p.endsWith(".mp4")
+        p.includes("youtube.com/embed")
+          ? `<iframe src="${p}" loading="lazy" allowfullscreen allow="fullscreen"></iframe>`
+          : p.endsWith(".mp4")
           ? `<video src="${p}" controls playsinline preload="metadata"></video>`
           : `<a href="${p}" target="_blank" rel="noopener"><img src="${p}" alt="" loading="lazy"></a>`).join("");
       body.innerHTML =
@@ -809,7 +819,7 @@ function render() {
       row.append(cb, body);
       const toggle = () => { if (it.status === "validated") return; it.done = !it.done; save(); pushRemote(it); patchFromSync(); };
       cb.addEventListener("click", e => { e.stopPropagation(); toggle(); });
-      row.addEventListener("click", e => { if (e.target !== cb && !e.target.closest("a, video, .cmts")) toggle(); });
+      row.addEventListener("click", e => { if (e.target !== cb && !e.target.closest("a, video, iframe, .cmts")) toggle(); });
       card.appendChild(row);
     });
     sec.appendChild(card);
