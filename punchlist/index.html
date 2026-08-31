@@ -238,7 +238,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-08-24 15:09";
+const UPDATED = "2026-08-30 22:00";
 const LOCATION_ORDER = ["Whole House","Exterior",
   "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
   "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
@@ -534,10 +534,18 @@ async function loadRemote() {
     updateSyncNote();
     // nothing changed since the last poll: leave the DOM alone (prevents scroll jumps)
     const sig = JSON.stringify(remote) + "|" + JSON.stringify(comments);
-    if (sig === lastSig) return;
+    if (sig === lastSig && !Object.keys(PENDING).length) return;
     lastSig = sig;
     COMMENTS = comments;
     DATA.forEach(it => { it.done = !!remote[idOf(it)]; });
+    // unconfirmed local changes win over the server snapshot, and get re-sent
+    DATA.forEach(it => {
+      const id = idOf(it);
+      if (id in PENDING) {
+        it.done = PENDING[id];
+        pushRemote(it);
+      }
+    });
     applyStatus();
     save();
     patchFromSync();
@@ -557,6 +565,7 @@ function fmtCmtDate(iso) {
 async function postComment(payload) {
   const r = await fetch(CAPI, {
     method: "POST",
+    keepalive: true,
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
@@ -699,16 +708,24 @@ function buildComments(it, u) {
   return wrap;
 }
 
+const PENDING = {}; // idOf -> desired done state, kept until the server confirms
 async function pushRemote(it) {
-  if (!synced) return;
+  const id = idOf(it);
+  PENDING[id] = it.done;
   try {
-    await fetch(API, {
+    const r = await fetch(API, {
       method: "POST",
+      keepalive: true,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: idOf(it), done: it.done }),
+      body: JSON.stringify({ id, done: it.done }),
     });
+    if (!r.ok) throw new Error("api " + r.status);
+    // only clear if no newer local change superseded this one
+    if (PENDING[id] === it.done) delete PENDING[id];
+    synced = true;
+    syncState = "ok";
+    updateSyncNote();
   } catch (e) {
-    synced = false;
     syncState = "off";
     updateSyncNote();
   }
