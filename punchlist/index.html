@@ -766,7 +766,6 @@ function updateCounts() {
   });
   const t = document.querySelector("#list .total-open");
   if (t) t.textContent = `${u.totalOpen}: ${DATA.filter(i => !i.done).length}`;
-  updateCounts();
 }
 
 // Update existing rows in place - never rebuilds the DOM, so media elements
