@@ -238,7 +238,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-09-03 17:40";
+const UPDATED = "2026-09-03 17:55";
 const LOCATION_ORDER = ["Whole House","Exterior",
   "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
   "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
@@ -255,6 +255,8 @@ const DATA = [
  {"num": 44, "location": "Exterior", "category": "Electrical", "item": "Replace Google Nest doorbell with hardwired version", "notes": "", "status": "validated"},
  {"num": 79, "location": "Exterior", "category": "General", "item": "Install hot tub", "notes": "Move the tub about 16 in. to the north of its current position before final placement"},
  {"num": 110, "location": "Exterior", "category": "General", "item": "Fix water pooling next to the hot tub", "notes": "Standing water collects on the exterior surface beside the hot tub - see video. Needs a grading/drainage fix; coordinate with the tub's planned 2 ft move north (#79)", "photos": ["photos/110-hot-tub-pooling.mp4"]},
+ {"num": 121, "location": "Exterior", "category": "General", "item": "Stucco the hole where the electrical pipe was feeding", "notes": "Open hole in the stucco next to the conduit above the main panel (see photo). Patch and paint to match the blue", "photos": ["photos/121-stucco-hole.jpg"]},
+ {"num": 123, "location": "Exterior", "category": "General", "item": "Remove the gas meter from the ground", "notes": "PG&E to perform the removal - schedule and coordinate with PG&E"},
  {"num": 87, "location": "Exterior", "category": "General", "item": "Touch up pink paint on the door where it has chipped off, exposing wood", "notes": ""}, {"num": 80, "location": "Exterior", "category": "Electrical", "item": "Install hot tub light fixture", "notes": "", "status": "validated"},
  {"num": 45, "location": "Exterior", "category": "Electrical", "item": "Wire power to the new Google Nest doorbell", "notes": "A 24V transformer must be installed - it has arrived and is in the garage", "status": "validated"},
  {"num": 30, "location": "Kitchen", "category": "Electrical", "item": "Install power receptacles on both sides of the kitchen island", "notes": "", "status": "validated"},
@@ -262,6 +264,7 @@ const DATA = [
  {"num": 112, "location": "Kitchen", "category": "Electrical", "item": "Swap the undercabinet dimmer from D36HD to the ELV dimmer", "notes": "Use Ivan's unused ELV Decora Smart dimmer (Matter QR 0641-211-8902). The HitLights 5-in-1 driver accepts both, but ELV (trailing-edge) gives a lower, smoother dimming floor and no buzz - worthwhile for undercabinet strips used at low levels. The freed D36HD becomes a spare. Ray re-pairs/renames in My Leviton after the swap"},
  {"num": 94, "location": "Kitchen", "category": "General", "item": "Adjust the pull-out spice rack so it doesn't bang when it slides back in", "notes": ""},
  {"num": 1, "location": "Kitchen", "category": "Electrical", "item": "Replace pendant light bulbs with rounded white globe bulbs", "notes": "Bulbs: Feit #BPG1640W927CAFIL2 (G16.5 frosted white globe, E12, 2700K) x8 - arriving Mon Jul 27, 10am-2pm (HD order WK33270664). Current Luxrite B11 torpedo bulbs coming out", "status": "validated"},
+ {"num": 120, "location": "Kitchen", "category": "General", "item": "Replace the top right refrigerator door", "notes": ""},
  {"num": 3, "location": "Family Room", "category": "Electrical", "item": "Change exterior light from dimmer to standard on/off switch", "notes": "Currently on a dimmer", "status": "validated"},
  {"num": 4, "location": "Family Room", "category": "General", "item": "Repaint to cover up plaster touch-ups", "notes": "", "status": "validated"},
  {"num": 5, "location": "Family Room", "category": "General", "item": "Remove tape from top of the door between bedroom and family room, including the rail guide at the top", "notes": "", "status": "validated"},
@@ -278,6 +281,7 @@ const DATA = [
  {"num": 97, "location": "Dining", "category": "Electrical", "item": "Adjust height of the pendant lights", "notes": "Hang per the elevation diagram (tap to zoom). Five globes, asymmetric W, all heights to the BOTTOM OF GLASS. Positions 1-5 left to right facing the artwork wall: 85, 66 (anchor), 77, 71, 89 in. AFF - anchor sits 36 in. above the 30 in. table. Verify the mounting-bar height inside the skylight well first (assumed 114 in.; every cable length shifts one-for-one). Mark cables with tape at target length and set the globes in order of height, not left to right. The skylight well is closed - the mounting bar cannot rotate; hang for the current table orientation", "photos": ["photos/97-pendant-hang.svg"]},
  {"num": 8, "location": "Powder Room", "category": "General", "item": "Install mirror in powder room", "notes": ""},
  {"num": 89, "location": "Powder Room", "category": "Electrical", "item": "Remove the smart on/off switch and replace with a Leviton IPS02 occupancy sensor (auto-on)", "notes": "Leviton IPS02-1LW, Decora, auto-on/auto-off, single pole. Set the time delay to 15 min (options are 30 s / 5 / 15 / 30 min) - the 15-min delay also serves as the fan's run-on time after exiting"},
+ {"num": 122, "location": "Powder Room", "category": "Electrical", "item": "Swap the occupancy sensor for a vacancy sensor", "notes": "Replace the installed Leviton IPS02 (auto-on) with a DVS02 vacancy sensor (manual-on, auto-off). Keep the 15-min delay so the fan still runs on after exiting. The freed IPS02 becomes a spare"},
  {"num": 102, "location": "Powder Room", "category": "Electrical", "item": "Adjust the exhaust fan down to 70 CFM", "notes": ""},
  {"num": 9, "location": "Downstairs Bathroom", "category": "Drywall", "item": "Fill in sheetrock in the area under the medicine cabinet", "notes": "", "status": "validated"},
  {"num": 10, "location": "Downstairs Bathroom", "category": "General", "item": "Remove protective film from the medicine cabinet - still on, making the mirror look dark", "notes": "", "status": "validated"},
@@ -360,6 +364,8 @@ const TR = {
  44:["Reemplazar el timbre Google Nest por la versión cableada",""],
  79:["Instalar el jacuzzi exterior","Mover el jacuzzi unas 16 pulg. hacia el norte de su posición actual antes de la colocación final"],
  110:["Corregir el encharcamiento de agua junto al jacuzzi","Se acumula agua en la superficie exterior junto al jacuzzi - ver video. Requiere corregir la pendiente/el drenaje; coordinar con el movimiento previsto del jacuzzi 2 pies al norte (#79)"],
+ 121:["Resanar con estuco el agujero por donde pasaba el tubo eléctrico","Agujero abierto en el estuco junto al conducto arriba del panel principal (ver foto). Resanar y pintar del mismo azul"],
+ 123:["Quitar el medidor de gas del suelo","PG&E realiza el retiro - programar y coordinar con PG&E"],
  87:["Retocar la pintura rosa de la puerta donde se ha descascarado y se ve la madera",""],
  80:["Instalar la lámpara del jacuzzi",""],
  45:["Cablear la corriente al nuevo timbre Google Nest","Hay que instalar un transformador de 24V - ya llegó y está en el garaje"],
@@ -368,6 +374,7 @@ const TR = {
  112:["Cambiar el dimmer de las luces bajo gabinetes de D36HD al dimmer ELV","Usar el dimmer ELV Decora Smart sin usar que tiene Ivan (QR Matter 0641-211-8902). El driver HitLights 5-en-1 acepta ambos, pero el ELV (flanco de bajada) da un piso de regulación más bajo y suave, sin zumbido - vale la pena para tiras bajo gabinetes que se usan a niveles bajos. El D36HD que se libere queda de repuesto. Ray lo vuelve a emparejar/renombrar en My Leviton después del cambio"],
  94:["Ajustar el especiero deslizable para que no golpee al meterlo",""],
  1:["Reemplazar los focos de la lámpara colgante por focos globo blancos redondeados","Focos: Feit #BPG1640W927CAFIL2 (globo esmerilado blanco G16.5, base E12, 2700K) x8 - llegan lun 27 jul, 10am-2pm (pedido HD WK33270664). Se retiran los focos Luxrite B11 tipo torpedo actuales"],
+ 120:["Reemplazar la puerta superior derecha del refrigerador",""],
  3:["Cambiar la luz exterior de dimmer a interruptor estándar de encendido/apagado","Actualmente tiene dimmer"],
  4:["Repintar para cubrir los retoques de yeso",""],
  5:["Quitar la cinta de la parte superior de la puerta entre el dormitorio y la sala familiar, incluida la guía del riel superior",""],
@@ -376,6 +383,7 @@ const TR = {
  107:["Reemplazar la lámpara colgante de papel","La misma pantalla de papel AllModern que en el pasillo (#53) - solo se cambia la pantalla, el cable y los ganchos se quedan"],
  8:["Instalar el espejo en el medio baño",""],
  89:["Quitar el interruptor inteligente de encendido/apagado y poner un sensor de ocupación Leviton IPS02 (encendido automático)","Leviton IPS02-1LW, Decora, encendido/apagado automático, unipolar. Ajustar el retardo a 15 min (las opciones son 30 s / 5 / 15 / 30 min) - el retardo de 15 min también funciona como tiempo extra del extractor después de salir"],
+ 122:["Cambiar el sensor de ocupación por un sensor de vacancia","Reemplazar el Leviton IPS02 instalado (encendido automático) por un sensor de vacancia DVS02 (encendido manual, apagado automático). Mantener el retardo de 15 min para que el extractor siga funcionando después de salir. El IPS02 liberado queda de repuesto"],
  102:["Ajustar el extractor de aire a 70 CFM",""],
  9:["Rellenar el panel de yeso en el área debajo del botiquín",""],
  10:["Quitar la película protectora del botiquín - sigue puesta y oscurece el espejo",""],
@@ -712,10 +720,15 @@ function buildComments(it, u) {
   return wrap;
 }
 
-const PENDING = {}; // idOf -> desired done state, kept until the server confirms
+// idOf -> desired done state, kept until the server confirms. Persisted so a push
+// that failed offline survives a page close/reload instead of being silently lost
+// (and then clobbered by the next poll) - the #95 disappearing-checkmark bug.
+const PENDING = JSON.parse(localStorage.getItem(KEY + "-pending") || "{}");
+const savePending = () => localStorage.setItem(KEY + "-pending", JSON.stringify(PENDING));
 async function pushRemote(it) {
   const id = idOf(it);
   PENDING[id] = it.done;
+  savePending();
   try {
     const r = await fetch(API, {
       method: "POST",
@@ -725,7 +738,7 @@ async function pushRemote(it) {
     });
     if (!r.ok) throw new Error("api " + r.status);
     // only clear if no newer local change superseded this one
-    if (PENDING[id] === it.done) delete PENDING[id];
+    if (PENDING[id] === it.done) { delete PENDING[id]; savePending(); }
     synced = true;
     syncState = "ok";
     lastSyncAt = new Date();
