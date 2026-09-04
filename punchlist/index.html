@@ -238,7 +238,7 @@
 <div class="print-rev" id="printRev"></div>
 
 <script>
-const UPDATED = "2026-09-03 10:45";
+const UPDATED = "2026-09-03 17:40";
 const LOCATION_ORDER = ["Whole House","Exterior",
   "Garage","Study/Den","Hallway","Laundry Room","Downstairs Bathroom","Family Room","Primary Bedroom",
   "Bedroom 1","Bedroom 2","Upstairs Bathroom","Powder Room","Kitchen","Sitting Room","Living Room","Dining",
@@ -269,11 +269,13 @@ const DATA = [
  {"num": 64, "location": "Family Room", "category": "General", "item": "Replace passage set with privacy set on the hallway passageway door into the bedroom suite", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Corrects a divergence from the spec - not a new requirement. Also confirm a privacy set didn't land on the garage door - it correctly takes passage"},
  {"num": 6, "location": "Sitting Room", "category": "Electrical", "item": "Install ceiling hooks for hanging lights", "notes": "Hooks: Adcssynd 3-pack aluminum swag hooks, white (Amazon B0CGV4HG83) - arrived"},
  {"num": 7, "location": "Sitting Room", "category": "Electrical", "item": "Install reading light in the corner", "notes": "Mount 57 in. up from the floor and 20 in. away from the wall", "status": "validated"},
+ {"num": 107, "location": "Sitting Room", "category": "Electrical", "item": "Replace the paper lantern pendant", "notes": "Same AllModern paper shade as the hallway (#53) - shade-only swap, existing cord and hooks stay"},
  {"num": 58, "location": "Living Room", "category": "Electrical", "item": "Replace on/off switch with a Leviton smart dimmer for the can lights", "notes": ""},
  {"num": 83, "location": "Living Room", "category": "Electrical", "item": "Replace receptacle with a Leviton smart receptacle", "notes": "The outlet on the wall by the couch, under the clerestory windows. Use Leviton Decora Smart"},
  {"num": 59, "location": "Dining", "category": "General", "item": "Mount the Velux skylight blind remote to the left of the light switches", "notes": "Vertical center aligned with the center of the adjacent switch gang. Gap 1/4 in.-3/8 in. matching the plate spacing. Drywall anchors, not adhesive alone", "status": "validated"},
  {"num": 111, "location": "Dining", "category": "Electrical", "item": "Swap the two dining room dimmers with each other - they are crosswired", "notes": "Confirmed via My Leviton (Aug 22): the D2ELV is on the CAN lights and the D36HD is on the PENDANT - backwards. The pendant's ET2 Continuum driver (EDHW-2496AL) dims via ELV/0-10V only (NOT TRIAC) and is slowly damaged by the D36HD; the cans are fine on either. Swap the two dimmers between the two gangs: D2ELV to the pendant, D36HD to the cans. No new parts. After the swap Ray re-names both in the My Leviton app"},
  {"num": 84, "location": "Dining", "category": "General", "item": "Remove sticker from the skylight", "notes": "Spec sticker still on the Velux skylight glass at the top of the lightwell", "status": "validated"},
+ {"num": 97, "location": "Dining", "category": "Electrical", "item": "Adjust height of the pendant lights", "notes": "Hang per the elevation diagram (tap to zoom). Five globes, asymmetric W, all heights to the BOTTOM OF GLASS. Positions 1-5 left to right facing the artwork wall: 85, 66 (anchor), 77, 71, 89 in. AFF - anchor sits 36 in. above the 30 in. table. Verify the mounting-bar height inside the skylight well first (assumed 114 in.; every cable length shifts one-for-one). Mark cables with tape at target length and set the globes in order of height, not left to right. The skylight well is closed - the mounting bar cannot rotate; hang for the current table orientation", "photos": ["photos/97-pendant-hang.svg"]},
  {"num": 8, "location": "Powder Room", "category": "General", "item": "Install mirror in powder room", "notes": ""},
  {"num": 89, "location": "Powder Room", "category": "Electrical", "item": "Remove the smart on/off switch and replace with a Leviton IPS02 occupancy sensor (auto-on)", "notes": "Leviton IPS02-1LW, Decora, auto-on/auto-off, single pole. Set the time delay to 15 min (options are 30 s / 5 / 15 / 30 min) - the 15-min delay also serves as the fan's run-on time after exiting"},
  {"num": 102, "location": "Powder Room", "category": "Electrical", "item": "Adjust the exhaust fan down to 70 CFM", "notes": ""},
@@ -310,16 +312,20 @@ const DATA = [
  {"num": 109, "location": "Downstairs Bathroom", "category": "General", "item": "Fix water leaking from the bottom of the shower door", "notes": "Water escapes under the sliding glass shower door during showers - see video. DreamLine Enigma-XO: likely the bottom door sweep/vinyl seal needs adjusting or replacing", "photos": ["photos/109-shower-door-leak.mp4"]},
  {"num": 62, "location": "Downstairs Bathroom", "category": "General", "item": "Replace door passage set with the specified privacy set", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Verify rosette shape is Modern Rectangular. Corrects a divergence from the spec - not a new requirement"},
  {"num": 21, "location": "Primary Bedroom", "category": "Electrical", "item": "Replace on/off switch with Aqara dimmer", "notes": "Dimmer: Aqara Dimmer H2 US (already purchased) - no-neutral OK; no wired 3-way support. Box extender: Arlington BE1 (adjustable to 1-1/2 in., trim to minimum protrusion) - arriving Mon Aug 3; delivery-confirmation reminders set for Mon & Tue", "status": "validated"},
+ {"num": 115, "location": "Primary Bedroom", "category": "Electrical", "item": "Swap the two sconce switches for smart on/off switches", "notes": "Smart switches, not dimmers - the Nubia swing-arms have their own on-fixture switches. NO PURCHASE: use the two D315S freed by #58 (living room switch becomes a dimmer) and #89 (powder switch becomes the occupancy sensor) - do those swaps first or same visit. Bulbs: Ivan's Luxrite 4W B10 candles (E12). Ray re-pairs/renames all in My Leviton"},
  {"num": 34, "location": "Primary Bedroom", "category": "Electrical", "item": "Replace closet light switches with timer switches", "notes": "", "status": "validated"},
  {"num": 35, "location": "Primary Bedroom", "category": "Electrical", "item": "Install wall sconces", "notes": "", "status": "validated"},
  {"num": 22, "location": "Bedroom 1", "category": "Electrical", "item": "Install lighting inside closet", "notes": "", "status": "validated"},
  {"num": 36, "location": "Bedroom 1", "category": "Electrical", "item": "Install wall sconces", "notes": "", "status": "validated"},
  {"num": 37, "location": "Bedroom 1", "category": "Electrical", "item": "Replace ceiling light bulb with bright dimmable LED - current bulb too dim", "notes": "Bulb: Luxrite #LR21440-4PK (A19 100W-equiv ~1600 lm, 2700K, dimmable, enclosed-rated) - arrived, with the neighbor. Current: Philips 60W-equiv WarmGlow (~800 lm)", "status": "reopened", "rev": 2},
  {"num": 88, "location": "Bedroom 1", "category": "Electrical", "item": "Fix protruding USB receptacle - not sitting flush with the wall", "notes": "The plate stands off the wallpapered wall. Same issue as the office (#77): deep USB device likely bottoming out in the box or the box sitting proud. Reseat so device and plate sit flush"},
+ {"num": 114, "location": "Bedroom 1", "category": "Electrical", "item": "Swap the two sconce switches for smart dimmers", "notes": "Use the two matching D36HDs: Ivan's boxed unit (Matter QR 0467-391-4011) and the one freed from the kitchen by #112. Sconce bulbs: Ivan's Feit Enhance 40W-equiv A19 filaments (dimmable). Ray pairs/renames in My Leviton"},
+ {"num": 113, "location": "Bedroom 1", "category": "Electrical", "item": "Swap the closet light's standard switch for a smart switch with auto-off", "notes": "Use Ivan's boxed D315S (Matter QR 2428-152-2236). Ray configures a 15-min auto-off timer in My Leviton"},
  {"num": 60, "location": "Bedroom 1", "category": "General", "item": "Replace door hardware: privacy set instead of passage, Modern Rectangular rosettes instead of round", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Corrects a divergence from the spec - not a new requirement"},
  {"num": 23, "location": "Bedroom 2", "category": "Electrical", "item": "Install lighting inside closet", "notes": "", "status": "validated"},
  {"num": 38, "location": "Bedroom 2", "category": "Electrical", "item": "Replace ceiling light bulb with bright dimmable LED - current bulb too dim", "notes": "Bulb: Luxrite #LR21440-4PK (A19 100W-equiv ~1600 lm, 2700K, dimmable, enclosed-rated). Neighbor has the Luxrite bulbs. Current: Philips 60W-equiv WarmGlow (~800 lm)", "status": "reopened", "rev": 2},
  {"num": 54, "location": "Bedroom 2", "category": "Electrical", "item": "Swap receptacles so the USB-C units are on the south wall", "notes": "Circuit #28 (20A AF). Check south-wall box depth first - USB-C receptacles are deep"},
+ {"num": 116, "location": "Bedroom 2", "category": "Electrical", "item": "Swap the closet light switch for a 15-minute countdown timer", "notes": "Use Ivan's unused Leviton DT115 countdown timer (15/10/5/2-min presets). Replaces the existing standard rocker - same treatment as the primary bedroom closets (#34)"},
  {"num": 98, "location": "Bedroom 2", "category": "Electrical", "item": "Straighten the lopsided bedside outlet", "notes": "Susy's bedside. Hard-to-plug is normal tamper-resistant shutter behavior - only the alignment needs fixing. From Susy's list, Aug 10"},
  {"num": 61, "location": "Bedroom 2", "category": "General", "item": "Replace door hardware: privacy set instead of passage, Modern Rectangular rosettes instead of round", "notes": "Spec: Emtek Orb knob 2-1/4 in., Modern Rectangular rosette 2-3/4 in. x 4 in., privacy (locking pin), solid brass ORB US10B. Corrects a divergence from the spec - not a new requirement"},
  {"num": 47, "location": "Study/Den", "category": "General", "item": "Remove tape from the pocket door in the office", "notes": "", "status": "validated"},
@@ -367,6 +373,7 @@ const TR = {
  5:["Quitar la cinta de la parte superior de la puerta entre el dormitorio y la sala familiar, incluida la guía del riel superior",""],
  6:["Instalar los ganchos de techo para lámparas colgantes","Ganchos: Adcssynd, paquete de 3, aluminio blanco (Amazon B0CGV4HG83) - ya llegaron"],
  7:["Instalar lámpara de lectura en la esquina","Montar a 57 pulg. del piso y a 20 pulg. de la pared"],
+ 107:["Reemplazar la lámpara colgante de papel","La misma pantalla de papel AllModern que en el pasillo (#53) - solo se cambia la pantalla, el cable y los ganchos se quedan"],
  8:["Instalar el espejo en el medio baño",""],
  89:["Quitar el interruptor inteligente de encendido/apagado y poner un sensor de ocupación Leviton IPS02 (encendido automático)","Leviton IPS02-1LW, Decora, encendido/apagado automático, unipolar. Ajustar el retardo a 15 min (las opciones son 30 s / 5 / 15 / 30 min) - el retardo de 15 min también funciona como tiempo extra del extractor después de salir"],
  102:["Ajustar el extractor de aire a 70 CFM",""],
@@ -390,6 +397,7 @@ const TR = {
  20:["Poner ambos interruptores en sensores de vacancia","Interruptor: Leviton #DVS02-1LW - llega 31 jul - 4 ago (hay 4 DVS02 más del pedido de junio)"],
  43:["Instalar el tope de puerta Emtek","El tope llegó el sáb 25 jul"],
  21:["Reemplazar el interruptor de encendido/apagado por el dimmer Aqara","Dimmer: Aqara Dimmer H2 US (ya comprado) - funciona sin neutro; sin soporte para 3-way cableado. Extensor de caja: Arlington BE1 (ajustable a 1-1/2 pulg., recortar al mínimo saliente) - llega lun 3 ago; recordatorios de confirmación de entrega para lun y mar"],
+ 115:["Cambiar los dos interruptores de los apliques por interruptores inteligentes de encendido/apagado","Interruptores inteligentes, no dimmers - los apliques Nubia tienen su propio interruptor en la lámpara. SIN COMPRA: usar los dos D315S que liberan el #58 (el interruptor de la sala se vuelve dimmer) y el #89 (el del medio baño se vuelve sensor de ocupación) - hacer esos cambios antes o en la misma visita. Focos: las velas Luxrite 4W B10 (E12) de Ivan. Ray los vuelve a emparejar/renombrar en My Leviton"],
  34:["Reemplazar los interruptores de luz del clóset por interruptores con temporizador",""],
  35:["Instalar apliques de pared",""],
  22:["Instalar iluminación dentro del clóset",""],
@@ -400,6 +408,7 @@ const TR = {
  47:["Quitar la cinta de la puerta corrediza de bolsillo en la oficina",""],
  78:["Cambiar el interruptor de luz de la oficina por un sensor de vacancia","Encendido manual / apagado automático. Usar uno de los Leviton DVS02-1LW de repuesto del pedido de junio - no hay que comprar nada. El interruptor actual es un Leviton estándar de balancín"],
  54:["Intercambiar los tomacorrientes para que las unidades USB-C queden en la pared sur","Circuito #28 (20A AF). Revisar primero la profundidad de la caja de la pared sur - los tomacorrientes USB-C son profundos"],
+ 116:["Cambiar el interruptor de la luz del clóset por un temporizador de 15 minutos","Usar el temporizador Leviton DT115 sin usar de Ivan (preajustes de 15/10/5/2 min). Reemplaza el interruptor de balancín estándar actual - el mismo tratamiento que los clósets del dormitorio principal (#34)"],
  55:["Intercambiar el orden de los dos interruptores de luz",""],
  92:["Poner las luces del techo en un dimmer con apagado automático","Interruptor ya comprado: Leviton D2MSD-1RW Decora Smart con sensor de movimiento (Wi-Fi 2a gen) - llega lun 17 ago. REQUIERE CABLE NEUTRO - verificar que la caja tenga uno antes de instalar. Configurar el modo de movimiento en apagado automático. Reemplaza al DVS02 del interruptor de las luces del techo (el DVS02 no regula); Ray se encarga de la configuración en la app My Leviton"],
  85:["Reemplazar las luces del techo: la luz empotrada del centro se cambia por una lámpara de sobreponer; la luz sobre la tina/regadera se cambia a Elco Koto","Luz del centro: reemplazar con la lámpara AllModern Pryor de 3 focos, 18 pulg., tipo tazón de sobreponer (allmodern.com, SKU IVYB2013). Focos: 3x Feit #OM60DM/5CCTCA (A19 equiv. 60W, regulable, temperatura seleccionable) - poner el selector de cada foco en 2700K. Luz de la tina/regadera: cambiar a un módulo Elco Koto con clasificación para ubicación húmeda, como en el resto de la casa - verificar que la carcasa acepte los módulos Koto"],
@@ -411,7 +420,10 @@ const TR = {
  59:["Montar el control remoto de la persiana del tragaluz Velux a la izquierda de los interruptores","Centro vertical alineado con el centro del grupo de interruptores adyacente. Separación de 1/4 a 3/8 pulg., igual al espacio entre placas. Usar taquetes para tablaroca, no solo adhesivo"],
  111:["Intercambiar los dos dimmers del comedor entre sí - están cruzados","Confirmado en My Leviton (22 ago): el D2ELV está en las luces EMPOTRADAS y el D36HD en la lámpara COLGANTE - al revés. El driver ET2 Continuum de la lámpara colgante (EDHW-2496AL) solo regula por ELV/0-10V (NO por TRIAC) y el D36HD lo daña lentamente; las luces empotradas funcionan bien con cualquiera de los dos. Intercambiar los dos dimmers entre las dos posiciones: D2ELV a la lámpara colgante, D36HD a las empotradas. No se necesitan partes nuevas. Después del cambio, Ray renombra ambos en la app My Leviton"],
  84:["Quitar la calcomanía del tragaluz","La calcomanía de especificaciones sigue pegada en el vidrio del tragaluz Velux, en la parte alta del pozo de luz"],
+ 97:["Ajustar la altura de las lámparas colgantes","Colgar según el diagrama de elevación (tocar para ampliar). Cinco globos, W asimétrica, todas las alturas al FONDO DEL VIDRIO. Posiciones 1-5 de izquierda a derecha viendo la pared del arte: 85, 66 (ancla), 77, 71, 89 pulg. del piso - el ancla queda 36 pulg. sobre la mesa de 30 pulg. Verificar primero la altura de la barra de montaje dentro del pozo del tragaluz (se asume 114 pulg.; cada largo de cable cambia uno a uno). Marcar los cables con cinta a la medida y colocar los globos en orden de altura, no de izquierda a derecha. El pozo del tragaluz ya está cerrado - la barra de montaje no puede girar; colgar para la orientación actual de la mesa"],
  88:["Corregir el tomacorriente USB botado - no queda a ras de la pared","La placa queda separada de la pared tapizada. Mismo problema que en la oficina (#77): el dispositivo USB profundo probablemente topa dentro de la caja o la caja sobresale. Reasentar para que quede a ras"],
+ 114:["Cambiar los dos interruptores de los apliques por dimmers inteligentes","Usar los dos D36HD iguales: el que tiene Ivan en caja (QR Matter 0467-391-4011) y el que libera la cocina con el #112. Focos de los apliques: los filamentos Feit Enhance equiv. 40W A19 de Ivan (regulables). Ray los empareja/renombra en My Leviton"],
+ 113:["Cambiar el interruptor estándar de la luz del clóset por un interruptor inteligente con apagado automático","Usar el D315S en caja de Ivan (QR Matter 2428-152-2236). Ray configura un temporizador de apagado de 15 min en My Leviton"],
  60:["Reemplazar los herrajes de la puerta: juego de privacidad en lugar de paso, y rosetas Modern Rectangular en lugar de redondas","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Corrige una desviación de la especificación - no es un requisito nuevo"],
  61:["Reemplazar los herrajes de la puerta: juego de privacidad en lugar de paso, y rosetas Modern Rectangular en lugar de redondas","Especificación: perilla Emtek Orb de 2-1/4 pulg., roseta Modern Rectangular de 2-3/4 x 4 pulg., privacidad (con pasador), latón sólido ORB US10B. Corrige una desviación de la especificación - no es un requisito nuevo"],
  82:["Ajustar el rodillo superior de la puerta de la regadera - roza contra la tira de plástico","En la puerta corrediza de vidrio de la regadera (DreamLine Enigma-XO) un rodillo superior está rozando la tira de plástico transparente del borde del vidrio - se ve el desgaste en el punto de contacto. Realinear el rodillo/la puerta para que corra por el riel sin tocar"],
@@ -449,8 +461,8 @@ const TR = {
 };
 
 const UI = {
- en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", floor1:"First Floor", floor2:"Second Floor", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened", addComment:"Add comment", cmtSave:"Save", cmtPh:"Write a comment…", cmtErr:"Couldn't save - check connection and try again.", cmtEdit:"Edit", cmtReply:"Reply", cmtEdited:"edited", cmtDelete:"Delete", cmtConfirm:"Delete?"},
- es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", floor1:"Primer piso", floor2:"Segundo piso", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto", addComment:"Agregar comentario", cmtSave:"Guardar", cmtPh:"Escribe un comentario…", cmtErr:"No se pudo guardar - revisa la conexión e intenta de nuevo.", cmtEdit:"Editar", cmtReply:"Responder", cmtEdited:"editado", cmtDelete:"Eliminar", cmtConfirm:"¿Eliminar?"}
+ en: {sub:"Grouped by location, then by trade", search:"Search items…", allLoc:"All locations", allCat:"All trades", hideValidated:"Hide validated", items:"items", open:"open", reopened:"reopened", done:"done", validated:"validated", locations:"locations", totalOpen:"Total open items", floor1:"First Floor", floor2:"Second Floor", empty:"No items match.", syncOk:"Progress syncs across all devices.", syncOff:"Sync unavailable — progress saved on this device only.", connecting:"Connecting…", lastSync:"synced", updated:"Last list update:", badgeValidated:"Validated", badgeReopened:"Reopened", addComment:"Add comment", cmtSave:"Save", cmtPh:"Write a comment…", cmtErr:"Couldn't save - check connection and try again.", cmtEdit:"Edit", cmtReply:"Reply", cmtEdited:"edited", cmtDelete:"Delete", cmtConfirm:"Delete?"},
+ es: {sub:"Agrupado por ubicación y luego por oficio", search:"Buscar elementos…", allLoc:"Todas las ubicaciones", allCat:"Todos los oficios", hideValidated:"Ocultar validados", items:"elementos", open:"pendientes", reopened:"reabiertos", done:"hechos", validated:"validados", locations:"ubicaciones", totalOpen:"Total de pendientes", floor1:"Primer piso", floor2:"Segundo piso", empty:"Ningún elemento coincide.", syncOk:"El progreso se sincroniza en todos los dispositivos.", syncOff:"Sincronización no disponible — el progreso se guarda solo en este dispositivo.", connecting:"Conectando…", lastSync:"sincronizado", updated:"Última actualización de la lista:", badgeValidated:"Validado", badgeReopened:"Reabierto", addComment:"Agregar comentario", cmtSave:"Guardar", cmtPh:"Escribe un comentario…", cmtErr:"No se pudo guardar - revisa la conexión e intenta de nuevo.", cmtEdit:"Editar", cmtReply:"Responder", cmtEdited:"editado", cmtDelete:"Eliminar", cmtConfirm:"¿Eliminar?"}
 };
 
 let LANG = localStorage.getItem("punchlist-lang-461") || "en";
@@ -483,9 +495,12 @@ const cats = [...new Set(DATA.map(i => i.category))].sort();
 locs.forEach(l => locSel.add(new Option(l, l)));
 cats.forEach(c => catSel.add(new Option(c, c)));
 
+let lastSyncAt = null; // time of last successful poll, shown so "Connecting…" vs stale is obvious
 function updateSyncNote() {
   const u = UI[LANG];
-  $("#syncnote").textContent = syncState === "ok" ? u.syncOk : syncState === "off" ? u.syncOff : u.connecting;
+  let t = syncState === "ok" ? u.syncOk : syncState === "off" ? u.syncOff : u.connecting;
+  if (lastSyncAt) t += ` (${u.lastSync} ${lastSyncAt.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})})`;
+  $("#syncnote").textContent = t;
 }
 
 function applyLang() {
@@ -519,6 +534,7 @@ async function loadRemote() {
     const comments = rc.ok ? await rc.json() : COMMENTS;
     synced = true;
     syncState = "ok";
+    lastSyncAt = new Date();
     updateSyncNote();
     // nothing changed since the last poll: leave the DOM alone (prevents scroll jumps)
     const sig = JSON.stringify(remote) + "|" + JSON.stringify(comments);
@@ -712,6 +728,7 @@ async function pushRemote(it) {
     if (PENDING[id] === it.done) delete PENDING[id];
     synced = true;
     syncState = "ok";
+    lastSyncAt = new Date();
     updateSyncNote();
   } catch (e) {
     syncState = "off";
